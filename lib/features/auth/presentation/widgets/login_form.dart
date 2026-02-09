@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_controller.dart';
 import 'login_fields.dart';
 import 'login_actions.dart';
 
-class LoginForm extends StatefulWidget {
+class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  ConsumerState<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _LoginFormState extends ConsumerState<LoginForm> {
   final _email = TextEditingController();
   final _pass = TextEditingController();
   bool _vis = false;
@@ -28,13 +27,11 @@ class _LoginFormState extends State<LoginForm> {
             toggle: () => setState(() => _vis = !_vis),
           ),
           LoginActions(
-            onSignIn: () => context.read<AuthBloc>().add(
-              SignInRequested(email: _email.text, password: _pass.text),
-            ),
-            onSignUp: () => context.read<AuthBloc>().add(
-              SignUpRequested(email: _email.text, password: _pass.text),
-            ),
-            onGuest: () => context.read<AuthBloc>().add(GuestLoginRequested()),
+            onSignIn: () =>
+                ref.read(authProvider.notifier).signIn(_email.text, _pass.text),
+            onSignUp: () =>
+                ref.read(authProvider.notifier).signUp(_email.text, _pass.text),
+            onGuest: () => ref.read(authProvider.notifier).signInAnonymously(),
           ),
         ],
       ),

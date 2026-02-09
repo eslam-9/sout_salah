@@ -33,7 +33,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException();
       }
       logger.i('Sign in successful: ${response.user!.id}');
-      return UserModel.fromSupabase(response.user!);
+      return _getUserWithProfile(response.user!);
     } catch (e) {
       logger.e('Sign in error', e);
       throw ServerException();
@@ -56,7 +56,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException();
       }
       logger.i('Sign up successful: ${response.user!.id}');
-      return UserModel.fromSupabase(response.user!);
+      // For sign up, profile might not exist yet or triggers handle it.
+      // We can try to fetch it or return basic user.
+      // Triggers usually run immediately, so we can try fetching.
+      return _getUserWithProfile(response.user!);
     } catch (e) {
       logger.e('Sign up error', e);
       throw ServerException();
@@ -73,7 +76,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException();
       }
       logger.i('Anonymous sign in successful: ${response.user!.id}');
-      return UserModel.fromSupabase(response.user!);
+      return _getUserWithProfile(response.user!);
     } on AuthException catch (e) {
       logger.e(
         'Anonymous sign in AuthException: ${e.message}, StatusCode: ${e.statusCode}',
@@ -99,11 +102,27 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final user = supabaseClient.auth.currentUser;
       if (user != null) {
-        return UserModel.fromSupabase(user);
+        return _getUserWithProfile(user);
       }
       return null;
     } catch (e) {
       throw ServerException();
+    }
+  }
+
+  Future<UserModel> _getUserWithProfile(User user) async {
+    try {
+      final data = await supabaseClient
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
+
+      return UserModel.fromSupabase(user, profileData: data);
+    } catch (e) {
+      logger.e('Error fetching profile for user ${user.id}', e);
+      // Return user without profile data if fetch fails
+      return UserModel.fromSupabase(user);
     }
   }
 }
