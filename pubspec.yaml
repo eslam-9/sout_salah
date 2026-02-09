@@ -7,12 +7,15 @@ environment:
   sdk: ^3.10.7
 
 dependencies:
+  bloc: ^9.2.0
   dartz: ^0.10.1
   equatable: ^2.0.8
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_svg: ^2.2.3
   get_it: ^9.2.0
+  google_fonts: ^8.0.1
   internet_connection_checker: ^3.0.1
   supabase_flutter: ^2.12.0
 
