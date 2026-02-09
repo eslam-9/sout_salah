@@ -7,15 +7,24 @@ import 'package:sout_salah/features/auth/domain/repositories/auth_repository.dar
 import 'package:sout_salah/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:sout_salah/features/auth/presentation/bloc/auth_bloc.dart';
 
+import 'package:sout_salah/features/auth/domain/usecases/sign_in_anonymously_usecase.dart';
+
+import 'package:sout_salah/core/utils/app_logger.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  //! Core
+  sl.registerLazySingleton(() => AppLogger());
+  // NetworkInfo implementation if needed
+
   //! Features - Auth
   // Bloc
   sl.registerFactory(
     () => AuthBloc(
       signInUseCase: sl(),
       signUpUseCase: sl(),
+      signInAnonymouslyUseCase: sl(),
       signOutUseCase: sl(),
       getCurrentUserUseCase: sl(),
     ),
@@ -24,6 +33,7 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => SignInUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
+  sl.registerLazySingleton(() => SignInAnonymouslyUseCase(sl()));
   sl.registerLazySingleton(() => SignOutUseCase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
 
@@ -34,11 +44,8 @@ Future<void> init() async {
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(supabaseClient: sl()),
+    () => AuthRemoteDataSourceImpl(sl(), sl()),
   );
-
-  //! Core
-  // NetworkInfo implementation if needed
 
   //! External
   sl.registerLazySingleton(() => Supabase.instance.client);

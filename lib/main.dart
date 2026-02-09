@@ -5,6 +5,8 @@ import 'core/services/service_locator.dart' as di;
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'package:sout_salah/core/utils/app_bloc_observer.dart';
+import 'package:sout_salah/core/utils/app_logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,8 @@ Future<void> main() async {
   );
 
   await di.init();
+
+  Bloc.observer = AppBlocObserver(di.sl<AppLogger>());
 
   runApp(const MyApp());
 }

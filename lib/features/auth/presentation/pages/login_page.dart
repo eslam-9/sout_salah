@@ -28,8 +28,9 @@ class LoginPage extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            if (state is AuthLoading)
+            if (state is AuthLoading) {
               return const Center(child: CircularProgressIndicator());
+            }
             return const SingleChildScrollView(
               child: Column(children: [AuthHeader(), LoginForm()]),
             );

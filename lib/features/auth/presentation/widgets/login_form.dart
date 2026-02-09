@@ -34,7 +34,7 @@ class _LoginFormState extends State<LoginForm> {
             onSignUp: () => context.read<AuthBloc>().add(
               SignUpRequested(email: _email.text, password: _pass.text),
             ),
-            onGuest: () {},
+            onGuest: () => context.read<AuthBloc>().add(GuestLoginRequested()),
           ),
         ],
       ),
