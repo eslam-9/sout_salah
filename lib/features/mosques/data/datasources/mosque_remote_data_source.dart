@@ -7,6 +7,11 @@ import '../models/ramadan_day_model.dart';
 abstract class MosqueRemoteDataSource {
   Future<List<MosqueModel>> getMosques();
   Future<List<RamadanDayModel>> getRamadanDays(String mosqueId);
+  Future<MosqueModel> addMosque({
+    required String name,
+    required String location,
+    String? description,
+  });
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
@@ -44,6 +49,33 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       return data.map((json) => RamadanDayModel.fromJson(json)).toList();
     } catch (e) {
       logger.e('Error fetching Ramadan days', e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<MosqueModel> addMosque({
+    required String name,
+    required String location,
+    String? description,
+  }) async {
+    logger.i('Adding new mosque: $name');
+    try {
+      final response = await supabaseClient
+          .from('mosques')
+          .insert({
+            'name': name,
+            'location': location,
+            ...?description != null ? {'description': description} : null,
+          })
+          .select()
+          .single();
+
+      logger.i('Mosque added successfully: ${response['id']}');
+      return MosqueModel.fromJson(response);
+    } catch (e, stackTrace) {
+      logger.e('Error adding mosque', e, stackTrace);
+      logger.e('Error details: ${e.toString()}');
       throw ServerException();
     }
   }

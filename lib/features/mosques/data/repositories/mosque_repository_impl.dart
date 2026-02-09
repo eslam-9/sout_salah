@@ -32,4 +32,22 @@ class MosqueRepositoryImpl implements MosqueRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, Mosque>> addMosque({
+    required String name,
+    required String location,
+    String? description,
+  }) async {
+    try {
+      final mosque = await remoteDataSource.addMosque(
+        name: name,
+        location: location,
+        description: description,
+      );
+      return Right(mosque);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

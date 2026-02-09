@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
 import '../../../mosques/presentation/bloc/mosque_state_event.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
+import '../../../mosques/presentation/pages/add_mosque_page.dart';
 import '../widgets/home_widgets.dart';
 
 class MosquesPage extends ConsumerWidget {
@@ -47,6 +50,20 @@ class MosquesPage extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddMosquePage()),
+          );
+        },
+        backgroundColor: const Color(0xFF2E7D32),
+        icon: const Icon(LucideIcons.plus),
+        label: Text(
+          'إضافة مسجد',
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
       ),
     );
