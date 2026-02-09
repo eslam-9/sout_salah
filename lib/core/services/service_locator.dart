@@ -10,6 +10,9 @@ import 'package:sout_salah/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sout_salah/features/auth/domain/usecases/sign_in_anonymously_usecase.dart';
 
 import 'package:sout_salah/core/utils/app_logger.dart';
+import 'package:sout_salah/features/mosques/data/datasources/mosque_remote_data_source.dart';
+import 'package:sout_salah/features/mosques/data/repositories/mosque_repository_impl.dart';
+import 'package:sout_salah/features/mosques/domain/repositories/mosque_repository.dart';
 
 final sl = GetIt.instance;
 
@@ -45,6 +48,15 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(sl(), sl()),
+  );
+  sl.registerLazySingleton<MosqueRemoteDataSource>(
+    () => MosqueRemoteDataSourceImpl(sl(), sl()),
+  );
+
+  //! Features - Mosques
+  // Repository
+  sl.registerLazySingleton<MosqueRepository>(
+    () => MosqueRepositoryImpl(remoteDataSource: sl()),
   );
 
   //! External
