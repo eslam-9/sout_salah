@@ -8,7 +8,7 @@ class AudioPlayerService {
 
   AudioPlayer get player => _player;
 
-  /// Play audio from URL with metadata
+  /// Play audio from URL with metadata for notification
   Future<void> play(
     String url, {
     String? title,

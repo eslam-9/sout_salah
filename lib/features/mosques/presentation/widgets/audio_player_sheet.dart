@@ -90,11 +90,18 @@ class AudioPlayerSheet extends ConsumerWidget {
                     child: Slider(
                       value: position.inSeconds.toDouble().clamp(
                         0.0,
-                        duration.inSeconds.toDouble(),
+                        duration.inSeconds > 0
+                            ? duration.inSeconds.toDouble()
+                            : 1.0,
                       ),
-                      max: duration.inSeconds.toDouble(),
+                      max: duration.inSeconds > 0
+                          ? duration.inSeconds.toDouble()
+                          : 1.0,
                       onChanged: (value) {
-                        audioService.seek(Duration(seconds: value.toInt()));
+                        // Only allow seeking if duration is valid
+                        if (duration.inSeconds > 0) {
+                          audioService.seek(Duration(seconds: value.toInt()));
+                        }
                       },
                     ),
                   ),

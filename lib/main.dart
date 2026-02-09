@@ -9,17 +9,34 @@ import 'package:just_audio_background/just_audio_background.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-  );
+  // Initialize JustAudioBackground for background audio and notifications
+  try {
+    debugPrint('Initializing JustAudioBackground...');
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.sout_salah.audio',
+      androidNotificationChannelName: 'Sout Salah Audio',
+      androidNotificationOngoing: true,
+    );
+    debugPrint('JustAudioBackground initialized successfully');
+  } catch (e, stackTrace) {
+    debugPrint('❌ CRITICAL ERROR: Failed to initialize JustAudioBackground');
+    debugPrint('Error: $e');
+    debugPrint('Stack trace: $stackTrace');
+  }
 
-  await Supabase.initialize(
-    url: 'https://fsddnmdmfrrapbumggsg.supabase.co',
-    anonKey: 'sb_publishable_JBJGtNO6N7B6jTbK0r-xUA_hdEEGXR4',
-  );
-  // await init(); // GetIt removed
+  try {
+    debugPrint('Initializing Supabase...');
+    await Supabase.initialize(
+      url: 'https://fsddnmdmfrrapbumggsg.supabase.co',
+      anonKey: 'sb_publishable_JBJGtNO6N7B6jTbK0r-xUA_hdEEGXR4',
+    );
+    debugPrint('Supabase initialized successfully');
+  } catch (e, stackTrace) {
+    debugPrint('❌ CRITICAL ERROR: Failed to initialize Supabase');
+    debugPrint('Error: $e');
+    debugPrint('Stack trace: $stackTrace');
+  }
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
