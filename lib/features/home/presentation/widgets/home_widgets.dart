@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeAppBar extends StatelessWidget {
-  const HomeAppBar({super.key});
+  final ValueChanged<String>? onSearchChanged;
+
+  const HomeAppBar({super.key, this.onSearchChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +14,8 @@ class HomeAppBar extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircleAvatar(
-                radius: 20,
-                backgroundColor: Color(0xFFE0E0E0),
-                child: Icon(LucideIcons.user, color: Colors.grey),
-              ),
               Text(
                 'المساجد',
                 style: GoogleFonts.cairo(
@@ -39,7 +36,7 @@ class HomeAppBar extends StatelessWidget {
               border: Border.all(color: Colors.grey[200]!),
               boxShadow: [
                 BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.02),
+                  color: const Color.fromRGBO(0, 0, 0, 0.02),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -47,6 +44,7 @@ class HomeAppBar extends StatelessWidget {
             ),
             child: TextField(
               textAlign: TextAlign.right,
+              onChanged: onSearchChanged,
               decoration: InputDecoration(
                 hintText: '...ابحث عن مسجد',
                 hintStyle: GoogleFonts.cairo(color: Colors.grey[400]),
@@ -54,10 +52,6 @@ class HomeAppBar extends StatelessWidget {
                 suffixIcon: const Icon(
                   LucideIcons.search,
                   color: Color(0xFF2E7D32),
-                ),
-                prefixIcon: const Icon(
-                  LucideIcons.slidersHorizontal,
-                  color: Colors.grey,
                 ),
               ),
             ),

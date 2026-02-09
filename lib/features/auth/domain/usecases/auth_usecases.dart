@@ -4,22 +4,13 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
+import 'sign_up_params.dart';
 
 class SignInParams extends Equatable {
   final String email;
   final String password;
 
   const SignInParams({required this.email, required this.password});
-
-  @override
-  List<Object> get props => [email, password];
-}
-
-class SignUpParams extends Equatable {
-  final String email;
-  final String password;
-
-  const SignUpParams({required this.email, required this.password});
 
   @override
   List<Object> get props => [email, password];
@@ -46,9 +37,10 @@ class SignUpUseCase implements UseCase<User, SignUpParams> {
 
   @override
   Future<Either<Failure, User>> call(SignUpParams params) async {
-    return await repository.signUpWithEmailAndPassword(
-      params.email,
-      params.password,
+    return await repository.signUp(
+      email: params.email,
+      password: params.password,
+      username: params.username,
     );
   }
 }

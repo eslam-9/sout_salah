@@ -4,7 +4,7 @@ import '../../domain/usecases/add_mosque_usecase.dart';
 import 'mosque_data_providers.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/error/failures.dart';
-import '../bloc/mosque_state_event.dart'; // Reuse state classes
+import '../bloc/mosque_state_event.dart';
 
 final getMosquesUseCaseProvider = Provider(
   (ref) => GetMosquesUseCase(ref.watch(mosqueRepositoryProvider)),

@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 import '../../domain/entities/mosque.dart';
+import '../../domain/entities/ramadan_day.dart';
+import '../../domain/entities/recording.dart';
 
 abstract class MosqueEvent extends Equatable {
   const MosqueEvent();
@@ -25,6 +27,20 @@ class MosqueLoaded extends MosqueState {
   const MosqueLoaded(this.mosques);
   @override
   List<Object> get props => [mosques];
+}
+
+class RamadanDaysLoaded extends MosqueState {
+  final List<RamadanDay> days;
+  const RamadanDaysLoaded(this.days);
+  @override
+  List<Object> get props => [days];
+}
+
+class RecordingsLoaded extends MosqueState {
+  final List<Recording> recordings;
+  const RecordingsLoaded(this.recordings);
+  @override
+  List<Object> get props => [recordings];
 }
 
 class MosqueError extends MosqueState {

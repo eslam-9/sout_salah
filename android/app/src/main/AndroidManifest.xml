@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:label="sout_salah"
         android:name="${applicationName}"
@@ -30,6 +37,23 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
+        <service android:name="com.ryanheise.just_audio_background.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true"
+            android:permission="android.permission.FOREGROUND_SERVICE">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name="com.ryanheise.just_audio_background.AudioService$NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.ryanheise.just_audio_background.action.LZ_NOTIFICATION_CLICK" />
+                <action android:name="com.ryanheise.just_audio_background.action.LZ_NOTIFICATION_DELETE" />
+            </intent-filter>
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

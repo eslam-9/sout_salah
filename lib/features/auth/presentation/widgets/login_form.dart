@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_controller.dart';
+import '../pages/sign_up_page.dart';
 import 'login_fields.dart';
 import 'login_actions.dart';
 
@@ -29,8 +30,10 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           LoginActions(
             onSignIn: () =>
                 ref.read(authProvider.notifier).signIn(_email.text, _pass.text),
-            onSignUp: () =>
-                ref.read(authProvider.notifier).signUp(_email.text, _pass.text),
+            onSignUp: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SignUpPage()),
+            ),
             onGuest: () => ref.read(authProvider.notifier).signInAnonymously(),
           ),
         ],

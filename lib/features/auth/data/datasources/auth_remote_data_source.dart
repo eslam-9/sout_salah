@@ -5,7 +5,11 @@ import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> signInWithEmailAndPassword(String email, String password);
-  Future<UserModel> signUpWithEmailAndPassword(String email, String password);
+  Future<UserModel> signUp({
+    required String email,
+    required String password,
+    String? username,
+  });
   Future<UserModel> signInAnonymously();
   Future<void> signOut();
   Future<UserModel?> getCurrentUser();
@@ -41,24 +45,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> signUpWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<UserModel> signUp({
+    required String email,
+    required String password,
+    String? username,
+  }) async {
     logger.i('Signing up with email: $email');
     try {
       final response = await supabaseClient.auth.signUp(
         email: email,
         password: password,
+        data: username != null ? {'username': username} : null,
       );
       if (response.user == null) {
         logger.e('Sign up failed: User is null');
         throw ServerException();
       }
       logger.i('Sign up successful: ${response.user!.id}');
-      // For sign up, profile might not exist yet or triggers handle it.
-      // We can try to fetch it or return basic user.
-      // Triggers usually run immediately, so we can try fetching.
+      // Profile is created by trigger, fetch it
       return _getUserWithProfile(response.user!);
     } catch (e) {
       logger.e('Sign up error', e);

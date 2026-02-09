@@ -6,6 +6,7 @@ import 'auth_data_providers.dart';
 import '../bloc/auth_state.dart'; // Reuse existing state classes
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/error/failures.dart';
+import '../../domain/usecases/sign_up_params.dart';
 
 // UseCases Providers (or direct usage)
 final signInUseCaseProvider = Provider(
@@ -69,10 +70,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp({
+    required String email,
+    required String password,
+    String? username,
+  }) async {
     state = AuthLoading();
     final result = await signUpUseCase(
-      SignUpParams(email: email, password: password),
+      SignUpParams(email: email, password: password, username: username),
     );
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),

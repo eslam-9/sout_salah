@@ -6,13 +6,21 @@ import '../../../mosques/presentation/providers/mosque_controller.dart';
 import '../../../mosques/presentation/bloc/mosque_state_event.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
 import '../../../mosques/presentation/pages/add_mosque_page.dart';
+import '../../../mosques/presentation/pages/mosque_detail_page.dart';
 import '../widgets/home_widgets.dart';
 
-class MosquesPage extends ConsumerWidget {
+class MosquesPage extends ConsumerStatefulWidget {
   const MosquesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MosquesPage> createState() => _MosquesPageState();
+}
+
+class _MosquesPageState extends ConsumerState<MosquesPage> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(mosqueProvider);
 
     return Scaffold(
@@ -20,7 +28,13 @@ class MosquesPage extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const HomeAppBar(),
+            HomeAppBar(
+              onSearchChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
+              },
+            ),
             Expanded(
               child: Builder(
                 builder: (context) {
@@ -29,18 +43,34 @@ class MosquesPage extends ConsumerWidget {
                   } else if (state is MosqueError) {
                     return Center(child: Text(state.message));
                   } else if (state is MosqueLoaded) {
-                    if (state.mosques.isEmpty) {
-                      return const Center(
-                        child: Text('لا توجد مساجد متاحة حاليا'),
+                    final mosques = state.mosques.where((mosque) {
+                      return mosque.name.contains(_searchQuery);
+                    }).toList();
+
+                    if (mosques.isEmpty) {
+                      return Center(
+                        child: Text(
+                          _searchQuery.isEmpty
+                              ? 'لا توجد مساجد متاحة حاليا'
+                              : 'لا نتائج لهذا البحث',
+                        ),
                       );
                     }
                     return ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount: state.mosques.length,
+                      itemCount: mosques.length,
                       itemBuilder: (context, index) {
                         return MosqueCard(
-                          mosque: state.mosques[index],
-                          onTap: () {},
+                          mosque: mosques[index],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MosqueDetailPage(mosque: mosques[index]),
+                              ),
+                            );
+                          },
                         );
                       },
                     );

@@ -27,14 +27,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> signUpWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<Either<Failure, User>> signUp({
+    required String email,
+    required String password,
+    String? username,
+  }) async {
     try {
-      final user = await remoteDataSource.signUpWithEmailAndPassword(
-        email,
-        password,
+      final user = await remoteDataSource.signUp(
+        email: email,
+        password: password,
+        username: username,
       );
       return Right(user);
     } on ServerException {
