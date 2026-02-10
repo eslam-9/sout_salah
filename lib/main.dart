@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/home/presentation/pages/home_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,7 @@ import 'core/di/providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // Initialize JustAudioBackground for background audio and notifications
   try {
@@ -31,8 +33,8 @@ void main() async {
   try {
     debugPrint('Initializing Supabase...');
     await Supabase.initialize(
-      url: 'https://fsddnmdmfrrapbumggsg.supabase.co',
-      anonKey: 'sb_publishable_JBJGtNO6N7B6jTbK0r-xUA_hdEEGXR4',
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
     debugPrint('Supabase initialized successfully');
   } catch (e, stackTrace) {
