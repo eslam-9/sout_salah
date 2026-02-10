@@ -5,6 +5,9 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/recording.dart';
 import '../../../../core/services/audio_player_service.dart';
+import '../../../home/presentation/providers/favorites_provider.dart';
+import '../../../home/presentation/providers/downloads_provider.dart';
+import '../../../../core/di/providers.dart';
 
 class AudioPlayerSheet extends ConsumerWidget {
   final Recording recording;
@@ -22,6 +25,7 @@ class AudioPlayerSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audioService = ref.watch(audioPlayerServiceProvider);
+    final isFavoriteAsync = ref.watch(isFavoriteProvider(recording.id));
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -43,25 +47,256 @@ class AudioPlayerSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 32),
 
-          // Title
-          Text(
-            recording.prayer.arabicName,
-            style: GoogleFonts.cairo(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            recording.sheikhName,
-            style: GoogleFonts.cairo(
-              fontSize: 16,
-              color: const Color(0xFF2E7D32),
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
+          // Title with favorite and download buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Download button (left)
+              Consumer(
+                builder: (context, ref, child) {
+                  final isDownloadedAsync = ref.watch(
+                    isDownloadedProvider(recording.id),
+                  );
+
+                  return isDownloadedAsync.when(
+                    data: (isDownloaded) => IconButton(
+                      onPressed: () async {
+                        final downloadsService = ref.read(
+                          downloadsServiceProvider,
+                        );
+
+                        if (isDownloaded) {
+                          // Already downloaded, show message
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'التسجيل محفوظ بالفعل',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        } else {
+                          // Download
+                          try {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Text(
+                                        'جاري التنزيل...',
+                                        style: GoogleFonts.cairo(),
+                                      ),
+                                    ],
+                                  ),
+                                  duration: const Duration(seconds: 30),
+                                ),
+                              );
+                            }
+
+                            await downloadsService.downloadRecording(recording);
+                            ref.invalidate(isDownloadedProvider(recording.id));
+                            ref.invalidate(allDownloadsProvider);
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'تم التنزيل بنجاح',
+                                    style: GoogleFonts.cairo(),
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'فشل التنزيل',
+                                    style: GoogleFonts.cairo(),
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
+                      icon: Icon(
+                        isDownloaded
+                            ? LucideIcons.downloadCloud
+                            : LucideIcons.download,
+                        color: isDownloaded
+                            ? Colors.green
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                    loading: () => const SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    error: (_, __) => const SizedBox(width: 48),
+                  );
+                },
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    Text(
+                      recording.prayer.arabicName,
+                      style: GoogleFonts.cairo(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      recording.sheikhName,
+                      style: GoogleFonts.cairo(
+                        fontSize: 16,
+                        color: const Color(0xFF2E7D32),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              // Favorite button (right)
+              isFavoriteAsync.when(
+                data: (isFavorite) => IconButton(
+                  onPressed: () async {
+                    final favoritesService = ref.read(favoritesServiceProvider);
+
+                    if (isFavorite) {
+                      await favoritesService.removeFavorite(recording.id);
+                      ref.invalidate(isFavoriteProvider(recording.id));
+                      ref.invalidate(allFavoritesProvider);
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'تم إزالة التلاوة من المحفوظات',
+                              style: GoogleFonts.cairo(),
+                            ),
+                            backgroundColor: Colors.grey.shade700,
+                          ),
+                        );
+                      }
+                    } else {
+                      try {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'جاري تحميل التلاوة...',
+                                    style: GoogleFonts.cairo(),
+                                  ),
+                                ],
+                              ),
+                              duration: const Duration(seconds: 30),
+                              backgroundColor: const Color(0xFF2E7D32),
+                            ),
+                          );
+                        }
+
+                        await favoritesService.addFavorite(recording);
+                        ref.invalidate(isFavoriteProvider(recording.id));
+                        ref.invalidate(allFavoritesProvider);
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '❤️ تم حفظ التلاوة',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: const Color(0xFF2E7D32),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'فشل حفظ التلاوة',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    }
+                  },
+                  icon: Icon(
+                    LucideIcons.heart,
+                    color: isFavorite
+                        ? Colors.red.shade400
+                        : Colors.grey.shade400,
+                  ),
+                  iconSize: 28,
+                ),
+                loading: () => const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                error: (_, __) => Icon(
+                  LucideIcons.heart,
+                  color: Colors.grey.shade400,
+                  size: 28,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 32),
 
@@ -231,40 +466,9 @@ class AudioPlayerSheet extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 32),
-
-          // Bottom Actions
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildAction(LucideIcons.share2, 'مشاركة'),
-              _buildAction(LucideIcons.download, 'تحميل'),
-              _buildAction(LucideIcons.heart, 'المفضلة'),
-            ],
-          ),
           const SizedBox(height: 16),
         ],
       ),
-    );
-  }
-
-  Widget _buildAction(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: Colors.grey.shade600, size: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.cairo(fontSize: 12, color: Colors.grey.shade600),
-        ),
-      ],
     );
   }
 }

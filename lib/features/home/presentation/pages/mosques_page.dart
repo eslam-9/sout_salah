@@ -19,6 +19,10 @@ class MosquesPage extends ConsumerStatefulWidget {
 class _MosquesPageState extends ConsumerState<MosquesPage> {
   String _searchQuery = '';
 
+  Future<void> _refreshMosques() async {
+    await ref.read(mosqueProvider.notifier).getMosques();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mosqueProvider);
@@ -36,47 +40,122 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
               },
             ),
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  if (state is MosqueLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is MosqueError) {
-                    return Center(child: Text(state.message));
-                  } else if (state is MosqueLoaded) {
-                    final mosques = state.mosques.where((mosque) {
-                      return mosque.name.contains(_searchQuery);
-                    }).toList();
+              child: RefreshIndicator(
+                onRefresh: _refreshMosques,
+                color: const Color(0xFF2E7D32),
+                child: Builder(
+                  builder: (context) {
+                    if (state is MosqueLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is MosqueError) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LucideIcons.wifiOff,
+                                    size: 64,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'فشل تحميل المساجد',
+                                    style: GoogleFonts.cairo(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'تأكد من اتصالك بالإنترنت',
+                                    style: GoogleFonts.cairo(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  ElevatedButton.icon(
+                                    onPressed: _refreshMosques,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF2E7D32),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    icon: const Icon(LucideIcons.refreshCw),
+                                    label: Text(
+                                      'إعادة المحاولة',
+                                      style: GoogleFonts.cairo(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (state is MosqueLoaded) {
+                      final mosques = state.mosques.where((mosque) {
+                        return mosque.name.contains(_searchQuery);
+                      }).toList();
 
-                    if (mosques.isEmpty) {
-                      return Center(
-                        child: Text(
-                          _searchQuery.isEmpty
-                              ? 'لا توجد مساجد متاحة حاليا'
-                              : 'لا نتائج لهذا البحث',
-                        ),
+                      if (mosques.isEmpty) {
+                        return ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: Center(
+                                child: Text(
+                                  _searchQuery.isEmpty
+                                      ? 'لا توجد مساجد متاحة حاليا'
+                                      : 'لا نتائج لهذا البحث',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: mosques.length,
+                        itemBuilder: (context, index) {
+                          return MosqueCard(
+                            mosque: mosques[index],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MosqueDetailPage(mosque: mosques[index]),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       );
                     }
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: mosques.length,
-                      itemBuilder: (context, index) {
-                        return MosqueCard(
-                          mosque: mosques[index],
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MosqueDetailPage(mosque: mosques[index]),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [SizedBox()],
                     );
-                  }
-                  return const SizedBox();
-                },
+                  },
+                ),
               ),
             ),
           ],

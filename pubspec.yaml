@@ -24,6 +24,9 @@ dependencies:
   on_audio_query: ^2.9.0
   permission_handler: ^12.0.1
   just_audio_background: ^0.0.1-beta.17
+  shared_preferences: ^2.2.2
+  http: ^1.2.0
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:

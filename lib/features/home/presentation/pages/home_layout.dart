@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'mosques_page.dart';
+import 'downloads_page.dart';
 import 'settings_page.dart';
+import 'saved_recordings_page.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -15,7 +17,8 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   final List<Widget> _pages = [
     const MosquesPage(),
-    const SizedBox(), // Placeholder for Saved
+    const DownloadsPage(),
+    const SavedRecordingsPage(),
     const SettingsPage(),
   ];
 
@@ -41,14 +44,19 @@ class _HomeLayoutState extends State<HomeLayout> {
           unselectedItemColor: Colors.grey[400],
           showSelectedLabels: true,
           showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed, // Required for 4+ items
           items: const [
             BottomNavigationBarItem(
               icon: Icon(LucideIcons.home),
               label: 'الرئيسية',
             ),
             BottomNavigationBarItem(
-              icon: Icon(LucideIcons.bookmark),
-              label: 'المحفوظات',
+              icon: Icon(LucideIcons.download),
+              label: 'التنزيلات',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(LucideIcons.heart),
+              label: 'المفضلة',
             ),
             BottomNavigationBarItem(
               icon: Icon(LucideIcons.settings),

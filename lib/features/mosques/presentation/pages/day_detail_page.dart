@@ -11,6 +11,8 @@ import '../../domain/usecases/delete_recording_usecase.dart';
 import '../widgets/audio_player_sheet.dart';
 import 'upload_recording_page.dart';
 import '../../../../core/utils/permission_checker.dart';
+import '../../../home/presentation/providers/favorites_provider.dart';
+import '../../../../core/di/providers.dart';
 
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
@@ -117,13 +119,127 @@ class DayDetailPage extends ConsumerWidget {
         final audioService = ref.watch(audioPlayerServiceProvider);
         final currentPlayingId = ref.watch(currentPlayingRecordingProvider);
         final isCurrentlyPlaying = currentPlayingId == recording.id;
+        final isFavoriteAsync = ref.watch(isFavoriteProvider(recording.id));
 
         return Row(
           children: [
-            // Upload/Download icons (left side)
+            // Upload/Download/Favorite icons (left side)
             Column(
               children: [
                 Icon(LucideIcons.cloud, color: Colors.grey.shade400, size: 20),
+                const SizedBox(height: 12),
+                // Favorite button
+                isFavoriteAsync.when(
+                  data: (isFavorite) => InkWell(
+                    onTap: () async {
+                      final favoritesService = ref.read(
+                        favoritesServiceProvider,
+                      );
+
+                      if (isFavorite) {
+                        // Remove from favorites
+                        await favoritesService.removeFavorite(recording.id);
+                        ref.invalidate(isFavoriteProvider(recording.id));
+                        ref.invalidate(allFavoritesProvider);
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'تم إزالة التلاوة من المحفوظات',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: Colors.grey.shade700,
+                            ),
+                          );
+                        }
+                      } else {
+                        // Add to favorites with download
+                        try {
+                          // Show loading snackbar
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'جاري تحميل التلاوة...',
+                                      style: GoogleFonts.cairo(),
+                                    ),
+                                  ],
+                                ),
+                                duration: const Duration(seconds: 30),
+                                backgroundColor: const Color(0xFF2E7D32),
+                              ),
+                            );
+                          }
+
+                          await favoritesService.addFavorite(recording);
+                          ref.invalidate(isFavoriteProvider(recording.id));
+                          ref.invalidate(allFavoritesProvider);
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '❤️ تم حفظ التلاوة',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor: const Color(0xFF2E7D32),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'فشل حفظ التلاوة',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    child: Icon(
+                      LucideIcons.heart,
+                      color: isFavorite
+                          ? Colors.red.shade400
+                          : Colors.grey.shade400,
+                      size: 20,
+                    ),
+                  ),
+                  loading: () => SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  error: (_, __) => Icon(
+                    LucideIcons.heart,
+                    color: Colors.grey.shade400,
+                    size: 20,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 // Delete button with permission check
                 Consumer(
@@ -278,6 +394,7 @@ class DayDetailPage extends ConsumerWidget {
                 return GestureDetector(
                   onTap: () async {
                     if (isCurrentlyPlaying) {
+                      // If already playing, show the player sheet
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
@@ -286,6 +403,7 @@ class DayDetailPage extends ConsumerWidget {
                             AudioPlayerSheet(recording: recording),
                       );
                     } else {
+                      // Start playing
                       ref.read(currentPlayingRecordingProvider.notifier).state =
                           recording.id;
                       await audioService.play(
@@ -294,6 +412,7 @@ class DayDetailPage extends ConsumerWidget {
                         artist: recording.sheikhName,
                       );
 
+                      // Show player sheet after starting playback
                       if (context.mounted) {
                         showModalBottomSheet(
                           context: context,
