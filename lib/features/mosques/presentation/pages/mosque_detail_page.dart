@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/mosque.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../providers/ramadan_days_provider.dart';
@@ -44,14 +45,14 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
           children: [
             const Icon(
               LucideIcons.calendar,
-              color: Color(0xFF2E7D32),
+              color: AppColors.primary,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
               widget.mosque.name,
               style: GoogleFonts.cairo(
-                color: const Color(0xFF2E7D32),
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -89,7 +90,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
               Text(
                 'Days $completedDays/$totalDays',
                 style: GoogleFonts.cairo(
-                  color: const Color(0xFF2E7D32),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -111,7 +112,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
               minHeight: 8,
               backgroundColor: Colors.grey.shade200,
               valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF2E7D32),
+                AppColors.primary,
               ),
             ),
           ),
@@ -143,9 +144,9 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             children: [
               _buildLegendItem('Empty', Colors.grey.shade300),
               const SizedBox(width: 16),
-              _buildLegendItem('Partial', const Color(0xFFFFF3CD)),
+              _buildLegendItem('Partial', AppColors.accentYellow),
               const SizedBox(width: 16),
-              _buildLegendItem('Complete', const Color(0xFF2E7D32)),
+              _buildLegendItem('Complete', AppColors.primary),
             ],
           ),
         ],
@@ -160,13 +161,13 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
 
     switch (day.status) {
       case 'green':
-        backgroundColor = const Color(0xFF2E7D32);
+        backgroundColor = AppColors.primary;
         textColor = Colors.white;
         showCheck = true;
         break;
       case 'yellow':
-        backgroundColor = const Color(0xFFFFF3CD);
-        textColor = const Color(0xFF856404);
+        backgroundColor = AppColors.accentYellow;
+        textColor = AppColors.accentYellowDark;
         break;
       default:
         backgroundColor = Colors.grey.shade200;
@@ -185,7 +186,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
           color: backgroundColor,
           shape: BoxShape.circle,
           border: isToday
-              ? Border.all(color: const Color(0xFF2E7D32), width: 3)
+              ? Border.all(color: AppColors.primary, width: 3)
               : null,
         ),
         child: Center(

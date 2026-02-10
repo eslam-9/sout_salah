@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import 'mosques_page.dart';
 import 'downloads_page.dart';
 import 'settings_page.dart';
@@ -40,7 +41,7 @@ class _HomeLayoutState extends State<HomeLayout> {
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
           backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF2E7D32),
+          selectedItemColor: AppColors.primary,
           unselectedItemColor: Colors.grey[400],
           showSelectedLabels: true,
           showUnselectedLabels: true,

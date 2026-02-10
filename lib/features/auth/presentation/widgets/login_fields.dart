@@ -5,13 +5,19 @@ class LoginFields extends StatelessWidget {
   final TextEditingController email, pass;
   final bool vis;
   final VoidCallback toggle;
+  final String? Function(String?)? emailValidator;
+  final String? Function(String?)? passwordValidator;
+
   const LoginFields({
     super.key,
     required this.email,
     required this.pass,
     required this.vis,
     required this.toggle,
+    this.emailValidator,
+    this.passwordValidator,
   });
+
   @override
   Widget build(BuildContext context) => Column(
     children: [
@@ -20,6 +26,7 @@ class LoginFields extends StatelessWidget {
         hint: 'example@mail.com',
         ctrl: email,
         suf: const Icon(Icons.email_outlined, color: Colors.grey),
+        validator: emailValidator,
       ),
       const SizedBox(height: 16),
       CustomTextField(
@@ -34,6 +41,7 @@ class LoginFields extends StatelessWidget {
           ),
           onPressed: toggle,
         ),
+        validator: passwordValidator,
       ),
     ],
   );

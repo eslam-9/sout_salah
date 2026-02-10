@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
 import '../../../mosques/presentation/bloc/mosque_state_event.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
@@ -42,7 +43,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshMosques,
-                color: const Color(0xFF2E7D32),
+                color: AppColors.primary,
                 child: Builder(
                   builder: (context) {
                     if (state is MosqueLoading) {
@@ -83,7 +84,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                   ElevatedButton.icon(
                                     onPressed: _refreshMosques,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF2E7D32),
+                                      backgroundColor: AppColors.primary,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 24,
@@ -168,7 +169,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
             MaterialPageRoute(builder: (context) => const AddMosquePage()),
           );
         },
-        backgroundColor: const Color(0xFF2E7D32),
+        backgroundColor: AppColors.primary,
         icon: const Icon(LucideIcons.plus),
         label: Text(
           'إضافة مسجد',

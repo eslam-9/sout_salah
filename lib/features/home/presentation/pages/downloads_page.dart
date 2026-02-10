@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../providers/downloads_provider.dart';
 import '../../../../core/services/audio_player_service.dart';
 import '../../../../core/models/downloaded_recording.dart';
@@ -40,12 +41,12 @@ class DownloadsPage extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       LucideIcons.download,
-                      color: Color(0xFF2E7D32),
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -232,7 +233,7 @@ class DownloadsPage extends ConsumerWidget {
                   download.sheikhName,
                   style: GoogleFonts.cairo(
                     fontSize: 14,
-                    color: const Color(0xFF2E7D32),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.right,
@@ -312,7 +313,7 @@ class DownloadsPage extends ConsumerWidget {
                   width: 56,
                   height: 56,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF2E7D32),
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

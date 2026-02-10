@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../providers/favorites_provider.dart';
 import '../../../../core/services/audio_player_service.dart';
 import '../../../../core/models/favorite_recording.dart';
@@ -158,7 +159,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                           'تم إزالة التلاوة من المحفوظات',
                           style: GoogleFonts.cairo(),
                         ),
-                        backgroundColor: const Color(0xFF2E7D32),
+                        backgroundColor: AppColors.primary,
                       ),
                     );
                   }
@@ -277,7 +278,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                   width: 56,
                   height: 56,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF2E7D32),
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

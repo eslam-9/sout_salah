@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../providers/mosque_controller.dart';
 import '../bloc/mosque_state_event.dart';
 
@@ -123,7 +124,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
               ElevatedButton(
                 onPressed: state is MosqueLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -170,7 +171,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.cairo(),
-        prefixIcon: Icon(icon, color: const Color(0xFF2E7D32)),
+        prefixIcon: Icon(icon, color: AppColors.primary),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
@@ -183,7 +184,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF2E7D32), width: 2),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

@@ -12,31 +12,60 @@ class LoginForm extends ConsumerStatefulWidget {
 }
 
 class _LoginFormState extends ConsumerState<LoginForm> {
+  final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
   final _pass = TextEditingController();
   bool _vis = false;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          LoginFields(
-            email: _email,
-            pass: _pass,
-            vis: _vis,
-            toggle: () => setState(() => _vis = !_vis),
-          ),
-          LoginActions(
-            onSignIn: () =>
-                ref.read(authProvider.notifier).signIn(_email.text, _pass.text),
-            onSignUp: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SignUpPage()),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            LoginFields(
+              email: _email,
+              pass: _pass,
+              vis: _vis,
+              toggle: () => setState(() => _vis = !_vis),
+              emailValidator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'الرجاء إدخال البريد الإلكتروني';
+                }
+                if (!value.contains('@')) {
+                  return 'الرجاء إدخال بريد إلكتروني صحيح';
+                }
+                return null;
+              },
+              passwordValidator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'الرجاء إدخال كلمة المرور';
+                }
+                if (value.length < 6) {
+                  return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                }
+                return null;
+              },
             ),
-            onGuest: () => ref.read(authProvider.notifier).signInAnonymously(),
-          ),
-        ],
+            LoginActions(
+              onSignIn: () {
+                if (_formKey.currentState!.validate()) {
+                  ref
+                      .read(authProvider.notifier)
+                      .signIn(_email.text.trim(), _pass.text);
+                }
+              },
+              onSignUp: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SignUpPage()),
+              ),
+              onGuest: () =>
+                  ref.read(authProvider.notifier).signInAnonymously(),
+            ),
+          ],
+        ),
       ),
     );
   }

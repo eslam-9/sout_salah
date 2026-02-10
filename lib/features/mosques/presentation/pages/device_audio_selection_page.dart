@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class DeviceAudioSelectionPage extends ConsumerStatefulWidget {
   const DeviceAudioSelectionPage({super.key});
@@ -132,7 +133,7 @@ class _DeviceAudioSelectionPageState
                   ElevatedButton(
                     onPressed: _checkPermission,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E7D32),
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -164,7 +165,7 @@ class _DeviceAudioSelectionPageState
 
                 if (item.data == null) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
+                    child: CircularProgressIndicator(color: AppColors.primary),
                   );
                 }
 
@@ -218,12 +219,12 @@ class _DeviceAudioSelectionPageState
                           width: 48,
                           height: 48,
                           decoration: const BoxDecoration(
-                            color: Color(0xFFE8F5E9), // Light green
+                            color: AppColors.primaryLight, // Light green
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             LucideIcons.music,
-                            color: Color(0xFF2E7D32),
+                            color: AppColors.primary,
                             size: 24,
                           ),
                         ),

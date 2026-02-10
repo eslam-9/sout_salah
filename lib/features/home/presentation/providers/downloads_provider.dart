@@ -24,5 +24,5 @@ final downloadsStreamProvider = StreamProvider<List<DownloadedRecording>>((
   ref,
 ) {
   final downloadsService = ref.watch(downloadsServiceProvider);
-  return downloadsService.downloadsStream();
+  return downloadsService.downloadsStream;
 });

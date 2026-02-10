@@ -6,6 +6,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController ctrl;
   final bool pass;
   final Widget? suf;
+  final String? Function(String?)? validator;
+
   const CustomTextField({
     super.key,
     required this.hint,
@@ -13,7 +15,9 @@ class CustomTextField extends StatelessWidget {
     required this.label,
     this.pass = false,
     this.suf,
+    this.validator,
   });
+
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.end,
@@ -27,10 +31,11 @@ class CustomTextField extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 8),
-      TextField(
+      TextFormField(
         controller: ctrl,
         obscureText: pass,
         textAlign: TextAlign.end,
+        validator: validator,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: GoogleFonts.cairo(color: Colors.grey),
@@ -41,10 +46,12 @@ class CustomTextField extends StatelessWidget {
           border: _b(Colors.grey.shade300),
           enabledBorder: _b(Colors.grey.shade300),
           focusedBorder: _b(const Color(0xFF2D6930), 2),
+          errorStyle: GoogleFonts.cairo(color: Colors.red, fontSize: 12),
         ),
       ),
     ],
   );
+
   InputBorder _b(Color c, [double w = 1]) => OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: BorderSide(color: c, width: w),

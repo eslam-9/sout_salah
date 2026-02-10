@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../mosques/domain/entities/mosque.dart';
 
 class MosqueCard extends StatelessWidget {
@@ -73,12 +74,12 @@ class MosqueCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9), // Light Green
+                    color: AppColors.primaryLight, // Light Green
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
                     LucideIcons.landmark, // Closest to Mosque
-                    color: Color(0xFF2E7D32), // Dark Green
+                    color: AppColors.primary, // Dark Green
                     size: 32,
                   ),
                 ),
@@ -92,15 +93,15 @@ class MosqueCard extends StatelessWidget {
                 _buildStatBadge(
                   icon: LucideIcons.mic,
                   text: '120 تسجيل', // Placeholder stats for now
-                  color: const Color(0xFFE8F5E9),
-                  textColor: const Color(0xFF2E7D32),
+                  color: AppColors.primaryLight,
+                  textColor: AppColors.primary,
                 ),
                 const SizedBox(width: 8),
                 _buildStatBadge(
                   icon: LucideIcons.moon,
                   text: '30 ليلة', // Placeholder stats
-                  color: const Color(0xFFFFF3E0), // Light Orange
-                  textColor: const Color(0xFFEF6C00), // Dark Orange
+                  color: AppColors.accentOrangeLight, // Light Orange
+                  textColor: AppColors.accentOrange, // Dark Orange
                 ),
               ],
             ),

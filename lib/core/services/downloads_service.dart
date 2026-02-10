@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -7,12 +8,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/downloaded_recording.dart';
 import '../../features/mosques/domain/entities/recording.dart';
 
-/// Service to manage downloaded recordings
+/// Service to manage downloaded recordings with reactive updates
 class DownloadsService {
   static const String _downloadsKey = 'downloaded_recordings';
   final SharedPreferences _prefs;
+  late final StreamController<List<DownloadedRecording>> _downloadsController;
 
-  DownloadsService(this._prefs);
+  DownloadsService(this._prefs) {
+    _downloadsController =
+        StreamController<List<DownloadedRecording>>.broadcast(
+          onListen: () {
+            _emitDownloads();
+          },
+        );
+  }
+
+  /// Get stream of downloads for reactive updates
+  Stream<List<DownloadedRecording>> get downloadsStream =>
+      _downloadsController.stream;
+
+  /// Emit current downloads to the stream
+  Future<void> _emitDownloads() async {
+    try {
+      final downloads = await getDownloads();
+      _downloadsController.add(downloads);
+    } catch (e) {
+      debugPrint('❌ Error emitting downloads: $e');
+    }
+  }
 
   /// Download a recording and save metadata
   Future<void> downloadRecording(Recording recording) async {
@@ -56,6 +79,9 @@ class DownloadsService {
 
         await _saveDownload(download);
         debugPrint('✅ Recording downloaded successfully');
+
+        // Update stream
+        await _emitDownloads();
       } else {
         throw Exception('Failed to download audio: ${response.statusCode}');
       }
@@ -87,6 +113,9 @@ class DownloadsService {
           .toList();
       await _saveAllDownloads(updatedDownloads);
       debugPrint('✅ Download removed successfully');
+
+      // Update stream
+      await _emitDownloads();
     } catch (e) {
       debugPrint('❌ Error removing download: $e');
       rethrow;
@@ -101,15 +130,21 @@ class DownloadsService {
 
   /// Get all downloaded recordings
   Future<List<DownloadedRecording>> getDownloads() async {
-    final jsonString = _prefs.getString(_downloadsKey);
-    if (jsonString == null) return [];
+    try {
+      final jsonString = _prefs.getString(_downloadsKey);
+      if (jsonString == null) return [];
 
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList
-        .map(
-          (json) => DownloadedRecording.fromJson(json as Map<String, dynamic>),
-        )
-        .toList();
+      final List<dynamic> jsonList = json.decode(jsonString);
+      return jsonList
+          .map(
+            (json) =>
+                DownloadedRecording.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
+    } catch (e) {
+      debugPrint('❌ Error loading downloads: $e');
+      return [];
+    }
   }
 
   /// Get a specific download by recording ID
@@ -119,14 +154,6 @@ class DownloadsService {
       return downloads.firstWhere((d) => d.recordingId == recordingId);
     } catch (e) {
       return null;
-    }
-  }
-
-  /// Stream of downloads for reactive updates
-  Stream<List<DownloadedRecording>> downloadsStream() async* {
-    while (true) {
-      yield await getDownloads();
-      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
@@ -142,5 +169,10 @@ class DownloadsService {
     final jsonList = downloads.map((d) => d.toJson()).toList();
     final jsonString = json.encode(jsonList);
     await _prefs.setString(_downloadsKey, jsonString);
+  }
+
+  /// Dispose the stream controller
+  void dispose() {
+    _downloadsController.close();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/prayer.dart';
 import '../../domain/usecases/upload_recording_params.dart';
 import '../providers/mosque_data_providers.dart';
@@ -114,7 +115,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                   'تم رفع التلاوة بنجاح',
                   style: GoogleFonts.cairo(),
                 ),
-                backgroundColor: const Color(0xFF2E7D32),
+                backgroundColor: AppColors.primary,
               ),
             );
           },
@@ -126,7 +127,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('تم رفع التلاوة بنجاح', style: GoogleFonts.cairo()),
-            backgroundColor: const Color(0xFF2E7D32),
+            backgroundColor: AppColors.primary,
           ),
         );
       }
@@ -213,7 +214,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                           ),
                           suffixIcon: const Icon(
                             LucideIcons.user,
-                            color: Color(0xFF2E7D32),
+                            color: AppColors.primary,
                           ),
                         ),
                         validator: (value) {
@@ -252,7 +253,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                           ),
                           suffixIcon: const Icon(
                             LucideIcons.fileText,
-                            color: Color(0xFF2E7D32),
+                            color: AppColors.primary,
                           ),
                         ),
                         items: Prayer.allPrayers.map((prayer) {
@@ -323,7 +324,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                               else
                                 const Icon(
                                   LucideIcons.fileAudio,
-                                  color: Color(0xFF2E7D32),
+                                  color: AppColors.primary,
                                 ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -345,7 +346,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                                         backgroundColor: Colors.grey.shade200,
                                         valueColor:
                                             const AlwaysStoppedAnimation<Color>(
-                                              Color(0xFF2E7D32),
+                                              AppColors.primary,
                                             ),
                                       ),
                                       const SizedBox(height: 4),
@@ -378,7 +379,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                 child: ElevatedButton(
                   onPressed: _isUploading ? null : _uploadRecording,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

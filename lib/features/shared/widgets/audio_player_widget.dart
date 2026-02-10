@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../core/services/audio_player_service.dart';
 import '../../mosques/domain/entities/recording.dart';
 
@@ -51,7 +52,7 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
               },
               icon: Icon(
                 showPlayButton ? LucideIcons.play : LucideIcons.pause,
-                color: const Color(0xFF2E7D32),
+                color: AppColors.primary,
               ),
             ),
 
@@ -90,7 +91,7 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
                                   );
                                   audioService.seek(newPosition);
                                 },
-                                activeColor: const Color(0xFF2E7D32),
+                                activeColor: AppColors.primary,
                               ),
                             ),
                             Padding(

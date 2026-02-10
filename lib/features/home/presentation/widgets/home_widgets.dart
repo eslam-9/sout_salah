@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class HomeAppBar extends StatelessWidget {
   final ValueChanged<String>? onSearchChanged;
@@ -21,7 +22,7 @@ class HomeAppBar extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E7D32),
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -51,7 +52,7 @@ class HomeAppBar extends StatelessWidget {
                 border: InputBorder.none,
                 suffixIcon: const Icon(
                   LucideIcons.search,
-                  color: Color(0xFF2E7D32),
+                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -88,7 +89,7 @@ class FilterChips extends StatelessWidget {
       margin: const EdgeInsets.only(left: 8),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF2E7D32) : Colors.white,
+        color: isSelected ? AppColors.primary : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: isSelected ? null : Border.all(color: Colors.grey[200]!),
       ),

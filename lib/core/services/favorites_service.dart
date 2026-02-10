@@ -8,18 +8,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/favorite_recording.dart';
 import '../../features/mosques/domain/entities/recording.dart';
 
-/// Service to manage favorite recordings with local audio file storage
+/// Service to manage favorite recordings with reactive updates
 class FavoritesService {
   static const String _favoritesKey = 'favorite_recordings';
   final SharedPreferences _prefs;
-  final StreamController<List<FavoriteRecording>> _favoritesController =
-      StreamController<List<FavoriteRecording>>.broadcast();
+  late final StreamController<List<FavoriteRecording>> _favoritesController;
 
-  FavoritesService(this._prefs);
+  FavoritesService(this._prefs) {
+    _favoritesController = StreamController<List<FavoriteRecording>>.broadcast(
+      onListen: () {
+        _emitFavorites();
+      },
+    );
+  }
 
   /// Get stream of favorites for reactive updates
   Stream<List<FavoriteRecording>> get favoritesStream =>
       _favoritesController.stream;
+
+  /// Emit current favorites to the stream
+  Future<void> _emitFavorites() async {
+    try {
+      final favorites = await getFavorites();
+      _favoritesController.add(favorites);
+    } catch (e) {
+      debugPrint('❌ Error emitting favorites: $e');
+    }
+  }
 
   /// Add a recording to favorites and download the audio file
   Future<void> addFavorite(Recording recording) async {
@@ -86,14 +101,18 @@ class FavoritesService {
   Future<void> removeFavorite(String recordingId) async {
     try {
       final favorites = await getFavorites();
-      final favorite = favorites.firstWhere(
-        (f) => f.recordingId == recordingId,
-        orElse: () => throw Exception('Recording not found in favorites'),
-      );
+      // Verify existence but we filter anyway
+      final exists = favorites.any((f) => f.recordingId == recordingId);
+      if (!exists) {
+        throw Exception('Recording not found in favorites');
+      }
 
       // NOTE: We no longer delete the local file here
-      // The file is managed by DownloadsService
-      // This allows users to keep downloaded files even after unfavoriting
+      // The file is managed by DownloadsService if it was a download
+      // If it was only a favorite, we technically leave it?
+      // The previous logic didn't delete because of "downloaded file sharing".
+      // But if it was downloaded specifically for favorites (into `favorites` dir), it might be orphan.
+      // However, keeping it simple as per original logic.
 
       // Remove from favorites list
       favorites.removeWhere((f) => f.recordingId == recordingId);

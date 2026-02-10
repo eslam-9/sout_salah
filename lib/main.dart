@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/home/presentation/pages/home_layout.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +9,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'core/services/favorites_service.dart';
 import 'core/services/downloads_service.dart';
 import 'core/di/providers.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,11 +67,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sout Salah',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D32)),
-        useMaterial3: true,
-        textTheme: GoogleFonts.cairoTextTheme(),
-      ),
+      theme: AppTheme.lightTheme,
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
       },

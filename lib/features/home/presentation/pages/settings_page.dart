@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/providers/auth_controller.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../auth/presentation/pages/login_page.dart';
@@ -31,7 +32,7 @@ class SettingsPage extends ConsumerWidget {
             style: GoogleFonts.cairo(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF2E7D32),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 32),

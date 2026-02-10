@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/theme/app_theme.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../../domain/entities/recording.dart';
@@ -39,7 +40,7 @@ class DayDetailPage extends ConsumerWidget {
               style: GoogleFonts.cairo(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF2E7D32),
+                color: AppColors.primary,
                 letterSpacing: 1.2,
               ),
             ),
@@ -181,7 +182,7 @@ class DayDetailPage extends ConsumerWidget {
                                   ],
                                 ),
                                 duration: const Duration(seconds: 30),
-                                backgroundColor: const Color(0xFF2E7D32),
+                                backgroundColor: AppColors.primary,
                               ),
                             );
                           }
@@ -198,7 +199,7 @@ class DayDetailPage extends ConsumerWidget {
                                   '❤️ تم حفظ التلاوة',
                                   style: GoogleFonts.cairo(),
                                 ),
-                                backgroundColor: const Color(0xFF2E7D32),
+                                backgroundColor: AppColors.primary,
                               ),
                             );
                           }
@@ -334,9 +335,7 @@ class DayDetailPage extends ConsumerWidget {
                                           'تم حذف التلاوة بنجاح',
                                           style: GoogleFonts.cairo(),
                                         ),
-                                        backgroundColor: const Color(
-                                          0xFF2E7D32,
-                                        ),
+                                        backgroundColor: AppColors.primary,
                                       ),
                                     );
                                   }
@@ -428,7 +427,7 @@ class DayDetailPage extends ConsumerWidget {
                     width: 56,
                     height: 56,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF2E7D32),
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -483,7 +482,7 @@ class DayDetailPage extends ConsumerWidget {
                   },
                   child: Icon(
                     LucideIcons.uploadCloud,
-                    color: const Color(0xFF2E7D32),
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 );

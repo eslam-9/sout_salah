@@ -5,6 +5,8 @@ import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
@@ -21,8 +23,12 @@ class AuthRepositoryImpl implements AuthRepository {
         password,
       );
       return Right(user);
-    } on ServerException {
-      return Left(ServerFailure());
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -39,8 +45,12 @@ class AuthRepositoryImpl implements AuthRepository {
         username: username,
       );
       return Right(user);
-    } on ServerException {
-      return Left(ServerFailure());
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -49,8 +59,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await remoteDataSource.signInAnonymously();
       return Right(user);
-    } on ServerException {
-      return Left(ServerFailure());
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -59,8 +73,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await remoteDataSource.signOut();
       return const Right(null);
-    } on ServerException {
-      return Left(ServerFailure());
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -71,9 +89,13 @@ class AuthRepositoryImpl implements AuthRepository {
       if (user != null) {
         return Right(user);
       }
-      return Left(ServerFailure()); // Check logic (maybe null is not failure)
-    } on ServerException {
-      return Left(ServerFailure());
+      return Left(const ServerFailure('User not found'));
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

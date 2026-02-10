@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/auth_controller.dart';
 import '../bloc/auth_state.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../home/presentation/pages/home_layout.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
@@ -85,7 +86,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   style: GoogleFonts.cairo(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2E7D32),
+                    color: AppColors.primary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -224,7 +225,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 ElevatedButton(
                   onPressed: state is AuthLoading ? null : _handleSignUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -266,7 +267,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       child: Text(
                         'تسجيل الدخول',
                         style: GoogleFonts.cairo(
-                          color: const Color(0xFF2E7D32),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
