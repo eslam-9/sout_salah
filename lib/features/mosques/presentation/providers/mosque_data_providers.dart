@@ -10,6 +10,7 @@ import '../../domain/usecases/delete_recording_usecase.dart';
 final mosqueRemoteDataSourceProvider = Provider<MosqueRemoteDataSource>((ref) {
   return MosqueRemoteDataSourceImpl(
     ref.watch(supabaseClientProvider),
+    ref.watch(r2StorageServiceProvider),
     ref.watch(appLoggerProvider),
   );
 });

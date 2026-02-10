@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/services/r2_storage_service.dart';
 import '../models/mosque_model.dart';
 import '../models/ramadan_day_model.dart';
 import '../models/recording_model.dart';
@@ -30,9 +31,14 @@ abstract class MosqueRemoteDataSource {
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   final SupabaseClient supabaseClient;
+  final R2StorageService r2StorageService;
   final AppLogger logger;
 
-  MosqueRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  MosqueRemoteDataSourceImpl(
+    this.supabaseClient,
+    this.r2StorageService,
+    this.logger,
+  );
 
   @override
   Future<List<MosqueModel>> getMosques() async {
@@ -128,21 +134,10 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       final file = File(filePath);
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${prayer.englishName}.mp3';
-      final storagePath = 'recordings/$mosqueId/$dayId/$fileName';
+      final storageKey = 'recordings/$mosqueId/$dayId/$fileName';
 
-      // Upload file to Supabase Storage
-      await supabaseClient.storage
-          .from('audio-recordings')
-          .upload(
-            storagePath,
-            file,
-            fileOptions: const FileOptions(upsert: false),
-          );
-
-      // Get public URL
-      final audioUrl = supabaseClient.storage
-          .from('audio-recordings')
-          .getPublicUrl(storagePath);
+      // Upload file to R2 and get CDN URL
+      final audioUrl = await r2StorageService.uploadFile(storageKey, file);
 
       // Save metadata to database
       final response = await supabaseClient
@@ -180,18 +175,14 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
 
       final audioUrl = recording['audio_url'] as String;
 
-      // Extract storage path from URL
+      // Extract storage key from CDN URL
       final uri = Uri.parse(audioUrl);
-      final pathSegments = uri.pathSegments;
-      final bucketIndex = pathSegments.indexOf('audio-recordings');
-      if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
-        final storagePath = pathSegments.sublist(bucketIndex + 1).join('/');
+      final storageKey = uri.path.startsWith('/')
+          ? uri.path.substring(1)
+          : uri.path;
 
-        // Delete from storage
-        await supabaseClient.storage.from('audio-recordings').remove([
-          storagePath,
-        ]);
-      }
+      // Delete from R2
+      await r2StorageService.deleteFile(storageKey);
 
       // Delete from database
       await supabaseClient.from('recordings').delete().eq('id', recordingId);
