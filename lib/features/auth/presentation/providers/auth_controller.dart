@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/di/providers.dart';
 
 import '../../domain/usecases/auth_usecases.dart';
 import '../../domain/usecases/sign_in_anonymously_usecase.dart';
@@ -32,6 +34,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signInAnonymouslyUseCase: ref.watch(signInAnonymouslyUseCaseProvider),
     signOutUseCase: ref.watch(signOutUseCaseProvider),
     getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
+    sharedPreferences: ref.watch(sharedPreferencesProvider),
   );
 });
 
@@ -42,21 +45,38 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final SignOutUseCase signOutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
 
+  final SharedPreferences sharedPreferences;
+
   AuthNotifier({
     required this.signInUseCase,
     required this.signUpUseCase,
     required this.signInAnonymouslyUseCase,
     required this.signOutUseCase,
     required this.getCurrentUserUseCase,
+    required this.sharedPreferences,
   }) : super(AuthInitial());
 
   Future<void> checkAuthStatus() async {
     state = AuthLoading();
+
+    // Check for guest mode first
+    final isGuest = sharedPreferences.getBool('is_guest_mode') ?? false;
+    if (isGuest) {
+      state = AuthGuest();
+      return;
+    }
+
     final result = await getCurrentUserUseCase(NoParams());
     result.fold(
       (failure) => state = AuthUnauthenticated(),
       (user) => state = AuthAuthenticated(user: user),
     );
+  }
+
+  Future<void> enterAsGuest() async {
+    state = AuthLoading();
+    await sharedPreferences.setBool('is_guest_mode', true);
+    state = AuthGuest();
   }
 
   Future<void> signIn(String email, String password) async {
@@ -66,7 +86,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
-      (user) => state = AuthAuthenticated(user: user),
+      (user) {
+        sharedPreferences.setBool('is_guest_mode', false);
+        state = AuthAuthenticated(user: user);
+      },
     );
   }
 
@@ -81,25 +104,47 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
-      (user) => state = AuthAuthenticated(user: user),
+      (user) {
+        sharedPreferences.setBool('is_guest_mode', false);
+        state = AuthAuthenticated(user: user);
+      },
     );
   }
 
   Future<void> signInAnonymously() async {
+    // Legacy method - might remove or keep as backup
+    // For now, we redirect to enterAsGuest if used, or just let it be
+    // but the UI should call enterAsGuest
     state = AuthLoading();
     final result = await signInAnonymouslyUseCase(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
-      (user) => state = AuthAuthenticated(user: user),
+      (user) {
+        sharedPreferences.setBool('is_guest_mode', false);
+        state = AuthAuthenticated(user: user);
+      },
     );
   }
 
   Future<void> signOut() async {
     state = AuthLoading();
+
+    // Check if we are in guest mode
+    final isGuest = state is AuthGuest;
+
+    if (isGuest) {
+      await sharedPreferences.setBool('is_guest_mode', false);
+      state = AuthUnauthenticated();
+      return;
+    }
+
     final result = await signOutUseCase(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
-      (_) => state = AuthUnauthenticated(),
+      (_) {
+        sharedPreferences.setBool('is_guest_mode', false);
+        state = AuthUnauthenticated();
+      },
     );
   }
 

@@ -61,8 +61,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 context,
                 MaterialPageRoute(builder: (_) => const SignUpPage()),
               ),
-              onGuest: () =>
-                  ref.read(authProvider.notifier).signInAnonymously(),
+              onGuest: () => ref.read(authProvider.notifier).enterAsGuest(),
             ),
           ],
         ),

@@ -12,10 +12,12 @@ class LoginPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next is AuthAuthenticated) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('تم تسجيل الدخول بنجاح')));
+      if (next is AuthAuthenticated || next is AuthGuest) {
+        if (next is AuthAuthenticated) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+          );
+        }
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomeLayout()),
         );

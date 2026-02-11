@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../auth/presentation/providers/auth_controller.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../auth/presentation/pages/login_page.dart';
+
 import 'mosques_page.dart';
 import 'downloads_page.dart';
 import 'settings_page.dart';
 import 'saved_recordings_page.dart';
 
-class HomeLayout extends StatefulWidget {
+class HomeLayout extends ConsumerStatefulWidget {
   const HomeLayout({super.key});
 
   @override
-  State<HomeLayout> createState() => _HomeLayoutState();
+  ConsumerState<HomeLayout> createState() => _HomeLayoutState();
 }
 
-class _HomeLayoutState extends State<HomeLayout> {
+class _HomeLayoutState extends ConsumerState<HomeLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
@@ -24,7 +29,28 @@ class _HomeLayoutState extends State<HomeLayout> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Check authentication status on startup if not already checked
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authState = ref.read(authProvider);
+      if (authState is AuthInitial) {
+        ref.read(authProvider.notifier).checkAuthStatus();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Listen for auth state changes
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next is AuthUnauthenticated) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    });
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(

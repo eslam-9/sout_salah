@@ -53,6 +53,7 @@ void main() async {
       overrides: [
         favoritesServiceProvider.overrideWithValue(favoritesService),
         downloadsServiceProvider.overrideWithValue(downloadsService),
+        sharedPreferencesProvider.overrideWithValue(prefs),
       ],
       child: const MyApp(),
     ),

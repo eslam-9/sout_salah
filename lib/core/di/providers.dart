@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart' as sp;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sout_salah/core/utils/app_logger.dart';
 import '../services/favorites_service.dart';
@@ -25,4 +26,8 @@ final favoritesServiceProvider = Provider<FavoritesService>((ref) {
 // DownloadsService provider
 final downloadsServiceProvider = Provider<DownloadsService>((ref) {
   throw UnimplementedError('DownloadsService must be overridden in main.dart');
+});
+
+final sharedPreferencesProvider = Provider<sp.SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences must be overridden in main.dart');
 });
