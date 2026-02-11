@@ -6,9 +6,31 @@ class MosquePermissions {
 
   MosquePermissions(this._supabase);
 
+  /// Check if current user is a super admin (global admin)
+  Future<bool> isSuperAdmin() async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return false;
+
+      // Check the profile for role 'admin'
+      final profile = await _supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+
+      return profile?['role'] == 'admin';
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Check if current user is admin of a specific mosque
   Future<bool> isAdmin(String mosqueId) async {
     try {
+      // Super admins are admins of all mosques
+      if (await isSuperAdmin()) return true;
+
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return false;
 
@@ -27,6 +49,9 @@ class MosquePermissions {
   /// Check if current user is a publisher for a specific mosque
   Future<bool> isPublisher(String mosqueId) async {
     try {
+      // Super admins are publishers for all mosques
+      if (await isSuperAdmin()) return true;
+
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return false;
 
@@ -45,6 +70,7 @@ class MosquePermissions {
 
   /// Check if current user can upload to a specific mosque
   Future<bool> canUpload(String mosqueId) async {
+    // Super admin check is already done inside isAdmin
     final admin = await isAdmin(mosqueId);
     if (admin) return true;
 
@@ -57,7 +83,7 @@ class MosquePermissions {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return false;
 
-      // Check if user is admin of the mosque
+      // Check if user is admin of the mosque (includes super admin)
       final admin = await isAdmin(mosqueId);
       if (admin) return true;
 

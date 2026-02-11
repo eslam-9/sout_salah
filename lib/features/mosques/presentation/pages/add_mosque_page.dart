@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/mosque_controller.dart';
 import '../bloc/mosque_state_event.dart';
+import '../../../../core/utils/permission_checker.dart';
 
 class AddMosquePage extends ConsumerStatefulWidget {
   const AddMosquePage({super.key});
@@ -38,6 +39,25 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
                 ? null
                 : _descriptionController.text.trim(),
           );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermission();
+  }
+
+  Future<void> _checkPermission() async {
+    final canAdd = await ref.read(permissionCheckerProvider).canAddMosque();
+    if (!canAdd && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('عذراً، فقط المشرفين يمكنهم إضافة مساجد'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.of(context).pop();
     }
   }
 

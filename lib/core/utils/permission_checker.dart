@@ -32,6 +32,11 @@ class PermissionChecker {
   Future<bool> isAdminOfMosque(String mosqueId) async {
     return await _permissions.isAdmin(mosqueId);
   }
+
+  /// Check if user can add a new mosque (Super Admin only)
+  Future<bool> canAddMosque() async {
+    return await _permissions.isSuperAdmin();
+  }
 }
 
 /// Provider for PermissionChecker

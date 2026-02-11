@@ -55,7 +55,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await supabaseClient.auth.signUp(
         email: email,
         password: password,
-        data: username != null ? {'username': username} : null,
+        data: {'role': 'user', if (username != null) 'username': username},
       );
       if (response.user == null) {
         logger.e('Sign up failed: User is null');

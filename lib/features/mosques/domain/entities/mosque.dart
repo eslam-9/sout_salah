@@ -6,6 +6,7 @@ class Mosque extends Equatable {
   final String? description;
   final String? location;
   final String? adminId;
+  final int recordingCount;
 
   const Mosque({
     required this.id,
@@ -13,8 +14,16 @@ class Mosque extends Equatable {
     this.description,
     this.location,
     this.adminId,
+    this.recordingCount = 0,
   });
 
   @override
-  List<Object?> get props => [id, name, description, location, adminId];
+  List<Object?> get props => [
+    id,
+    name,
+    description,
+    location,
+    adminId,
+    recordingCount,
+  ];
 }

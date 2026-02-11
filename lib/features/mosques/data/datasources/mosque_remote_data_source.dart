@@ -44,7 +44,9 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   Future<List<MosqueModel>> getMosques() async {
     logger.i('Fetching list of mosques');
     try {
-      final response = await supabaseClient.from('mosques').select();
+      final response = await supabaseClient
+          .from('mosques')
+          .select('*, recordings(count)');
       final data = response as List<dynamic>;
       logger.i('Fetched ${data.length} mosques');
       return data.map((json) => MosqueModel.fromJson(json)).toList();

@@ -33,8 +33,6 @@ class MosqueCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Heart Icon
-                Icon(LucideIcons.heart, color: Colors.grey[300], size: 24),
                 const Spacer(),
                 // Mosque Info (RTL)
                 Column(
@@ -92,7 +90,7 @@ class MosqueCard extends StatelessWidget {
               children: [
                 _buildStatBadge(
                   icon: LucideIcons.mic,
-                  text: '120 تسجيل', // Placeholder stats for now
+                  text: '${mosque.recordingCount} تسجيل',
                   color: AppColors.primaryLight,
                   textColor: AppColors.primary,
                 ),

@@ -29,31 +29,16 @@ class HomeAppBar extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Search Bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Colors.grey[200]!),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromRGBO(0, 0, 0, 0.02),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: TextField(
-              textAlign: TextAlign.right,
-              onChanged: onSearchChanged,
-              decoration: InputDecoration(
-                hintText: '...ابحث عن مسجد',
-                hintStyle: GoogleFonts.cairo(color: Colors.grey[400]),
-                border: InputBorder.none,
-                suffixIcon: const Icon(
-                  LucideIcons.search,
-                  color: AppColors.primary,
-                ),
+          TextField(
+            textAlign: TextAlign.right,
+            onChanged: onSearchChanged,
+            decoration: InputDecoration(
+              hintText: '...ابحث عن مسجد',
+              hintStyle: GoogleFonts.cairo(color: Colors.grey[400]),
+              border: InputBorder.none,
+              suffixIcon: const Icon(
+                LucideIcons.search,
+                color: AppColors.primary,
               ),
             ),
           ),
