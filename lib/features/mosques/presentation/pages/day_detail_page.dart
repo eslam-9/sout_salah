@@ -9,11 +9,13 @@ import '../../domain/entities/prayer.dart';
 import '../providers/mosque_data_providers.dart';
 import '../../../../core/services/audio_player_service.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
-import '../widgets/audio_player_sheet.dart';
-import 'upload_recording_page.dart';
+
 import '../../../../core/utils/permission_checker.dart';
 import '../../../home/presentation/providers/favorites_provider.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
+import '../../../../core/services/navigation_service.dart';
 
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
@@ -95,7 +97,7 @@ class DayDetailPage extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -394,31 +396,27 @@ class DayDetailPage extends ConsumerWidget {
                   onTap: () async {
                     if (isCurrentlyPlaying) {
                       // If already playing, show the player sheet
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            AudioPlayerSheet(recording: recording),
+                      // If already playing, navigate to player page
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(recording: recording),
                       );
                     } else {
                       // Start playing
                       ref.read(currentPlayingRecordingProvider.notifier).state =
                           recording.id;
-                      await audioService.play(
+                      // Don't await playback to ensure instant navigation
+                      audioService.play(
                         recording.audioUrl,
                         title: recording.prayer.arabicName,
                         artist: recording.sheikhName,
                       );
 
-                      // Show player sheet after starting playback
+                      // Navigate immediately
                       if (context.mounted) {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) =>
-                              AudioPlayerSheet(recording: recording),
+                        NavigationService.navigateTo(
+                          AppRoutes.audioPlayer,
+                          arguments: AudioPlayerArgs(recording: recording),
                         );
                       }
                     }
@@ -430,6 +428,7 @@ class DayDetailPage extends ConsumerWidget {
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
+                    alignment: Alignment.center,
                     child: Icon(
                       showPlayButton ? LucideIcons.play : LucideIcons.barChart2,
                       color: Colors.white,
@@ -466,13 +465,11 @@ class DayDetailPage extends ConsumerWidget {
 
                 return InkWell(
                   onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UploadRecordingPage(
-                          mosqueId: day.mosqueId,
-                          dayId: day.id,
-                        ),
+                    final result = await NavigationService.navigateTo(
+                      AppRoutes.uploadRecording,
+                      arguments: UploadRecordingArgs(
+                        mosqueId: day.mosqueId,
+                        dayId: day.id,
                       ),
                     );
 

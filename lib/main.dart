@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'features/home/presentation/pages/home_layout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:just_audio_background/just_audio_background.dart';
+
 import 'core/services/favorites_service.dart';
 import 'core/services/downloads_service.dart';
+import 'core/services/navigation_service.dart';
 import 'core/di/providers.dart';
 import 'core/theme/app_theme.dart';
+import 'core/routes/app_router.dart';
+import 'core/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,10 +71,16 @@ class MyApp extends StatelessWidget {
       title: 'Sout Salah',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+
+      // Navigation configuration
+      navigatorKey: NavigationService.navigatorKey,
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      onUnknownRoute: AppRouter.onUnknownRoute,
+      initialRoute: AppRoutes.home,
+
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
       },
-      home: const HomeLayout(),
     );
   }
 }

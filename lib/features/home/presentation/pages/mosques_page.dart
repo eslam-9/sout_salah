@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/permission_checker.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
 import '../../../mosques/presentation/bloc/mosque_state_event.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
-import '../../../mosques/presentation/pages/add_mosque_page.dart';
-import '../../../mosques/presentation/pages/mosque_detail_page.dart';
 import '../widgets/home_widgets.dart';
 
 class MosquesPage extends ConsumerStatefulWidget {
@@ -156,12 +156,9 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                           return MosqueCard(
                             mosque: mosques[index],
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      MosqueDetailPage(mosque: mosques[index]),
-                                ),
+                              NavigationService.navigateTo(
+                                AppRoutes.mosqueDetail,
+                                arguments: mosques[index],
                               );
                             },
                           );
@@ -182,12 +179,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
       floatingActionButton: _canAddMosque
           ? FloatingActionButton.extended(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddMosquePage(),
-                  ),
-                );
+                NavigationService.navigateTo(AppRoutes.addMosque);
               },
               backgroundColor: AppColors.primary,
               icon: const Icon(LucideIcons.plus),

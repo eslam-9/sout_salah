@@ -9,18 +9,19 @@ final favoritesProvider = StreamProvider<List<FavoriteRecording>>((ref) {
 });
 
 /// Provider to check if a recording is favorite
-final isFavoriteProvider = FutureProvider.family<bool, String>((
+final isFavoriteProvider = Provider.family<AsyncValue<bool>, String>((
   ref,
   recordingId,
-) async {
-  final favoritesService = ref.watch(favoritesServiceProvider);
-  return await favoritesService.isFavorite(recordingId);
+) {
+  final favoritesAsync = ref.watch(favoritesProvider);
+  return favoritesAsync.whenData(
+    (favorites) => favorites.any((f) => f.recordingId == recordingId),
+  );
 });
 
 /// Provider to get all favorites
-final allFavoritesProvider = FutureProvider<List<FavoriteRecording>>((
+final allFavoritesProvider = Provider<AsyncValue<List<FavoriteRecording>>>((
   ref,
-) async {
-  final favoritesService = ref.watch(favoritesServiceProvider);
-  return await favoritesService.getFavorites();
+) {
+  return ref.watch(favoritesProvider);
 });

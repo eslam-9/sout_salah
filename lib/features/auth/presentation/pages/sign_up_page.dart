@@ -5,7 +5,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/auth_controller.dart';
 import '../bloc/auth_state.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../home/presentation/pages/home_layout.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -50,9 +51,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthAuthenticated) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeLayout()),
-        );
+        NavigationService.navigateAndReplace(AppRoutes.home);
       } else if (next is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.message), backgroundColor: Colors.red),

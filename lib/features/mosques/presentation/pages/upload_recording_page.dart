@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/prayer.dart';
 import '../../domain/usecases/upload_recording_params.dart';
 import '../providers/mosque_data_providers.dart';
-import 'device_audio_selection_page.dart';
 
 class UploadRecordingPage extends ConsumerStatefulWidget {
   final String mosqueId;
@@ -39,21 +40,12 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
   }
 
   Future<void> _pickFile() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const DeviceAudioSelectionPage()),
+    final result = await NavigationService.navigateTo(
+      AppRoutes.deviceAudioSelection,
     );
 
     if (result != null && result is Map) {
       setState(() {
-        // The result is a map with 'path', 'name', 'size', 'duration'
-        // We might need to adjust logic if the path is content:// URI (Android 10+)
-        // But on_audio_query usually returns absolute path for older androids,
-        // and for newer ones we might need to handle differently if we were playing.
-        // For upload, we need a File object.
-        // Note: on latest androids, direct file access might be restricted.
-        // However, on_audio_query's 'data' field usually provides a path we can try to use.
-
         _selectedFile = File(result['path']);
       });
     }

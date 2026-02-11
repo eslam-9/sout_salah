@@ -61,11 +61,9 @@ class FavoritesService {
         fileSize = await downloadedFile.length();
         debugPrint('✅ Using existing downloaded file for favorite');
       } else {
-        // File not downloaded, download it now
-        localPath = await _downloadAudioFile(recording.audioUrl, recording.id);
-        final file = File(localPath);
-        fileSize = await file.length();
-        debugPrint('✅ Downloaded file for favorite');
+        // File not downloaded, just save metadata with streaming URL
+        localPath = '';
+        debugPrint('✅ Adding favorite without local file (will stream)');
       }
 
       // Create favorite recording object
@@ -150,42 +148,6 @@ class FavoritesService {
     } catch (e) {
       debugPrint('❌ Error loading favorites: $e');
       return [];
-    }
-  }
-
-  /// Download audio file from URL and save locally
-  Future<String> _downloadAudioFile(String url, String recordingId) async {
-    try {
-      debugPrint('📥 Downloading audio file for recording $recordingId...');
-
-      // Get app's documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final favoritesDir = Directory('${directory.path}/favorites');
-
-      // Create favorites directory if it doesn't exist
-      if (!await favoritesDir.exists()) {
-        await favoritesDir.create(recursive: true);
-      }
-
-      // Create file path
-      final filePath = '${favoritesDir.path}/$recordingId.mp3';
-
-      // Download the file
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-        debugPrint('✅ Downloaded audio file to: $filePath');
-        return filePath;
-      } else {
-        throw Exception(
-          'Failed to download audio file: ${response.statusCode}',
-        );
-      }
-    } catch (e) {
-      debugPrint('❌ Error downloading audio file: $e');
-      rethrow;
     }
   }
 

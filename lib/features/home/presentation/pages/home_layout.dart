@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../../auth/presentation/providers/auth_controller.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
-import '../../../auth/presentation/pages/login_page.dart';
 
 import 'mosques_page.dart';
 import 'downloads_page.dart';
@@ -45,8 +46,8 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
     // Listen for auth state changes
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthUnauthenticated) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+        NavigationService.navigateAndRemoveUntil(
+          AppRoutes.login,
           (route) => false,
         );
       }

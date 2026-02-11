@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_controller.dart';
-import '../pages/sign_up_page.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import 'login_fields.dart';
 import 'login_actions.dart';
 
@@ -57,10 +58,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                       .signIn(_email.text.trim(), _pass.text);
                 }
               },
-              onSignUp: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SignUpPage()),
-              ),
+              onSignUp: () => NavigationService.navigateTo(AppRoutes.signup),
               onGuest: () => ref.read(authProvider.notifier).enterAsGuest(),
             ),
           ],

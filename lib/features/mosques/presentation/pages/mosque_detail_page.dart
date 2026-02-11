@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/mosque.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../providers/ramadan_days_provider.dart';
-import 'day_detail_page.dart';
 
 class MosqueDetailPage extends ConsumerStatefulWidget {
   final Mosque mosque;
@@ -176,10 +177,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DayDetailPage(day: day)),
-        );
+        NavigationService.navigateTo(AppRoutes.dayDetail, arguments: day);
       },
       child: Container(
         decoration: BoxDecoration(

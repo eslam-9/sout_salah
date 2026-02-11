@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../../auth/presentation/providers/auth_controller.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
-import '../../../auth/presentation/pages/login_page.dart';
-import '../../../auth/presentation/pages/profile_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -15,8 +15,8 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthUnauthenticated) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+        NavigationService.navigateAndRemoveUntil(
+          AppRoutes.login,
           (route) => false,
         );
       }
@@ -44,10 +44,7 @@ class SettingsPage extends ConsumerWidget {
               icon: LucideIcons.user,
               title: 'الملف الشخصي',
               onTap: (context) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                );
+                NavigationService.navigateTo(AppRoutes.profile);
               },
               isContextRequired: true,
             ),

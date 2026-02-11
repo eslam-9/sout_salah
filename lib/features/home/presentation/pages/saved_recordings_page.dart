@@ -7,7 +7,11 @@ import '../providers/favorites_provider.dart';
 import '../../../../core/services/audio_player_service.dart';
 import '../../../../core/models/favorite_recording.dart';
 import '../../../../core/di/providers.dart';
-import '../widgets/favorite_audio_player_sheet.dart';
+import '../../../mosques/domain/entities/prayer.dart';
+import '../../../mosques/domain/entities/recording.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
+import '../../../../core/services/navigation_service.dart';
 
 class SavedRecordingsPage extends ConsumerWidget {
   const SavedRecordingsPage({super.key});
@@ -100,7 +104,7 @@ class SavedRecordingsPage extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -231,45 +235,36 @@ class SavedRecordingsPage extends ConsumerWidget {
 
               return GestureDetector(
                 onTap: () async {
-                  if (isCurrentlyPlaying && isPlaying) {
-                    // If already playing, show the player sheet
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) =>
-                          FavoriteAudioPlayerSheet(favorite: favorite),
+                  if (isCurrentlyPlaying) {
+                    // Navigate to player page
+                    NavigationService.navigateTo(
+                      AppRoutes.audioPlayer,
+                      arguments: AudioPlayerArgs(
+                        recording: _convertToRecording(favorite),
+                      ),
                     );
-                  } else if (isCurrentlyPlaying && !isPlaying) {
-                    await audioService.resume();
-                    // Show player sheet after resuming
-                    if (context.mounted) {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            FavoriteAudioPlayerSheet(favorite: favorite),
-                      );
-                    }
                   } else {
                     ref.read(currentPlayingRecordingProvider.notifier).state =
                         favorite.recordingId;
-                    // Play from local file
-                    await audioService.play(
-                      favorite.localAudioPath,
+                    // Play from local file if available, otherwise stream
+                    // Start playing (don't await to avoid UI delay)
+                    final path = favorite.localAudioPath.isNotEmpty
+                        ? favorite.localAudioPath
+                        : favorite.audioUrl;
+
+                    audioService.play(
+                      path,
                       title: favorite.prayerName,
                       artist: favorite.sheikhName,
                     );
 
-                    // Show player sheet after starting playback
+                    // Navigate immediately
                     if (context.mounted) {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            FavoriteAudioPlayerSheet(favorite: favorite),
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(
+                          recording: _convertToRecording(favorite),
+                        ),
                       );
                     }
                   }
@@ -281,6 +276,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
+                  alignment: Alignment.center,
                   child: Icon(
                     showPlayButton ? LucideIcons.play : LucideIcons.pause,
                     color: Colors.white,
@@ -303,5 +299,29 @@ class SavedRecordingsPage extends ConsumerWidget {
     } else {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     }
+  }
+
+  // Helper to convert FavoriteRecording to Recording for the player page
+  Recording _convertToRecording(FavoriteRecording favorite) {
+    // Try to find matching prayer, default to Fajr if not found
+    final prayer = Prayer.values.firstWhere(
+      (p) =>
+          p.englishName == favorite.prayerName ||
+          p.arabicName == favorite.prayerName,
+      orElse: () => Prayer.fajr,
+    );
+
+    return Recording(
+      id: favorite.recordingId,
+      mosqueId: favorite.mosqueId,
+      dayId: favorite.dayId,
+      prayer: prayer,
+      sheikhName: favorite.sheikhName,
+      audioUrl: favorite.localAudioPath.isNotEmpty
+          ? favorite.localAudioPath
+          : favorite.audioUrl,
+      fileSize: favorite.fileSize,
+      createdAt: favorite.savedAt,
+    );
   }
 }
