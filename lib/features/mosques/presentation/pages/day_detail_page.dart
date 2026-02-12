@@ -7,7 +7,6 @@ import '../../domain/entities/ramadan_day.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/entities/prayer.dart';
 import '../providers/mosque_data_providers.dart';
-import '../../../../core/services/audio_player_service.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
 
 import '../../../../core/utils/permission_checker.dart';

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import '../../../../core/utils/app_logger.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -126,8 +128,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
         );
       }
     } catch (e, stackTrace) {
-      debugPrint('Upload Error: $e');
-      debugPrint('Stack Trace: $stackTrace');
+      GetIt.I<AppLogger>().e('Upload Error: $e', e, stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -12,7 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
-  flutter_svg: ^2.2.3
   google_fonts: ^8.0.1
   internet_connection_checker: ^3.0.1
   logger: ^2.6.2
@@ -25,11 +24,11 @@ dependencies:
   permission_handler: ^12.0.1
   just_audio_background: ^0.0.1-beta.17
   shared_preferences: ^2.2.2
-  http: ^1.2.0
   path_provider: ^2.1.2
   flutter_dotenv: ^5.1.0
   crypto: ^3.0.3
   dio: ^5.9.1
+  get_it: ^9.2.0
 
 dev_dependencies:
   flutter_test:

@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/favorites_provider.dart';
-import '../../../../core/services/audio_player_service.dart';
-import '../../../../core/models/favorite_recording.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/models/favorite_recording.dart';
+
 import '../../../mosques/domain/entities/prayer.dart';
 import '../../../mosques/domain/entities/recording.dart';
 import '../../../../core/routes/app_routes.dart';

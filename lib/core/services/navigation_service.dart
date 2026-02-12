@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import '../utils/app_logger.dart';
 
 /// Centralized navigation service for programmatic navigation
 ///
@@ -13,7 +15,7 @@ class NavigationService {
   ///
   /// Returns the result from the pushed route when it's popped
   static Future<T?> navigateTo<T>(String routeName, {Object? arguments}) {
-    debugPrint('🧭 NavigationService: Navigating to $routeName');
+    GetIt.I<AppLogger>().i('🧭 NavigationService: Navigating to $routeName');
     return navigatorKey.currentState!.pushNamed<T>(
       routeName,
       arguments: arguments,
@@ -24,7 +26,7 @@ class NavigationService {
   ///
   /// Optionally pass a result back to the previous route
   static void goBack<T>([T? result]) {
-    debugPrint('🧭 NavigationService: Going back');
+    GetIt.I<AppLogger>().i('🧭 NavigationService: Going back');
     if (navigatorKey.currentState!.canPop()) {
       navigatorKey.currentState!.pop(result);
     }
@@ -37,7 +39,7 @@ class NavigationService {
     String routeName, {
     Object? arguments,
   }) {
-    debugPrint('🧭 NavigationService: Replacing with $routeName');
+    GetIt.I<AppLogger>().i('🧭 NavigationService: Replacing with $routeName');
     return navigatorKey.currentState!.pushReplacementNamed<T, dynamic>(
       routeName,
       arguments: arguments,
@@ -52,7 +54,7 @@ class NavigationService {
     bool Function(Route<dynamic>) predicate, {
     Object? arguments,
   }) {
-    debugPrint(
+    GetIt.I<AppLogger>().i(
       '🧭 NavigationService: Navigating to $routeName and removing until predicate',
     );
     return navigatorKey.currentState!.pushNamedAndRemoveUntil<T>(

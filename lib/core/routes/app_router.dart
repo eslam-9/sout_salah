@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:get_it/get_it.dart';
+import '../utils/app_logger.dart';
 import '../../features/home/presentation/pages/home_layout.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
@@ -30,14 +32,16 @@ class AppRouter {
 
   /// Main route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    debugPrint('🧭 AppRouter: Navigating to ${settings.name}');
+    GetIt.I<AppLogger>().i('🧭 AppRouter: Navigating to ${settings.name}');
 
     // Check if route requires authentication
     final requiresAuth = AppRoutes.authRequiredRoutes.contains(settings.name);
 
     // If route requires auth and user is not authenticated, redirect to login
     if (requiresAuth && !_isAuthenticated()) {
-      debugPrint('⚠️ AppRouter: Route requires auth, redirecting to login');
+      GetIt.I<AppLogger>().w(
+        '⚠️ AppRouter: Route requires auth, redirecting to login',
+      );
       return RouteTransitions.fadeTransition(
         const LoginPage(),
         const RouteSettings(name: AppRoutes.login),
@@ -61,7 +65,9 @@ class AppRouter {
       case AppRoutes.mosqueDetail:
         // Validate arguments
         if (settings.arguments is! Mosque) {
-          debugPrint('❌ AppRouter: Invalid arguments for mosqueDetail');
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for mosqueDetail',
+          );
           return _errorRoute(settings);
         }
         final mosque = settings.arguments as Mosque;
@@ -73,7 +79,9 @@ class AppRouter {
       case AppRoutes.dayDetail:
         // Validate arguments
         if (settings.arguments is! RamadanDay) {
-          debugPrint('❌ AppRouter: Invalid arguments for dayDetail');
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for dayDetail',
+          );
           return _errorRoute(settings);
         }
         final day = settings.arguments as RamadanDay;
@@ -85,12 +93,16 @@ class AppRouter {
       case AppRoutes.uploadRecording:
         // Validate arguments
         if (settings.arguments is! UploadRecordingArgs) {
-          debugPrint('❌ AppRouter: Invalid arguments for uploadRecording');
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for uploadRecording',
+          );
           return _errorRoute(settings);
         }
         final args = settings.arguments as UploadRecordingArgs;
         if (!args.validate()) {
-          debugPrint('❌ AppRouter: Invalid uploadRecording arguments');
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid uploadRecording arguments',
+          );
           return _errorRoute(settings);
         }
         return RouteTransitions.slideTransition(
@@ -112,7 +124,9 @@ class AppRouter {
 
       case AppRoutes.audioPlayer:
         if (settings.arguments is! AudioPlayerArgs) {
-          debugPrint('❌ AppRouter: Invalid arguments for audioPlayer');
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for audioPlayer',
+          );
           return _errorRoute(settings);
         }
         final args = settings.arguments as AudioPlayerArgs;
@@ -122,7 +136,7 @@ class AppRouter {
         );
 
       default:
-        debugPrint('❌ AppRouter: Unknown route ${settings.name}');
+        GetIt.I<AppLogger>().e('❌ AppRouter: Unknown route ${settings.name}');
         return _errorRoute(settings);
     }
   }
@@ -136,7 +150,7 @@ class AppRouter {
 
   /// Handler for unknown routes
   static Route<dynamic> onUnknownRoute(RouteSettings settings) {
-    debugPrint('❌ AppRouter: Unknown route ${settings.name}');
+    GetIt.I<AppLogger>().e('❌ AppRouter: Unknown route ${settings.name}');
     return _errorRoute(settings);
   }
 }

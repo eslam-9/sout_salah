@@ -2,17 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/downloaded_recording.dart';
 import '../../features/mosques/domain/entities/recording.dart';
+import '../utils/app_logger.dart';
 
 /// Service to manage downloaded recordings with reactive updates
 class DownloadsService {
   static const String _downloadsKey = 'downloaded_recordings';
   final SharedPreferences _prefs;
   final Dio _dio;
+  final AppLogger _logger;
 
   // Stream controller for the list of downloaded recordings
   late final StreamController<List<DownloadedRecording>> _downloadsController;
@@ -23,7 +24,7 @@ class DownloadsService {
   // Cancel tokens for active downloads
   final Map<String, CancelToken> _cancelTokens = {};
 
-  DownloadsService(this._prefs, this._dio) {
+  DownloadsService(this._prefs, this._dio, this._logger) {
     _downloadsController =
         StreamController<List<DownloadedRecording>>.broadcast(
           onListen: () {
@@ -51,7 +52,7 @@ class DownloadsService {
       final downloads = await getDownloads();
       _downloadsController.add(downloads);
     } catch (e) {
-      debugPrint('❌ Error emitting downloads: $e');
+      _logger.e('❌ Error emitting downloads: $e');
     }
   }
 
@@ -62,13 +63,13 @@ class DownloadsService {
     try {
       // Check if already downloaded
       if (await isDownloaded(recordingId)) {
-        debugPrint('Recording $recordingId is already downloaded');
+        _logger.i('Recording $recordingId is already downloaded');
         return;
       }
 
       // Check if already downloading (prevent duplicate downloads)
       if (_cancelTokens.containsKey(recordingId)) {
-        debugPrint('Recording $recordingId is already downloading');
+        _logger.w('Recording $recordingId is already downloading');
         return;
       }
 
@@ -92,7 +93,7 @@ class DownloadsService {
       }
       _progressControllers[recordingId]!.add(0.0);
 
-      debugPrint('📥 Downloading audio from: ${recording.audioUrl}');
+      _logger.i('📥 Downloading audio from: ${recording.audioUrl}');
 
       await _dio.download(
         recording.audioUrl,
@@ -106,7 +107,7 @@ class DownloadsService {
         },
       );
 
-      debugPrint('✅ Audio file saved to: $filePath');
+      _logger.i('✅ Audio file saved to: $filePath');
 
       // Save metadata
       final file = File(filePath);
@@ -124,16 +125,16 @@ class DownloadsService {
       );
 
       await _saveDownload(download);
-      debugPrint('✅ Recording downloaded successfully');
+      _logger.i('✅ Recording downloaded successfully');
 
       // Update stream
       await _emitDownloads();
     } catch (e) {
       if (e is DioException && CancelToken.isCancel(e)) {
-        debugPrint('ℹ️ Download canceled for $recordingId');
+        _logger.i('ℹ️ Download canceled for $recordingId');
         // Clean up partial file if needed
       } else {
-        debugPrint('❌ Error downloading recording: $e');
+        _logger.e('❌ Error downloading recording: $e');
         rethrow;
       }
     } finally {
@@ -170,7 +171,7 @@ class DownloadsService {
       final file = File(download.localAudioPath);
       if (await file.exists()) {
         await file.delete();
-        debugPrint('🗑️ Deleted audio file: ${download.localAudioPath}');
+        _logger.i('🗑️ Deleted audio file: ${download.localAudioPath}');
       }
 
       // Remove from metadata
@@ -178,12 +179,12 @@ class DownloadsService {
           .where((d) => d.recordingId != recordingId)
           .toList();
       await _saveAllDownloads(updatedDownloads);
-      debugPrint('✅ Download removed successfully');
+      _logger.i('✅ Download removed successfully');
 
       // Update stream
       await _emitDownloads();
     } catch (e) {
-      debugPrint('❌ Error removing download: $e');
+      _logger.e('❌ Error removing download: $e');
       rethrow;
     }
   }
@@ -208,7 +209,7 @@ class DownloadsService {
           )
           .toList();
     } catch (e) {
-      debugPrint('❌ Error loading downloads: $e');
+      _logger.e('❌ Error loading downloads: $e');
       return [];
     }
   }
