@@ -22,6 +22,7 @@ class UploadRecordingUseCase
       filePath: params.filePath,
       fileSize: params.fileSize,
       duration: params.duration,
+      onProgress: params.onProgress,
     );
   }
 }

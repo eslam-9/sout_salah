@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:dio/dio.dart';
 
 import 'core/services/favorites_service.dart';
 import 'core/services/downloads_service.dart';
@@ -47,8 +48,18 @@ void main() async {
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
+
+  // Initialize Dio
+  final dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(minutes: 5),
+      sendTimeout: const Duration(minutes: 5),
+    ),
+  );
+
   final favoritesService = FavoritesService(prefs);
-  final downloadsService = DownloadsService(prefs);
+  final downloadsService = DownloadsService(prefs, dio);
 
   runApp(
     ProviderScope(
@@ -56,6 +67,7 @@ void main() async {
         favoritesServiceProvider.overrideWithValue(favoritesService),
         downloadsServiceProvider.overrideWithValue(downloadsService),
         sharedPreferencesProvider.overrideWithValue(prefs),
+        dioProvider.overrideWithValue(dio),
       ],
       child: const MyApp(),
     ),

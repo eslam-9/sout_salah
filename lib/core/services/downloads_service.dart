@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/downloaded_recording.dart';
@@ -12,9 +12,18 @@ import '../../features/mosques/domain/entities/recording.dart';
 class DownloadsService {
   static const String _downloadsKey = 'downloaded_recordings';
   final SharedPreferences _prefs;
+  final Dio _dio;
+
+  // Stream controller for the list of downloaded recordings
   late final StreamController<List<DownloadedRecording>> _downloadsController;
 
-  DownloadsService(this._prefs) {
+  // Stream controllers for individual download progress
+  final Map<String, StreamController<double>> _progressControllers = {};
+
+  // Cancel tokens for active downloads
+  final Map<String, CancelToken> _cancelTokens = {};
+
+  DownloadsService(this._prefs, this._dio) {
     _downloadsController =
         StreamController<List<DownloadedRecording>>.broadcast(
           onListen: () {
@@ -26,6 +35,15 @@ class DownloadsService {
   /// Get stream of downloads for reactive updates
   Stream<List<DownloadedRecording>> get downloadsStream =>
       _downloadsController.stream;
+
+  /// Get progress stream for a specific recording
+  Stream<double> progressStream(String recordingId) {
+    _progressControllers.putIfAbsent(
+      recordingId,
+      () => StreamController<double>.broadcast(),
+    );
+    return _progressControllers[recordingId]!.stream;
+  }
 
   /// Emit current downloads to the stream
   Future<void> _emitDownloads() async {
@@ -39,10 +57,18 @@ class DownloadsService {
 
   /// Download a recording and save metadata
   Future<void> downloadRecording(Recording recording) async {
+    final recordingId = recording.id;
+
     try {
       // Check if already downloaded
-      if (await isDownloaded(recording.id)) {
-        debugPrint('Recording ${recording.id} is already downloaded');
+      if (await isDownloaded(recordingId)) {
+        debugPrint('Recording $recordingId is already downloaded');
+        return;
+      }
+
+      // Check if already downloading (prevent duplicate downloads)
+      if (_cancelTokens.containsKey(recordingId)) {
+        debugPrint('Recording $recordingId is already downloading');
         return;
       }
 
@@ -53,47 +79,87 @@ class DownloadsService {
         await downloadsDir.create(recursive: true);
       }
 
-      // Download the audio file
-      final fileName = '${recording.id}.mp3';
+      // Prepare file path and cancel token
+      final fileName = '$recordingId.mp3';
       final filePath = '${downloadsDir.path}/$fileName';
+      final cancelToken = CancelToken();
+      _cancelTokens[recordingId] = cancelToken;
+
+      // Initialize progress controller
+      if (!_progressControllers.containsKey(recordingId)) {
+        _progressControllers[recordingId] =
+            StreamController<double>.broadcast();
+      }
+      _progressControllers[recordingId]!.add(0.0);
 
       debugPrint('📥 Downloading audio from: ${recording.audioUrl}');
-      final response = await http.get(Uri.parse(recording.audioUrl));
 
-      if (response.statusCode == 200) {
-        final file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-        debugPrint('✅ Audio file saved to: $filePath');
+      await _dio.download(
+        recording.audioUrl,
+        filePath,
+        cancelToken: cancelToken,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            final progress = received / total;
+            _progressControllers[recordingId]?.add(progress);
+          }
+        },
+      );
 
-        // Save metadata
-        final download = DownloadedRecording(
-          recordingId: recording.id,
-          localAudioPath: filePath,
-          prayerName: recording.prayer.arabicName,
-          sheikhName: recording.sheikhName,
-          mosqueId: recording.mosqueId,
-          dayId: recording.dayId,
-          fileSize: response.bodyBytes.length,
-          downloadedAt: DateTime.now(),
-        );
+      debugPrint('✅ Audio file saved to: $filePath');
 
-        await _saveDownload(download);
-        debugPrint('✅ Recording downloaded successfully');
+      // Save metadata
+      final file = File(filePath);
+      final fileSize = await file.length();
 
-        // Update stream
-        await _emitDownloads();
-      } else {
-        throw Exception('Failed to download audio: ${response.statusCode}');
-      }
+      final download = DownloadedRecording(
+        recordingId: recordingId,
+        localAudioPath: filePath,
+        prayerName: recording.prayer.arabicName,
+        sheikhName: recording.sheikhName,
+        mosqueId: recording.mosqueId,
+        dayId: recording.dayId,
+        fileSize: fileSize,
+        downloadedAt: DateTime.now(),
+      );
+
+      await _saveDownload(download);
+      debugPrint('✅ Recording downloaded successfully');
+
+      // Update stream
+      await _emitDownloads();
     } catch (e) {
-      debugPrint('❌ Error downloading recording: $e');
-      rethrow;
+      if (e is DioException && CancelToken.isCancel(e)) {
+        debugPrint('ℹ️ Download canceled for $recordingId');
+        // Clean up partial file if needed
+      } else {
+        debugPrint('❌ Error downloading recording: $e');
+        rethrow;
+      }
+    } finally {
+      _cancelTokens.remove(recordingId);
+      _progressControllers[recordingId]?.close();
+      _progressControllers.remove(recordingId);
+    }
+  }
+
+  /// Cancel a download
+  void cancelDownload(String recordingId) {
+    if (_cancelTokens.containsKey(recordingId)) {
+      _cancelTokens[recordingId]?.cancel();
+      _cancelTokens.remove(recordingId);
     }
   }
 
   /// Remove a download and delete the local file
   Future<void> removeDownload(String recordingId) async {
     try {
+      // If currently downloading, cancel it first
+      if (_cancelTokens.containsKey(recordingId)) {
+        cancelDownload(recordingId);
+        return;
+      }
+
       final downloads = await getDownloads();
       final download = downloads.firstWhere(
         (d) => d.recordingId == recordingId,
@@ -174,5 +240,11 @@ class DownloadsService {
   /// Dispose the stream controller
   void dispose() {
     _downloadsController.close();
+    for (var controller in _progressControllers.values) {
+      controller.close();
+    }
+    for (var token in _cancelTokens.values) {
+      token.cancel();
+    }
   }
 }

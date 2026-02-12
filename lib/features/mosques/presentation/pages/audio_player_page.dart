@@ -282,133 +282,181 @@ class AudioPlayerPage extends ConsumerWidget {
     final isDownloadedAsync = ref.watch(isDownloadedProvider(recording.id));
 
     return isDownloadedAsync.when(
-      data: (isDownloaded) => IconButton(
-        onPressed: () async {
-          final downloadsService = ref.read(downloadsServiceProvider);
-
-          if (isDownloaded) {
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text(
-                  'حذف التنزيل',
-                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.right,
-                ),
-                content: Text(
-                  'هل تريد حذف هذا التنزيل؟ سيتم حذف الملف من جهازك.',
-                  style: GoogleFonts.cairo(),
-                  textAlign: TextAlign.right,
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: Text('إلغاء', style: GoogleFonts.cairo()),
+      data: (isDownloaded) {
+        if (isDownloaded) {
+          return IconButton(
+            onPressed: () async {
+              final downloadsService = ref.read(downloadsServiceProvider);
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(
+                    'حذف التنزيل',
+                    style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.right,
                   ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    style: TextButton.styleFrom(foregroundColor: Colors.red),
-                    child: Text(
-                      'حذف',
-                      style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
-                    ),
+                  content: Text(
+                    'هل تريد حذف هذا التنزيل؟ سيتم حذف الملف من جهازك.',
+                    style: GoogleFonts.cairo(),
+                    textAlign: TextAlign.right,
                   ),
-                ],
-              ),
-            );
-
-            if (confirm == true) {
-              try {
-                await downloadsService.removeDownload(recording.id);
-                ref.invalidate(isDownloadedProvider(recording.id));
-                ref.invalidate(allDownloadsProvider);
-
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'تم حذف التنزيل',
-                        style: GoogleFonts.cairo(),
-                      ),
-                      backgroundColor: Colors.green,
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('إلغاء', style: GoogleFonts.cairo()),
                     ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'فشل حذف التنزيل',
-                        style: GoogleFonts.cairo(),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: Text(
+                        'حذف',
+                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                       ),
-                      backgroundColor: Colors.red,
                     ),
-                  );
-                }
-              }
-            }
-          } else {
-            try {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text('جاري التنزيل...', style: GoogleFonts.cairo()),
-                    ],
-                  ),
-                  duration: const Duration(seconds: 30),
-                  backgroundColor: AppColors.primary,
+                  ],
                 ),
               );
 
-              await downloadsService.downloadRecording(recording);
-              ref.invalidate(isDownloadedProvider(recording.id));
-              ref.invalidate(allDownloadsProvider);
+              if (confirm == true) {
+                try {
+                  await downloadsService.removeDownload(recording.id);
+                  ref.invalidate(isDownloadedProvider(recording.id));
+                  ref.invalidate(allDownloadsProvider);
 
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'تم التنزيل بنجاح',
-                      style: GoogleFonts.cairo(),
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'تم حذف التنزيل',
+                          style: GoogleFonts.cairo(),
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'فشل حذف التنزيل',
+                          style: GoogleFonts.cairo(),
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              }
+            },
+            icon: const Icon(LucideIcons.downloadCloud, color: Colors.green),
+            iconSize: 28,
+            tooltip: 'حذف التنزيل',
+          );
+        }
+
+        return Consumer(
+          builder: (context, ref, child) {
+            final downloadsService = ref.watch(downloadsServiceProvider);
+            return StreamBuilder<double>(
+              stream: downloadsService.progressStream(recording.id),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: snapshot.data,
+                            strokeWidth: 3,
+                            color: AppColors.primary,
+                          ),
+                          Text(
+                            '${(snapshot.data! * 100).toInt()}',
+                            style: GoogleFonts.cairo(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    backgroundColor: Colors.green,
-                  ),
+                  );
+                }
+
+                return IconButton(
+                  onPressed: () async {
+                    try {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Text(
+                                'جاري التنزيل...',
+                                style: GoogleFonts.cairo(),
+                              ),
+                            ],
+                          ),
+                          duration: const Duration(seconds: 30),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+
+                      await downloadsService.downloadRecording(recording);
+                      ref.invalidate(isDownloadedProvider(recording.id));
+                      ref.invalidate(allDownloadsProvider);
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'تم التنزيل بنجاح',
+                              style: GoogleFonts.cairo(),
+                            ),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'فشل التنزيل',
+                              style: GoogleFonts.cairo(),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  icon: Icon(LucideIcons.download, color: Colors.grey.shade600),
+                  iconSize: 28,
+                  tooltip: 'تنزيل',
                 );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('فشل التنزيل', style: GoogleFonts.cairo()),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            }
-          }
-        },
-        icon: Icon(
-          isDownloaded ? LucideIcons.downloadCloud : LucideIcons.download,
-          color: isDownloaded ? Colors.green : Colors.grey.shade600,
-        ),
-        iconSize: 28,
-        tooltip: 'تنزيل',
-      ),
+              },
+            );
+          },
+        );
+      },
       loading: () => const SizedBox(
         width: 48,
         height: 48,

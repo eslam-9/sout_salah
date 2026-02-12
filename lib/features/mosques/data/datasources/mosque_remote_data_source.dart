@@ -25,6 +25,7 @@ abstract class MosqueRemoteDataSource {
     required String filePath,
     required int fileSize,
     int? duration,
+    void Function(double)? onProgress,
   });
   Future<void> deleteRecording(String recordingId);
 }
@@ -130,6 +131,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     required String filePath,
     required int fileSize,
     int? duration,
+    void Function(double)? onProgress,
   }) async {
     logger.i('Uploading recording for prayer: ${prayer.englishName}');
     try {
@@ -139,7 +141,11 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       final storageKey = 'recordings/$mosqueId/$dayId/$fileName';
 
       // Upload file to R2 and get CDN URL
-      final audioUrl = await r2StorageService.uploadFile(storageKey, file);
+      final audioUrl = await r2StorageService.uploadFile(
+        storageKey,
+        file,
+        onProgress: onProgress,
+      );
 
       // Save metadata to database
       final response = await supabaseClient

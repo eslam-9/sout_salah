@@ -73,18 +73,20 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
         fileSize: fileSize,
       );
 
-      // Simulate upload progress
-      for (var i = 0; i <= 100; i += 10) {
-        await Future.delayed(const Duration(milliseconds: 100));
-        setState(() {
-          _uploadProgress = i / 100;
-        });
-      }
-
       // Call upload use case
       final result = await ref
           .read(uploadRecordingUseCaseProvider)
-          .call(params);
+          .call(
+            params.copyWith(
+              onProgress: (progress) {
+                if (mounted) {
+                  setState(() {
+                    _uploadProgress = progress;
+                  });
+                }
+              },
+            ),
+          );
 
       if (mounted) {
         result.fold(
@@ -123,7 +125,9 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Upload Error: $e');
+      debugPrint('Stack Trace: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

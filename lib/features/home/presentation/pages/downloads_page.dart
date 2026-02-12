@@ -253,6 +253,26 @@ class DownloadsPage extends ConsumerWidget {
                     textAlign: TextAlign.right,
                   ),
                 ],
+                // Progress indicator during active download (if any)
+                StreamBuilder<double>(
+                  stream: ref
+                      .watch(downloadsServiceProvider)
+                      .progressStream(download.recordingId),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: LinearProgressIndicator(
+                          value: snapshot.data,
+                          backgroundColor: Colors.grey.shade200,
+                          color: AppColors.primary,
+                          minHeight: 4,
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
           ),

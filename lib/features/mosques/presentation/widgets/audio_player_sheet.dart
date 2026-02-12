@@ -28,91 +28,98 @@ class AudioPlayerSheet extends ConsumerWidget {
           );
 
           return isDownloadedAsync.when(
-            data: (isDownloaded) => IconButton(
-              onPressed: () async {
-                final downloadsService = ref.read(downloadsServiceProvider);
+            data: (isDownloaded) {
+              final downloadsService = ref.read(downloadsServiceProvider);
 
-                if (isDownloaded) {
-                  // Already downloaded, show message
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'التسجيل محفوظ بالفعل',
-                          style: GoogleFonts.cairo(),
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                } else {
-                  // Download
-                  try {
+              if (isDownloaded) {
+                return IconButton(
+                  onPressed: () {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Text(
-                                'جاري التنزيل...',
-                                style: GoogleFonts.cairo(),
-                              ),
-                            ],
-                          ),
-                          duration: const Duration(seconds: 30),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
-                    }
-
-                    await downloadsService.downloadRecording(recording);
-                    ref.invalidate(isDownloadedProvider(recording.id));
-                    ref.invalidate(allDownloadsProvider);
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'تم التنزيل بنجاح',
+                            'التسجيل محفوظ بالفعل',
                             style: GoogleFonts.cairo(),
                           ),
                           backgroundColor: Colors.green,
                         ),
                       );
                     }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'فشل التنزيل',
-                            style: GoogleFonts.cairo(),
-                          ),
-                          backgroundColor: Colors.red,
+                  },
+                  icon: const Icon(
+                    LucideIcons.downloadCloud,
+                    color: Colors.green,
+                  ),
+                );
+              }
+
+              return StreamBuilder<double>(
+                stream: downloadsService.progressStream(recording.id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    // Downloading
+                    return SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Center(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              value: snapshot.data,
+                              strokeWidth: 3,
+                              color: AppColors.primary,
+                            ),
+                            Text(
+                              '${(snapshot.data! * 100).toInt()}%',
+                              style: GoogleFonts.cairo(fontSize: 10),
+                            ),
+                          ],
                         ),
-                      );
-                    }
+                      ),
+                    );
                   }
-                }
-              },
-              icon: Icon(
-                isDownloaded ? LucideIcons.downloadCloud : LucideIcons.download,
-                color: isDownloaded ? Colors.green : Colors.grey.shade600,
-              ),
-            ),
+
+                  return IconButton(
+                    onPressed: () async {
+                      try {
+                        await downloadsService.downloadRecording(recording);
+                        ref.invalidate(isDownloadedProvider(recording.id));
+                        ref.invalidate(allDownloadsProvider);
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'تم التنزيل بنجاح',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'فشل التنزيل: $e',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: Icon(
+                      LucideIcons.download,
+                      color: Colors.grey.shade600,
+                    ),
+                  );
+                },
+              );
+            },
             loading: () => const SizedBox(
               width: 48,
               height: 48,
@@ -124,7 +131,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (_, __) => const SizedBox(width: 48),
+            error: (_, s) => const SizedBox(width: 48),
           );
         },
       ),
@@ -226,7 +233,7 @@ class AudioPlayerSheet extends ConsumerWidget {
               height: 28,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            error: (_, __) =>
+            error: (_, s) =>
                 Icon(LucideIcons.heart, color: Colors.grey.shade400, size: 28),
           );
         },

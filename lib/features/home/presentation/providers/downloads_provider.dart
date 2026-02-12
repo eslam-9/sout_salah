@@ -14,9 +14,7 @@ final isDownloadedProvider = Provider.family<AsyncValue<bool>, String>((
 });
 
 /// Provider for all downloads
-final allDownloadsProvider = StreamProvider<List<DownloadedRecording>>((ref) {
-  return ref.watch(downloadsStreamProvider.stream);
-});
+final allDownloadsProvider = downloadsStreamProvider;
 
 /// Provider for downloads stream
 final downloadsStreamProvider = StreamProvider<List<DownloadedRecording>>((

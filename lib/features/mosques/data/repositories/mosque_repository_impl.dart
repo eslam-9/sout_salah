@@ -74,6 +74,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
     required String filePath,
     required int fileSize,
     int? duration,
+    void Function(double)? onProgress,
   }) async {
     try {
       final recording = await remoteDataSource.uploadRecording(
@@ -84,6 +85,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
         filePath: filePath,
         fileSize: fileSize,
         duration: duration,
+        onProgress: onProgress,
       );
       return Right(recording);
     } on ServerException {
