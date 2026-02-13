@@ -35,7 +35,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signOutUseCase: ref.watch(signOutUseCaseProvider),
     getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
     sharedPreferences: ref.watch(sharedPreferencesProvider),
-  );
+  )..checkAuthStatus(); // Initialize auth status
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {

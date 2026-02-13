@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
+import 'core/config/app_config.dart';
 import 'core/services/navigation_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sout_salah/core/utils/app_logger.dart';
@@ -11,15 +11,15 @@ import 'core/di/injection_container.dart' as di;
 import 'core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
 import 'core/routes/app_routes.dart';
+import 'core/widgets/startup_check_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: AppConfig.supabaseUrl,
+    anonKey: AppConfig.supabaseAnonKey,
   );
 
   // Initialize Service Locator
@@ -62,7 +62,12 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.home,
 
       builder: (context, child) {
-        return Directionality(textDirection: TextDirection.rtl, child: child!);
+        return StartupCheckWrapper(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: child!,
+          ),
+        );
       },
     );
   }

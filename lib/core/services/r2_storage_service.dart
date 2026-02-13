@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:crypto/crypto.dart';
+import '../config/app_config.dart';
 import '../utils/app_logger.dart';
 
 class R2StorageService {
@@ -15,11 +15,11 @@ class R2StorageService {
   final Dio _dio = Dio();
 
   R2StorageService() {
-    _endpoint = dotenv.env['R2_ENDPOINT']!;
-    _accessKey = dotenv.env['R2_ACCESS_KEY']!;
-    _secretKey = dotenv.env['R2_SECRET_KEY']!;
-    _bucket = dotenv.env['R2_BUCKET']!;
-    _cdnUrl = dotenv.env['R2_CDN_URL']!;
+    _endpoint = AppConfig.r2Endpoint;
+    _accessKey = AppConfig.r2AccessKey;
+    _secretKey = AppConfig.r2SecretKey;
+    _bucket = AppConfig.r2Bucket;
+    _cdnUrl = AppConfig.r2CdnUrl;
 
     _logger.i('R2StorageService initialized: bucket=$_bucket, cdn=$_cdnUrl');
   }
