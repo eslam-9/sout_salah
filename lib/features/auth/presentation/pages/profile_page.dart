@@ -167,8 +167,8 @@ class ProfilePage extends ConsumerWidget {
   String _translateRole(String? role) {
     if (role == null) return 'مستخدم';
     switch (role) {
-      case 'super_admin':
-        return 'مدير عام';
+      case 'admin':
+        return 'Super Admin';
       case 'mosque_admin':
         return 'مدير مسجد';
       case 'publisher':

@@ -27,4 +27,5 @@ abstract class MosqueRepository {
   });
 
   Future<Either<Failure, void>> deleteRecording(String recordingId);
+  Future<Either<Failure, void>> addPublisher(String mosqueId, String email);
 }

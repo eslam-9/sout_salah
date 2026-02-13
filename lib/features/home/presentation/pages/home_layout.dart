@@ -30,18 +30,6 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    // Check authentication status on startup if not already checked
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authState = ref.read(authProvider);
-      if (authState is AuthInitial) {
-        ref.read(authProvider.notifier).checkAuthStatus();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     // Listen for auth state changes
     ref.listen<AuthState>(authProvider, (previous, next) {

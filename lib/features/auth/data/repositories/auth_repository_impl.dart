@@ -24,11 +24,11 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       return Right(user);
     } on AuthException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 
@@ -46,11 +46,11 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       return Right(user);
     } on AuthException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 
@@ -60,11 +60,11 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await remoteDataSource.signInAnonymously();
       return Right(user);
     } on AuthException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 
@@ -74,11 +74,11 @@ class AuthRepositoryImpl implements AuthRepository {
       await remoteDataSource.signOut();
       return const Right(null);
     } on AuthException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 
@@ -89,13 +89,13 @@ class AuthRepositoryImpl implements AuthRepository {
       if (user != null) {
         return Right(user);
       }
-      return Left(const ServerFailure('User not found'));
+      return Left(const ServerFailure(message: 'User not found'));
     } on AuthException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 }

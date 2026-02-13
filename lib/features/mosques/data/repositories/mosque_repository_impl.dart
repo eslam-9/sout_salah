@@ -102,4 +102,19 @@ class MosqueRepositoryImpl implements MosqueRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, void>> addPublisher(
+    String mosqueId,
+    String email,
+  ) async {
+    try {
+      await remoteDataSource.addPublisher(mosqueId, email);
+      return const Right(null);
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
 }

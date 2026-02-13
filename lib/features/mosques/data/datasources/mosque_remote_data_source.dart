@@ -28,6 +28,7 @@ abstract class MosqueRemoteDataSource {
     void Function(double)? onProgress,
   });
   Future<void> deleteRecording(String recordingId);
+  Future<void> addPublisher(String mosqueId, String email);
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
@@ -198,6 +199,56 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       logger.i('Recording deleted successfully');
     } catch (e) {
       logger.e('Error deleting recording', e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> addPublisher(String mosqueId, String email) async {
+    logger.i('Adding publisher with email $email to mosque $mosqueId');
+    try {
+      // 1. Find user by email
+      final userResponse = await supabaseClient
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+
+      if (userResponse == null) {
+        logger.w('User with email $email not found');
+        throw Exception('User not found');
+      }
+
+      final userId = userResponse['id'] as String;
+
+      // 2. Check if current user is super admin
+      final currentUser = supabaseClient.auth.currentUser;
+      if (currentUser == null) throw Exception('No user logged in');
+
+      final profileResponse = await supabaseClient
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single();
+
+      final currentRole = profileResponse['role'] as String?;
+      if (currentRole != 'admin') {
+        throw Exception('Only Super Admin can add publishers');
+      }
+
+      // 3. Add to mosque_publishers
+      await supabaseClient.from('mosque_publishers').insert({
+        'mosque_id': mosqueId,
+        'publisher_id': userId,
+        'added_by': currentUser.id,
+      });
+
+      logger.i('Publisher added successfully');
+    } catch (e) {
+      logger.e('Error adding publisher', e);
+      if (e.toString().contains('User not found')) {
+        throw Exception('المستخدم غير موجود');
+      }
       throw ServerException();
     }
   }

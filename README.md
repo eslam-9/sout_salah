@@ -1,41 +1,90 @@
-# Sout Salah (صوت صلاح)
+# Sout Salah
 
-Sout Salah is a comprehensive mobile application for managing and listening to mosque prayer recordings. It helps users connect with their local mosques, follow prayer times, and access a rich library of daily prayer audio.
+Sout Salah is a comprehensive Flutter application for managing and listening to mosque recordings during Ramadan. It allows users to listen to prayers, follow specific mosques, and for mosque admins/publishers to upload and manage daily recordings.
 
-## 📚 Documentation
+## Features
 
-Detailed documentation for the project can be found in the following files:
+- **Mosque Management**: Admins can manage mosque details and publishers.
+- **Daily Recordings**: Organized by Ramadan days, users can find recordings for specific prayers (Fajr, Taraweeh, etc.).
+- **Audio Player**:
+  - Background playback support.
+  - Playlist management.
+  - Offline listening (Download support).
+  - Favorites system.
+- **User Roles**:
+  - **Listener**: Defaults for all users. Can listen, download, and favorite.
+  - **Publisher**: Can upload recordings to assigned mosques.
+  - **Admin**: Full control over mosque management.
+- **Performance**:
+  - Uses Cloudflare R2 for efficient audio storage and delivery.
+  - Optimized local caching with Hive/SharedPrefs.
+  - Efficient network handling with Dio.
 
-*   **[Application Documentation](docs/APP_DOCUMENTATION.md)**: Overview of features, architecture, packages, and technical details.
-*   **[Permissions & Roles](PERMISSIONS.md)**: Explanation of the user roles (Guest, Admin, Publisher) and their access rights.
-*   **[Storage Setup](STORAGE_SETUP.md)**: Guide for configuring Supabase Storage for audio recordings.
+## Tech Stack
 
-## 🚀 Quick Start
+- **Frontend**: Flutter
+- **Backend/Database**: Supabase (PostgreSQL)
+- **Storage**: Cloudflare R2 (S3 compatible) & Supabase Storage
+- **State Management**: Riverpod
+- **Dependency Injection**: GetIt
+- **Routing**: Custom Navigator 2.0 implementation
+- **Audio**: `just_audio` + `just_audio_background`
 
-1.  **Clone the repository**.
-2.  **Install dependencies**:
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK (Latest Stable)
+- Supabase Account
+- Cloudflare R2 Bucket (for audio storage)
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/sout_salah.git
+    cd sout_salah
+    ```
+
+2.  **Install dependencies**
     ```bash
     flutter pub get
     ```
-3.  **Configure Environment**:
-    Create a `.env` file in the root directory with your Supabase credentials:
+
+3.  **Environment Setup**
+    Create a `.env` file in the root directory (added to `.gitignore` for security):
     ```env
-    SUPABASE_URL=your_url
-    SUPABASE_ANON_KEY=your_key
+    SUPABASE_URL=your_supabase_url
+    SUPABASE_ANON_KEY=your_supabase_anon_key
+    R2_BUCKET_URL=your_r2_bucket_url
+    R2_ACCESS_KEY_ID=your_access_key
+    R2_SECRET_ACCESS_KEY=your_secret_key
+    R2_ACCOUNT_ID=your_account_id
     ```
-4.  **Run the App**:
+
+4.  **Database Setup**
+    Run the `schema.sql` file in your Supabase SQL Editor to set up the database tables and policies.
+
+5.  **Run the App**
     ```bash
     flutter run
     ```
 
-## 🌟 Key Features
+## Architecture
 
-*   **Background Audio Playback**: Listen to prayers even when the app is closed.
-*   **Offline Mode**: Download recordings for offline listening.
-*   **Multi-Role System**: Dedicated interfaces for Mosque Admins and Publishers.
-*   **Favorites**: Save your favorite recitations.
-*   **Ramadan Calendar**: Organized daily recordings for the holy month.
+The app follows a Clean Architecture approach:
+- **Presentation**: UI, Widgets, Riverpod Providers.
+- **Domain**: Entities, Use Cases, Repository Interfaces.
+- **Data**: Models, Data Sources (Remote/Local), Repository Implementations.
 
-## 📦 Tech Stack
+## Contributing
 
-Built with **Flutter**, using **Riverpod** for state management and **Supabase** for the backend.
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
