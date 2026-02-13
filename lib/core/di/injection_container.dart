@@ -10,6 +10,7 @@ import '../services/r2_storage_service.dart';
 import '../services/downloads_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
+import '../services/startup_service.dart';
 
 // Import Feature Data Sources
 import '../../features/mosques/data/datasources/mosque_remote_data_source.dart';
@@ -62,6 +63,7 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => DownloadsService(sl(), sl(), sl()));
   sl.registerLazySingleton(() => AudioPlayerService());
   sl.registerLazySingleton(() => FavoritesService(sl(), sl()));
+  sl.registerLazySingleton(() => StartupService(sl())); // Startup Service
 
   // 3. Features - Auth
   // Data Sources

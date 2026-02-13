@@ -39,25 +39,25 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 32),
-          if (!isGuest)
+          const SizedBox(height: 32),
+          if (!isGuest) ...[
             _buildSettingsItem(
               icon: LucideIcons.user,
               title: 'الملف الشخصي',
-              onTap: (context) {
+              onTap: () {
                 NavigationService.navigateTo(AppRoutes.profile);
               },
-              isContextRequired: true,
             ),
-          if (!isGuest) const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
           _buildSettingsItem(
             icon: LucideIcons.logOut,
             title: isGuest ? 'خروج من وضع الزائر' : 'تسجيل الخروج',
             color: Colors.red,
             textColor: Colors.red,
-            onTap: (BuildContext context) {
+            onTap: () {
               ref.read(authProvider.notifier).signOut();
             },
-            isContextRequired: true,
           ),
         ],
       ),
@@ -69,52 +69,47 @@ class SettingsPage extends ConsumerWidget {
     required String title,
     Color color = Colors.black87,
     Color textColor = Colors.black87,
-    required Function onTap,
-    bool isContextRequired = false,
+    required VoidCallback onTap,
   }) {
-    return Builder(
-      builder: (context) {
-        return GestureDetector(
-          onTap: () => isContextRequired ? onTap(context) : onTap(),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromRGBO(0, 0, 0, 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  title,
-                  style: GoogleFonts.cairo(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
-                const Spacer(),
-                Icon(LucideIcons.chevronLeft, color: Colors.grey[400]),
-              ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color),
             ),
-          ),
-        );
-      },
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: GoogleFonts.cairo(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+            const Spacer(),
+            Icon(LucideIcons.chevronLeft, color: Colors.grey[400]),
+          ],
+        ),
+      ),
     );
   }
 }
