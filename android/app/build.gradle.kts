@@ -5,6 +5,9 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
 android {
     namespace = "com.example.sout_salah"
     compileSdk = 36
@@ -33,9 +36,9 @@ android {
     signingConfigs {
         create("release") {
             val keystoreFile = project.rootProject.file("key.properties")
-            val props = java.util.Properties()
+            val props = Properties()
             if (keystoreFile.exists()) {
-                props.load(java.io.FileInputStream(keystoreFile))
+                props.load(FileInputStream(keystoreFile))
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
                 storeFile = file(props.getProperty("storeFile"))
