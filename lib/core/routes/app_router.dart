@@ -12,7 +12,6 @@ import '../../features/mosques/presentation/pages/add_mosque_page.dart';
 import '../../features/mosques/presentation/pages/upload_recording_page.dart';
 import '../../features/mosques/presentation/pages/device_audio_selection_page.dart';
 import '../../features/mosques/presentation/pages/audio_player_page.dart';
-import '../../features/splash/presentation/pages/splash_view.dart';
 import '../../features/mosques/domain/entities/mosque.dart';
 import '../../features/mosques/domain/entities/ramadan_day.dart';
 
@@ -51,9 +50,6 @@ class AppRouter {
 
     // Route handling
     switch (settings.name) {
-      case AppRoutes.splash:
-        return RouteTransitions.fadeTransition(const SplashView(), settings);
-
       case AppRoutes.home:
         return RouteTransitions.fadeTransition(const HomeLayout(), settings);
 

@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: NavigationService.navigatorKey,
       onGenerateRoute: AppRouter.onGenerateRoute,
       onUnknownRoute: AppRouter.onUnknownRoute,
-      initialRoute: AppRoutes.splash,
+      initialRoute: AppRoutes.home,
 
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
