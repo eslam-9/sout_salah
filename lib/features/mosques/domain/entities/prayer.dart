@@ -11,7 +11,8 @@ enum Prayer {
   taraweeh3('Taraweeh 3', 'التراويح 3'),
   taraweeh4('Taraweeh 4', 'التراويح 4'),
   shaf('Shaf', 'الشفع'),
-  witr('Witr', 'الوتر');
+  witr('Witr', 'الوتر'),
+  other('Other', 'أخرى');
 
   final String englishName;
   final String arabicName;
@@ -39,8 +40,10 @@ enum Prayer {
         return Prayer.shaf;
       case 'Witr':
         return Prayer.witr;
+      case 'Other':
+        return Prayer.other;
       default:
-        throw ArgumentError('Unknown prayer: $value');
+        return Prayer.other;
     }
   }
 

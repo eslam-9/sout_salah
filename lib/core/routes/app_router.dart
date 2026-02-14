@@ -119,7 +119,13 @@ class AppRouter {
           return _errorRoute(settings);
         }
         return RouteTransitions.slideTransition(
-          UploadRecordingPage(mosqueId: args.mosqueId, dayId: args.dayId),
+          UploadRecordingPage(
+            mosqueId: args.mosqueId,
+            dayId: args.dayId,
+            prayer: args.prayer,
+            customPrayerName: args.customPrayerName,
+            pendingRecordingId: args.pendingRecordingId,
+          ),
           settings,
         );
 

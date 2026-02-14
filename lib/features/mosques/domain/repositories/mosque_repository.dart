@@ -19,6 +19,7 @@ abstract class MosqueRepository {
     required String mosqueId,
     required String dayId,
     required Prayer prayer,
+    String? customPrayerName,
     required String sheikhName,
     required String filePath,
     required int fileSize,
@@ -28,4 +29,9 @@ abstract class MosqueRepository {
 
   Future<Either<Failure, void>> deleteRecording(String recordingId);
   Future<Either<Failure, void>> addPublisher(String mosqueId, String email);
+  Future<Either<Failure, Recording>> createPendingRecording({
+    required String mosqueId,
+    required String dayId,
+    required String prayerName,
+  });
 }

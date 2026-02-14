@@ -17,13 +17,28 @@ class DeviceAudioSelectionPage extends ConsumerStatefulWidget {
 class _DeviceAudioSelectionPageState
     extends ConsumerState<DeviceAudioSelectionPage> {
   final _audioQuery = OnAudioQuery();
+  final _searchController = TextEditingController();
   bool _hasPermission = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _checkPermission();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim().toLowerCase();
+      });
+    });
   }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // ... _checkPermission and _formatDuration remain the same ...
 
   Future<void> _checkPermission() async {
     // For Android 13+ (SDK 33+), we need READ_MEDIA_AUDIO
@@ -114,6 +129,32 @@ class _DeviceAudioSelectionPageState
           icon: const Icon(LucideIcons.x, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: TextField(
+              controller: _searchController,
+              textAlign: TextAlign.right,
+              style: GoogleFonts.cairo(),
+              decoration: InputDecoration(
+                hintText: 'بحث عن تلاوة...',
+                hintStyle: GoogleFonts.cairo(color: Colors.grey.shade400),
+                prefixIcon: const Icon(LucideIcons.search, color: Colors.grey),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: !_hasPermission
           ? Center(
@@ -178,15 +219,22 @@ class _DeviceAudioSelectionPageState
                   );
                 }
 
-                // Filter out very short audios (e.g. < 5 seconds) to avoid system sounds
-                final songs = item.data!
-                    .where((song) => (song.duration ?? 0) > 5000)
-                    .toList();
+                // Filter out very short audios (e.g. < 5 seconds)
+                // And filter by search query
+                final songs = item.data!.where((song) {
+                  final isLongEnough = (song.duration ?? 0) > 5000;
+                  if (!isLongEnough) return false;
+
+                  if (_searchQuery.isEmpty) return true;
+                  return song.displayNameWOExt.toLowerCase().contains(
+                    _searchQuery,
+                  );
+                }).toList();
 
                 if (songs.isEmpty) {
                   return Center(
                     child: Text(
-                      'لا توجد تلاوات مناسبة',
+                      'لا توجد تلاوات تطابق بحثك',
                       style: GoogleFonts.cairo(),
                     ),
                   );
@@ -206,8 +254,6 @@ class _DeviceAudioSelectionPageState
                       ),
                       child: ListTile(
                         onTap: () {
-                          // Return the selected file path (and size/duration if needed)
-                          // We return a map or a custom object, but for now just the path + metadata map
                           Navigator.pop(context, {
                             'path': song.data,
                             'name': song.displayNameWOExt,
@@ -219,7 +265,7 @@ class _DeviceAudioSelectionPageState
                           width: 48,
                           height: 48,
                           decoration: const BoxDecoration(
-                            color: AppColors.primaryLight, // Light green
+                            color: AppColors.primaryLight,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(

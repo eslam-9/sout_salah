@@ -50,7 +50,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Publisher added successfully'),
+            content: Text('تم إضافة الناشر بنجاح'),
             backgroundColor: Colors.green,
           ),
         );
@@ -65,7 +65,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Add Publisher',
+          'إضافة ناشر',
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -86,7 +86,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Enter Publisher Email',
+                'أدخل البريد الإلكتروني للناشر',
                 style: GoogleFonts.cairo(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'The user must already satisfy the condition of being registered in the app.',
+                'يجب أن يكون المستخدم مسجلاً بالفعل في التطبيق.',
                 style: GoogleFonts.cairo(color: Colors.grey[600], fontSize: 14),
               ),
               const SizedBox(height: 24),
@@ -103,7 +103,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: 'البريد الإلكتروني',
                   prefixIcon: const Icon(LucideIcons.mail, size: 20),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -132,7 +132,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
                           ),
                         )
                       : Text(
-                          'Add Publisher',
+                          'إضافة الناشر',
                           style: GoogleFonts.cairo(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

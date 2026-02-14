@@ -7,6 +7,7 @@ import '../../domain/entities/recording.dart';
 import '../../domain/usecases/upload_recording_usecase.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
 import '../../domain/usecases/add_publisher_usecase.dart';
+import '../../domain/usecases/create_pending_recording_usecase.dart';
 
 final mosqueRemoteDataSourceProvider = Provider<MosqueRemoteDataSource>((ref) {
   return MosqueRemoteDataSourceImpl(
@@ -47,3 +48,8 @@ final deleteRecordingUseCaseProvider = Provider<DeleteRecordingUseCase>((ref) {
 final addPublisherUseCaseProvider = Provider<AddPublisherUseCase>((ref) {
   return AddPublisherUseCase(ref.watch(mosqueRepositoryProvider));
 });
+
+final createPendingRecordingUseCaseProvider =
+    Provider<CreatePendingRecordingUseCase>((ref) {
+      return CreatePendingRecordingUseCase(ref.watch(mosqueRepositoryProvider));
+    });
