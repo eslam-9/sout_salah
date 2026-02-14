@@ -71,7 +71,7 @@ class ProfilePage extends ConsumerWidget {
                       icon: LucideIcons.landmark,
                       label: 'المسجد التابع له',
                       value:
-                          'ID: ${user.mosqueId}', // We would need to fetch mosque name ideally
+                          'معرف المسجد: ${user.mosqueId}', // We would need to fetch mosque name ideally
                     ),
                   const SizedBox(height: 32),
                   // Placeholder for Edit Profile
@@ -106,7 +106,7 @@ class ProfilePage extends ConsumerWidget {
           } else if (state is AuthLoading) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            return const Center(child: Text('Please log in again'));
+            return const Center(child: Text('الرجاء تسجيل الدخول مرة أخرى'));
           }
         },
       ),
@@ -168,7 +168,7 @@ class ProfilePage extends ConsumerWidget {
     if (role == null) return 'مستخدم';
     switch (role) {
       case 'admin':
-        return 'Super Admin';
+        return 'مدير النظام';
       case 'mosque_admin':
         return 'مدير مسجد';
       case 'publisher':

@@ -36,7 +36,7 @@ class AuthHeader extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Text(
-            'قم بتسجيل الدخول للاستماع إلى تلاوات المسجد والبث المباشر',
+            'قم بتسجيل الدخول للاستماع إلى تلاوات المسجد',
             textAlign: TextAlign.center,
             style: GoogleFonts.cairo(fontSize: 14, color: Colors.grey[600]),
           ),

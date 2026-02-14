@@ -7,6 +7,7 @@ class Recording extends Equatable {
   final String dayId;
   final String? publisherId;
   final Prayer prayer;
+  final String? customPrayerName;
   final String sheikhName;
   final String audioUrl;
   final int? fileSize; // in bytes
@@ -19,6 +20,7 @@ class Recording extends Equatable {
     required this.dayId,
     this.publisherId,
     required this.prayer,
+    this.customPrayerName,
     required this.sheikhName,
     required this.audioUrl,
     this.fileSize,
@@ -33,6 +35,7 @@ class Recording extends Equatable {
     dayId,
     publisherId,
     prayer,
+    customPrayerName,
     sheikhName,
     audioUrl,
     fileSize,

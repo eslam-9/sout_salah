@@ -70,6 +70,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
     required String mosqueId,
     required String dayId,
     required Prayer prayer,
+    String? customPrayerName,
     required String sheikhName,
     required String filePath,
     required int fileSize,
@@ -81,6 +82,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
         mosqueId: mosqueId,
         dayId: dayId,
         prayer: prayer,
+        customPrayerName: customPrayerName,
         sheikhName: sheikhName,
         filePath: filePath,
         fileSize: fileSize,
@@ -114,7 +116,26 @@ class MosqueRepositoryImpl implements MosqueRepository {
     } on ServerException {
       return Left(ServerFailure());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      final message = e.toString().replaceAll('Exception: ', '');
+      return Left(ServerFailure(message: message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Recording>> createPendingRecording({
+    required String mosqueId,
+    required String dayId,
+    required String prayerName,
+  }) async {
+    try {
+      final recording = await remoteDataSource.createPendingRecording(
+        mosqueId: mosqueId,
+        dayId: dayId,
+        prayerName: prayerName,
+      );
+      return Right(recording);
+    } on ServerException {
+      return Left(ServerFailure());
     }
   }
 }

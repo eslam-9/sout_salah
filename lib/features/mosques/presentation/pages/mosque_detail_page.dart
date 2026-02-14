@@ -116,7 +116,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Days $completedDays/$totalDays',
+                'الأيام $completedDays/$totalDays',
                 style: GoogleFonts.cairo(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -170,11 +170,11 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLegendItem('Empty', Colors.grey.shade300),
+              _buildLegendItem('فارغ', Colors.grey.shade300),
               const SizedBox(width: 16),
-              _buildLegendItem('Partial', AppColors.accentYellow),
+              _buildLegendItem('جزئي', AppColors.accentYellow),
               const SizedBox(width: 16),
-              _buildLegendItem('Complete', AppColors.primary),
+              _buildLegendItem('مكتمل', AppColors.primary),
             ],
           ),
         ],
@@ -228,7 +228,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                       ),
                     ),
                     Text(
-                      'TODAY',
+                      'اليوم',
                       style: GoogleFonts.cairo(
                         color: textColor,
                         fontSize: 8,

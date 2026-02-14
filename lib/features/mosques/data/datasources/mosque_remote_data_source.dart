@@ -21,6 +21,7 @@ abstract class MosqueRemoteDataSource {
     required String mosqueId,
     required String dayId,
     required Prayer prayer,
+    String? customPrayerName,
     required String sheikhName,
     required String filePath,
     required int fileSize,
@@ -29,6 +30,11 @@ abstract class MosqueRemoteDataSource {
   });
   Future<void> deleteRecording(String recordingId);
   Future<void> addPublisher(String mosqueId, String email);
+  Future<RecordingModel> createPendingRecording({
+    required String mosqueId,
+    required String dayId,
+    required String prayerName,
+  });
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
@@ -128,17 +134,22 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     required String mosqueId,
     required String dayId,
     required Prayer prayer,
+    String? customPrayerName,
     required String sheikhName,
     required String filePath,
     required int fileSize,
     int? duration,
     void Function(double)? onProgress,
   }) async {
-    logger.i('Uploading recording for prayer: ${prayer.englishName}');
+    final effectivePrayerName =
+        prayer == Prayer.other && customPrayerName != null
+        ? customPrayerName
+        : prayer.englishName;
+    logger.i('Uploading recording for prayer: $effectivePrayerName');
     try {
       final file = File(filePath);
       final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_${prayer.englishName}.mp3';
+          '${DateTime.now().millisecondsSinceEpoch}_$effectivePrayerName.mp3';
       final storageKey = 'recordings/$mosqueId/$dayId/$fileName';
 
       // Upload file to R2 and get CDN URL
@@ -154,7 +165,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
           .insert({
             'mosque_id': mosqueId,
             'day_id': dayId,
-            'prayer_name': prayer.englishName,
+            'prayer_name': effectivePrayerName,
             'sheikh_name': sheikhName,
             'audio_url': audioUrl,
             'file_size': fileSize,
@@ -233,7 +244,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
 
       final currentRole = profileResponse['role'] as String?;
       if (currentRole != 'admin') {
-        throw Exception('Only Super Admin can add publishers');
+        throw Exception('فقط مدير النظام يمكنه إضافة ناشرين');
       }
 
       // 3. Add to mosque_publishers
@@ -246,9 +257,43 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       logger.i('Publisher added successfully');
     } catch (e) {
       logger.e('Error adding publisher', e);
-      if (e.toString().contains('User not found')) {
+      if (e.toString().contains('User not found') ||
+          e.toString().contains('User with email')) {
         throw Exception('المستخدم غير موجود');
       }
+      if (e.toString().contains('Only Super Admin')) {
+        throw Exception('فقط مدير النظام يمكنه إضافة ناشرين');
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<RecordingModel> createPendingRecording({
+    required String mosqueId,
+    required String dayId,
+    required String prayerName,
+  }) async {
+    logger.i('Creating pending recording for: $prayerName');
+    try {
+      final response = await supabaseClient
+          .from('recordings')
+          .insert({
+            'mosque_id': mosqueId,
+            'day_id': dayId,
+            'prayer_name': prayerName,
+            'sheikh_name': 'Pending',
+            'audio_url': 'pending',
+            'file_size': 0,
+            'duration': 0,
+          })
+          .select()
+          .single();
+
+      logger.i('Pending recording created successfully');
+      return RecordingModel.fromJson(response);
+    } catch (e) {
+      logger.e('Error creating pending recording', e);
       throw ServerException();
     }
   }

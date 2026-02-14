@@ -13,16 +13,6 @@ class LoginActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () {},
-          child: Text(
-            'نسيت كلمة المرور؟',
-            style: GoogleFonts.cairo(color: Colors.grey, fontSize: 12),
-          ),
-        ),
-      ),
       const SizedBox(height: 24),
       CustomButton(
         text: 'تسجيل الدخول',

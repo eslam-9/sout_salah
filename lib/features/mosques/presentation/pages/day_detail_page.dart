@@ -8,6 +8,7 @@ import '../../domain/entities/recording.dart';
 import '../../domain/entities/prayer.dart';
 import '../providers/mosque_data_providers.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
+import '../../domain/usecases/create_pending_recording_params.dart';
 
 import '../../../../core/utils/permission_checker.dart';
 import 'package:sout_salah/features/home/presentation/providers/favorites_provider.dart';
@@ -38,7 +39,7 @@ class DayDetailPage extends ConsumerWidget {
         title: Column(
           children: [
             Text(
-              'RAMADAN 1445',
+              'رمضان 1445',
               style: GoogleFonts.cairo(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -47,7 +48,7 @@ class DayDetailPage extends ConsumerWidget {
               ),
             ),
             Text(
-              'Day ${day.dayNumber}',
+              'اليوم ${day.dayNumber}',
               style: GoogleFonts.cairo(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class DayDetailPage extends ConsumerWidget {
       body: recordingsAsync.when(
         data: (recordings) => _buildPrayersList(recordings),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(child: Text('خطأ: $error')),
       ),
     );
   }
@@ -69,19 +70,79 @@ class DayDetailPage extends ConsumerWidget {
   Widget _buildPrayersList(List<Recording> recordings) {
     // Group recordings by prayer
     final prayerGroups = <Prayer, List<Recording>>{};
+    final customRecordings = <Recording>[];
+
     for (var recording in recordings) {
-      prayerGroups.putIfAbsent(recording.prayer, () => []).add(recording);
+      if (recording.prayer == Prayer.other) {
+        customRecordings.add(recording);
+      } else {
+        prayerGroups.putIfAbsent(recording.prayer, () => []).add(recording);
+      }
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: Prayer.allPrayers.length,
-      itemBuilder: (context, index) {
-        final prayer = Prayer.allPrayers[index];
-        final prayerRecordings = prayerGroups[prayer] ?? [];
+    // Standard prayers (excluding 'other')
+    final standardPrayers = Prayer.allPrayers
+        .where((p) => p != Prayer.other)
+        .toList();
 
-        return _buildPrayerCard(prayer, prayerRecordings);
-      },
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        ...standardPrayers.map((prayer) {
+          final prayerRecordings = prayerGroups[prayer] ?? [];
+          return _buildPrayerCard(prayer, prayerRecordings);
+        }),
+
+        ...customRecordings.map((recording) {
+          return _buildPrayerCard(Prayer.other, [recording]);
+        }),
+
+        // Add Prayer Button (for admins)
+        Consumer(
+          builder: (context, ref, child) {
+            final permissionChecker = ref.read(permissionCheckerProvider);
+            return FutureBuilder<bool>(
+              future: permissionChecker.canShowUploadButton(day.mosqueId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == false) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final prayerName = await showDialog<String>(
+                        context: context,
+                        builder: (context) => _AddPrayerDialog(
+                          mosqueId: day.mosqueId,
+                          dayId: day.id,
+                        ),
+                      );
+
+                      if (prayerName != null) {
+                        ref.invalidate(dayRecordingsProvider(day.id));
+                      }
+                    },
+                    icon: const Icon(LucideIcons.plus),
+                    label: Text(
+                      'إضافة تلاوة جديدة',
+                      style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -97,7 +158,12 @@ class DayDetailPage extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color.fromRGBO(
+              0,
+              0,
+              0,
+              0.05,
+            ), // Fixed deprecated withOpacity
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -111,8 +177,85 @@ class DayDetailPage extends ConsumerWidget {
               ),
       ),
       child: hasRecording
-          ? _buildRecordingContent(recording!)
+          ? (recording!.audioUrl == 'pending'
+                ? _buildPendingRecordingContent(recording)
+                : _buildRecordingContent(recording))
           : _buildEmptyPrayerContent(prayer),
+    );
+  }
+
+  Widget _buildPendingRecordingContent(Recording recording) {
+    return Row(
+      children: [
+        Consumer(
+          builder: (context, ref, child) {
+            // Check permission again, or assume if they see this they are admin/publisher
+            // Creating pending recording is restricted to admins/publishers anyway.
+            return InkWell(
+              onTap: () async {
+                final result = await NavigationService.navigateTo(
+                  AppRoutes.uploadRecording,
+                  arguments: UploadRecordingArgs(
+                    mosqueId: recording.mosqueId,
+                    dayId: recording.dayId,
+                    prayer: recording.prayer,
+                    customPrayerName: recording.customPrayerName,
+                    pendingRecordingId: recording.id,
+                  ),
+                );
+                if (result == true) {
+                  ref.invalidate(dayRecordingsProvider(recording.dayId));
+                }
+              },
+              child: Icon(
+                LucideIcons.uploadCloud,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                recording.prayer == Prayer.other
+                    ? (recording.customPrayerName ?? 'أخرى')
+                    : recording.prayer.arabicName,
+                style: GoogleFonts.cairo(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'في انتظار الرفع...',
+                style: GoogleFonts.cairo(
+                  fontSize: 14,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            LucideIcons.volume,
+            color: Colors.grey.shade300,
+            size: 24,
+          ),
+        ),
+      ],
     );
   }
 
@@ -126,7 +269,6 @@ class DayDetailPage extends ConsumerWidget {
 
         return Row(
           children: [
-            // Upload/Download/Favorite icons (left side)
             Column(
               children: [
                 // Download button
@@ -138,7 +280,6 @@ class DayDetailPage extends ConsumerWidget {
                     final isDownloadedAsync = ref.watch(
                       isDownloadedProvider(recording.id),
                     );
-
                     return isDownloadedAsync.when(
                       data: (isDownloaded) {
                         if (isDownloaded) {
@@ -148,7 +289,6 @@ class DayDetailPage extends ConsumerWidget {
                             size: 20,
                           );
                         }
-
                         return StreamBuilder<double>(
                           stream: downloadsService.progressStream(recording.id),
                           builder: (context, snapshot) {
@@ -176,7 +316,6 @@ class DayDetailPage extends ConsumerWidget {
                                 ),
                               );
                             }
-
                             return InkWell(
                               onTap: () async {
                                 try {
@@ -231,13 +370,10 @@ class DayDetailPage extends ConsumerWidget {
                       final favoritesService = ref.read(
                         favoritesServiceProvider,
                       );
-
                       if (isFavorite) {
-                        // Remove from favorites
                         await favoritesService.removeFavorite(recording.id);
                         ref.invalidate(isFavoriteProvider(recording.id));
                         ref.invalidate(allFavoritesProvider);
-
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -250,15 +386,14 @@ class DayDetailPage extends ConsumerWidget {
                           );
                         }
                       } else {
-                        // Add to favorites with download
                         try {
-                          // Show loading snackbar
                           if (context.mounted) {
+                            // Fixed braces
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Row(
                                   children: [
-                                    const SizedBox(
+                                    SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
@@ -269,7 +404,7 @@ class DayDetailPage extends ConsumerWidget {
                                             ),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: 12),
                                     Text(
                                       'جاري تحميل التلاوة...',
                                       style: GoogleFonts.cairo(),
@@ -281,11 +416,9 @@ class DayDetailPage extends ConsumerWidget {
                               ),
                             );
                           }
-
                           await favoritesService.addFavorite(recording);
                           ref.invalidate(isFavoriteProvider(recording.id));
                           ref.invalidate(allFavoritesProvider);
-
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -337,13 +470,12 @@ class DayDetailPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Delete button with permission check
+                // Delete button
                 Consumer(
                   builder: (context, ref, child) {
                     final permissionChecker = ref.read(
                       permissionCheckerProvider,
                     );
-
                     return FutureBuilder<bool>(
                       future: permissionChecker.canShowDeleteButton(
                         recording.id,
@@ -353,7 +485,6 @@ class DayDetailPage extends ConsumerWidget {
                         if (!snapshot.hasData || snapshot.data == false) {
                           return const SizedBox.shrink();
                         }
-
                         return InkWell(
                           onTap: () async {
                             final confirm = await showDialog<bool>(
@@ -395,17 +526,14 @@ class DayDetailPage extends ConsumerWidget {
                                 ],
                               ),
                             );
-
                             if (confirm == true) {
                               final params = DeleteRecordingParams(
                                 recordingId: recording.id,
                                 mosqueId: recording.mosqueId,
                               );
-
                               final result = await ref
                                   .read(deleteRecordingUseCaseProvider)
                                   .call(params);
-
                               result.fold(
                                 (failure) {
                                   if (context.mounted) {
@@ -421,7 +549,6 @@ class DayDetailPage extends ConsumerWidget {
                                   }
                                 },
                                 (_) {
-                                  // Refresh recordings
                                   ref.invalidate(dayRecordingsProvider(day.id));
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -451,14 +578,14 @@ class DayDetailPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(width: 16),
-
-            // Prayer info (center)
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    recording.prayer.arabicName,
+                    recording.prayer == Prayer.other
+                        ? (recording.customPrayerName ?? 'أخرى')
+                        : recording.prayer.arabicName,
                     style: GoogleFonts.cairo(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -477,35 +604,28 @@ class DayDetailPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 16),
-
-            // Play button (right side)
             StreamBuilder<bool>(
               stream: audioService.player.playingStream,
               builder: (context, snapshot) {
                 final isPlaying = snapshot.data ?? false;
                 final showPlayButton = !isCurrentlyPlaying || !isPlaying;
-
                 return GestureDetector(
                   onTap: () async {
                     if (isCurrentlyPlaying) {
-                      // If already playing, show the player sheet
-                      // If already playing, navigate to player page
                       NavigationService.navigateTo(
                         AppRoutes.audioPlayer,
                         arguments: AudioPlayerArgs(recording: recording),
                       );
                     } else {
-                      // Start playing
                       ref.read(currentPlayingRecordingProvider.notifier).state =
                           recording.id;
-                      // Don't await playback to ensure instant navigation
                       audioService.play(
                         recording.audioUrl,
-                        title: recording.prayer.arabicName,
+                        title: recording.prayer == Prayer.other
+                            ? (recording.customPrayerName ?? 'أخرى')
+                            : recording.prayer.arabicName,
                         artist: recording.sheikhName,
                       );
-
-                      // Navigate immediately
                       if (context.mounted) {
                         NavigationService.navigateTo(
                           AppRoutes.audioPlayer,
@@ -540,11 +660,9 @@ class DayDetailPage extends ConsumerWidget {
   Widget _buildEmptyPrayerContent(Prayer prayer) {
     return Row(
       children: [
-        // Upload icon
         Consumer(
           builder: (context, ref, child) {
             final permissionChecker = ref.read(permissionCheckerProvider);
-
             return FutureBuilder<bool>(
               future: permissionChecker.canShowUploadButton(day.mosqueId),
               builder: (context, snapshot) {
@@ -555,7 +673,6 @@ class DayDetailPage extends ConsumerWidget {
                     size: 20,
                   );
                 }
-
                 return InkWell(
                   onTap: () async {
                     final result = await NavigationService.navigateTo(
@@ -563,9 +680,9 @@ class DayDetailPage extends ConsumerWidget {
                       arguments: UploadRecordingArgs(
                         mosqueId: day.mosqueId,
                         dayId: day.id,
+                        prayer: prayer, // Pass the prayer
                       ),
                     );
-
                     if (result == true) {
                       ref.invalidate(dayRecordingsProvider(day.id));
                     }
@@ -581,8 +698,6 @@ class DayDetailPage extends ConsumerWidget {
           },
         ),
         const SizedBox(width: 16),
-
-        // Prayer info
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -597,7 +712,7 @@ class DayDetailPage extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Guest Reciter',
+                'قارئ ضيف',
                 style: GoogleFonts.cairo(
                   fontSize: 14,
                   color: Colors.grey.shade400,
@@ -607,8 +722,6 @@ class DayDetailPage extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: 16),
-
-        // Disabled/muted icon
         Container(
           width: 56,
           height: 56,
@@ -621,6 +734,151 @@ class DayDetailPage extends ConsumerWidget {
             color: Colors.grey.shade300,
             size: 24,
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddPrayerDialog extends ConsumerStatefulWidget {
+  final String mosqueId;
+  final String dayId;
+
+  const _AddPrayerDialog({required this.mosqueId, required this.dayId});
+
+  @override
+  ConsumerState<_AddPrayerDialog> createState() => _AddPrayerDialogState();
+}
+
+class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _prayerNameController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _prayerNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addPrayer() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final params = CreatePendingRecordingParams(
+        mosqueId: widget.mosqueId,
+        dayId: widget.dayId,
+        prayerName: _prayerNameController.text.trim(),
+      );
+
+      final result = await ref
+          .read(createPendingRecordingUseCaseProvider)
+          .call(params);
+
+      if (mounted) {
+        result.fold(
+          (failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'فشل إضافة التلاوة: ${failure.toString()}',
+                  style: GoogleFonts.cairo(),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          },
+          (_) {
+            Navigator.pop(context, _prayerNameController.text.trim());
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'تم إضافة التلاوة بنجاح',
+                  style: GoogleFonts.cairo(),
+                ),
+                backgroundColor: AppColors.primary,
+              ),
+            );
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('حدث خطأ غير متوقع', style: GoogleFonts.cairo()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'إضافة تلاوة جديدة',
+        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+        textAlign: TextAlign.right,
+      ),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _prayerNameController,
+              textAlign: TextAlign.right,
+              style: GoogleFonts.cairo(),
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'اسم التلاوة (مثل: تهجد)',
+                labelStyle: GoogleFonts.cairo(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'الرجاء إدخال اسم التلاوة';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          child: Text('إلغاء', style: GoogleFonts.cairo(color: Colors.grey)),
+        ),
+        ElevatedButton(
+          onPressed: _isLoading ? null : _addPrayer,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: _isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text('إضافة', style: GoogleFonts.cairo(color: Colors.white)),
         ),
       ],
     );
