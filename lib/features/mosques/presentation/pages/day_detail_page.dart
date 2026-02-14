@@ -189,29 +189,135 @@ class DayDetailPage extends ConsumerWidget {
       children: [
         Consumer(
           builder: (context, ref, child) {
-            // Check permission again, or assume if they see this they are admin/publisher
-            // Creating pending recording is restricted to admins/publishers anyway.
-            return InkWell(
-              onTap: () async {
-                final result = await NavigationService.navigateTo(
-                  AppRoutes.uploadRecording,
-                  arguments: UploadRecordingArgs(
-                    mosqueId: recording.mosqueId,
-                    dayId: recording.dayId,
-                    prayer: recording.prayer,
-                    customPrayerName: recording.customPrayerName,
-                    pendingRecordingId: recording.id,
+            final permissionChecker = ref.read(permissionCheckerProvider);
+            return FutureBuilder<bool>(
+              future: permissionChecker.canShowUploadButton(recording.mosqueId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == false) {
+                  return const SizedBox.shrink();
+                }
+                return InkWell(
+                  onTap: () async {
+                    final result = await NavigationService.navigateTo(
+                      AppRoutes.uploadRecording,
+                      arguments: UploadRecordingArgs(
+                        mosqueId: recording.mosqueId,
+                        dayId: recording.dayId,
+                        prayer: recording.prayer,
+                        customPrayerName: recording.customPrayerName,
+                        pendingRecordingId: recording.id,
+                      ),
+                    );
+                    if (result == true) {
+                      ref.invalidate(dayRecordingsProvider(recording.dayId));
+                    }
+                  },
+                  child: Icon(
+                    LucideIcons.uploadCloud,
+                    color: AppColors.primary,
+                    size: 20,
                   ),
                 );
-                if (result == true) {
-                  ref.invalidate(dayRecordingsProvider(recording.dayId));
-                }
               },
-              child: Icon(
-                LucideIcons.uploadCloud,
-                color: AppColors.primary,
-                size: 20,
+            );
+          },
+        ),
+        const SizedBox(width: 12),
+        // Delete button for pending recording
+        Consumer(
+          builder: (context, ref, child) {
+            final permissionChecker = ref.read(permissionCheckerProvider);
+            return FutureBuilder<bool>(
+              future: permissionChecker.canShowDeleteButton(
+                recording.id,
+                recording.mosqueId,
               ),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == false) {
+                  return const SizedBox.shrink();
+                }
+                return InkWell(
+                  onTap: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(
+                          'حذف التلاوة',
+                          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.right,
+                        ),
+                        content: Text(
+                          'هل أنت متأكد من حذف هذه التلاوة؟',
+                          style: GoogleFonts.cairo(),
+                          textAlign: TextAlign.right,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text(
+                              'إلغاء',
+                              style: GoogleFonts.cairo(color: Colors.grey),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text(
+                              'حذف',
+                              style: GoogleFonts.cairo(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      final params = DeleteRecordingParams(
+                        recordingId: recording.id,
+                        mosqueId: recording.mosqueId,
+                      );
+                      final result = await ref
+                          .read(deleteRecordingUseCaseProvider)
+                          .call(params);
+                      result.fold(
+                        (failure) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'فشل حذف التلاوة',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        (_) {
+                          ref.invalidate(
+                            dayRecordingsProvider(recording.dayId),
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'تم حذف التلاوة بنجاح',
+                                  style: GoogleFonts.cairo(),
+                                ),
+                                backgroundColor: AppColors.primary,
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
+                  child: Icon(
+                    LucideIcons.trash2,
+                    color: Colors.red.shade300,
+                    size: 20,
+                  ),
+                );
+              },
             );
           },
         ),
