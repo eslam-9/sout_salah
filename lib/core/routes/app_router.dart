@@ -16,6 +16,7 @@ import '../../features/mosques/domain/entities/mosque.dart';
 import '../../features/mosques/domain/entities/ramadan_day.dart';
 
 import '../presentation/pages/error_page.dart';
+import '../presentation/pages/splash_screen.dart';
 import 'app_routes.dart';
 import 'route_args.dart';
 import 'route_transitions.dart';
@@ -57,6 +58,9 @@ class AppRouter {
 
     // Route handling
     switch (settings.name) {
+      case AppRoutes.splash:
+        return RouteTransitions.fadeTransition(const SplashScreen(), settings);
+
       case AppRoutes.home:
         if (!_isAuthenticated() && !_isGuest()) {
           GetIt.I<AppLogger>().i(

@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   google_fonts: ^8.0.1
+  lottie: ^3.1.0
   internet_connection_checker: ^3.0.1
   logger: ^2.6.2
   lucide_icons: ^0.257.0
@@ -43,16 +44,13 @@ flutter_icons:
   image_path: "assets/icon.png"
 
 flutter_native_splash:
-  color: "#8AD38C"
-  image: assets/splash.png
-
+  color: "#2E7D32"
   android: true
   ios: true
 
   android_12:
-    image: assets/splash.png
-    icon_background_color: "#8AD38C"
-    color: "#8AD38C"
+    icon_background_color: "#2E7D32"
+    color: "#2E7D32"
 
 
 flutter:
@@ -61,3 +59,4 @@ flutter:
   assets:
     - assets/icon.png
     - assets/splash.png
+    - assets/animations/
