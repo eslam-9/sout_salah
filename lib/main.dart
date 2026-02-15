@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: NavigationService.navigatorKey,
       onGenerateRoute: AppRouter.onGenerateRoute,
       onUnknownRoute: AppRouter.onUnknownRoute,
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.splash,
 
       builder: (context, child) {
         return StartupCheckWrapper(

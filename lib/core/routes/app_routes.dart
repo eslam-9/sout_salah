@@ -1,5 +1,8 @@
 /// Centralized route definitions for the application
 class AppRoutes {
+  // Splash screen route
+  static const String splash = '/splash';
+
   // Authentication routes
   static const String login = '/login';
   static const String signup = '/signup';
