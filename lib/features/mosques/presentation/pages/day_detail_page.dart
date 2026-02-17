@@ -39,7 +39,7 @@ class DayDetailPage extends ConsumerWidget {
         title: Column(
           children: [
             Text(
-              'رمضان 1445',
+              'رمضان 1447',
               style: GoogleFonts.cairo(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
