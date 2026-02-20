@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Lottie animation controller
     _lottieController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 3000),
     );
 
     // Logo animation controller
