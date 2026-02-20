@@ -29,7 +29,7 @@ import 'package:shared_preferences/shared_preferences.dart'; // Add import
 class AppRouter {
   /// Check if user is authenticated (not guest)
   static bool _isAuthenticated() {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = GetIt.I<SupabaseClient>().auth.currentUser;
     return user != null;
   }
 
