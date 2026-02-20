@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/mosque.dart';
@@ -159,7 +160,13 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             itemCount: days.length,
             itemBuilder: (context, index) {
               final day = days[index];
-              final isToday = day.dayNumber == DateTime.now().day;
+              final ramadanStart = AppConstants.ramadanStartDate;
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final daysSinceStart = today.difference(ramadanStart).inDays;
+              final currentRamadanDay = daysSinceStart + 1;
+
+              final isToday = day.dayNumber == currentRamadanDay;
               return _buildDayCircle(context, day, isToday);
             },
           ),
