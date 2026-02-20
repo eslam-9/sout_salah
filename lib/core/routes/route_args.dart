@@ -1,13 +1,23 @@
 import '../../features/mosques/domain/entities/mosque.dart';
 import '../../features/mosques/domain/entities/ramadan_day.dart';
 import '../../features/mosques/domain/entities/recording.dart';
+import '../../features/mosques/domain/entities/prayer.dart';
 
 /// Route arguments for upload recording page
 class UploadRecordingArgs {
   final String mosqueId;
   final String dayId;
+  final Prayer? prayer;
+  final String? customPrayerName;
+  final String? pendingRecordingId;
 
-  UploadRecordingArgs({required this.mosqueId, required this.dayId});
+  UploadRecordingArgs({
+    required this.mosqueId,
+    required this.dayId,
+    this.prayer,
+    this.customPrayerName,
+    this.pendingRecordingId,
+  });
 
   /// Validate that the arguments are not empty
   bool validate() {

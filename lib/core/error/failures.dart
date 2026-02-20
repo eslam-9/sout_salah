@@ -15,7 +15,7 @@ abstract class Failure extends Equatable {
 
 // General Failures
 class ServerFailure extends Failure {
-  const ServerFailure({super.message = 'Server Failure'});
+  const ServerFailure({super.message = 'خطأ في الخادم'});
 }
 
 class CacheFailure extends Failure {}

@@ -15,11 +15,17 @@ import '../providers/mosque_data_providers.dart';
 class UploadRecordingPage extends ConsumerStatefulWidget {
   final String mosqueId;
   final String dayId;
+  final String? pendingRecordingId;
+  final Prayer? prayer;
+  final String? customPrayerName;
 
   const UploadRecordingPage({
     super.key,
     required this.mosqueId,
     required this.dayId,
+    this.prayer,
+    this.customPrayerName,
+    this.pendingRecordingId,
   });
 
   @override
@@ -30,14 +36,27 @@ class UploadRecordingPage extends ConsumerStatefulWidget {
 class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
   final _formKey = GlobalKey<FormState>();
   final _sheikhNameController = TextEditingController();
+  final _customPrayerController = TextEditingController();
   Prayer? _selectedPrayer;
   File? _selectedFile;
   bool _isUploading = false;
   double _uploadProgress = 0.0;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.prayer != null) {
+      _selectedPrayer = widget.prayer;
+    }
+    if (widget.customPrayerName != null) {
+      _customPrayerController.text = widget.customPrayerName!;
+    }
+  }
+
+  @override
   void dispose() {
     _sheikhNameController.dispose();
+    _customPrayerController.dispose();
     super.dispose();
   }
 
@@ -55,6 +74,31 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
 
   Future<void> _uploadRecording() async {
     if (!_formKey.currentState!.validate() || _selectedFile == null) {
+      if (_selectedFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('الرجاء اختيار ملف صوتي', style: GoogleFonts.cairo()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Check file size (100MB = 100 * 1024 * 1024 bytes)
+    final fileSize = await _selectedFile!.length();
+    if (fileSize > 100 * 1024 * 1024) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'حجم الملف يتجاوز 100 ميجابايت',
+              style: GoogleFonts.cairo(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -64,15 +108,17 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
     });
 
     try {
-      final fileSize = await _selectedFile!.length();
-
       final params = UploadRecordingParams(
         mosqueId: widget.mosqueId,
         dayId: widget.dayId,
         prayer: _selectedPrayer!,
+        customPrayerName: _selectedPrayer == Prayer.other
+            ? _customPrayerController.text.trim()
+            : null,
         sheikhName: _sheikhNameController.text.trim(),
         filePath: _selectedFile!.path,
         fileSize: fileSize,
+        pendingRecordingId: widget.pendingRecordingId,
       );
 
       // Call upload use case
@@ -115,16 +161,6 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
               ),
             );
           },
-        );
-      }
-
-      if (mounted) {
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('تم رفع التلاوة بنجاح', style: GoogleFonts.cairo()),
-            backgroundColor: AppColors.primary,
-          ),
         );
       }
     } catch (e, stackTrace) {
@@ -226,7 +262,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
 
                       // Prayer selection
                       Text(
-                        'عنوان التلاوة (اختياري)',
+                        'عنوان التلاوة',
                         style: GoogleFonts.cairo(
                           fontSize: 14,
                           color: Colors.grey.shade700,
@@ -235,24 +271,27 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<Prayer>(
-                        initialValue: _selectedPrayer,
+                        // ignore: deprecated_member_use
+                        value: _selectedPrayer,
                         isExpanded: true,
                         decoration: InputDecoration(
-                          hintText: 'مثال: سورة الكهف - صلاة العشاء',
-                          hintStyle: GoogleFonts.cairo(
-                            color: Colors.grey.shade400,
-                          ),
+                          hintText: 'اختر الصلاة',
                           filled: true,
-                          fillColor: Colors.grey.shade50,
+                          fillColor: widget.prayer != null
+                              ? Colors.grey.shade200
+                              : Colors.grey.shade50,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
                           ),
-                          suffixIcon: const Icon(
-                            LucideIcons.fileText,
-                            color: AppColors.primary,
-                          ),
                         ),
+                        onChanged: widget.prayer != null
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _selectedPrayer = value;
+                                });
+                              },
                         items: Prayer.allPrayers.map((prayer) {
                           return DropdownMenuItem(
                             value: prayer,
@@ -264,18 +303,48 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedPrayer = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'الرجاء اختيار الصلاة';
-                          }
-                          return null;
-                        },
+                        validator: (value) =>
+                            value == null ? 'الرجاء اختيار الصلاة' : null,
                       ),
+
+                      if (_selectedPrayer == Prayer.other) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'اسم التلاوة',
+                          style: GoogleFonts.cairo(
+                            fontSize: 14,
+                            color: Colors.grey.shade700,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _customPrayerController,
+                          textAlign: TextAlign.right,
+                          style: GoogleFonts.cairo(),
+                          readOnly:
+                              widget.pendingRecordingId !=
+                              null, // Make read-only if editing pending slot
+                          decoration: InputDecoration(
+                            hintText: 'مثال: تهجد',
+                            filled: true,
+                            fillColor: widget.pendingRecordingId != null
+                                ? Colors.grey.shade200
+                                : Colors.grey.shade50,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (_selectedPrayer == Prayer.other &&
+                                (value == null || value.trim().isEmpty)) {
+                              return 'الرجاء إدخال اسم التلاوة';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
 
                       const SizedBox(height: 32),
 
@@ -289,7 +358,6 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                               onTap: _pickFile,
                             ),
                           ),
-                          const SizedBox(width: 16),
                         ],
                       ),
 

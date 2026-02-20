@@ -52,10 +52,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     logger.i('Signing up with email: $email');
     try {
+      final data = {'role': 'user'};
+      if (username != null) data['username'] = username;
       final response = await supabaseClient.auth.signUp(
         email: email,
         password: password,
-        data: {'role': 'user', if (username != null) 'username': username},
+        data: data,
       );
       if (response.user == null) {
         logger.e('Sign up failed: User is null');
