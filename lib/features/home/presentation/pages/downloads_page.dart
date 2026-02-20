@@ -4,11 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/downloads_provider.dart';
-import '../../../../core/services/audio_player_service.dart';
-import '../../../../core/models/downloaded_recording.dart';
-import '../../../../core/models/favorite_recording.dart';
 import '../../../../core/di/providers.dart';
-import '../widgets/favorite_audio_player_sheet.dart';
+import '../../../../core/models/downloaded_recording.dart';
+
+import '../../../mosques/domain/entities/prayer.dart';
+import '../../../mosques/domain/entities/recording.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
+import '../../../../core/services/navigation_service.dart';
 
 class DownloadsPage extends ConsumerWidget {
   const DownloadsPage({super.key});
@@ -249,6 +252,26 @@ class DownloadsPage extends ConsumerWidget {
                     textAlign: TextAlign.right,
                   ),
                 ],
+                // Progress indicator during active download (if any)
+                StreamBuilder<double>(
+                  stream: ref
+                      .watch(downloadsServiceProvider)
+                      .progressStream(download.recordingId),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: LinearProgressIndicator(
+                          value: snapshot.data,
+                          backgroundColor: Colors.grey.shade200,
+                          color: AppColors.primary,
+                          minHeight: 4,
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
           ),
@@ -263,47 +286,30 @@ class DownloadsPage extends ConsumerWidget {
 
               return GestureDetector(
                 onTap: () async {
-                  if (isCurrentlyPlaying && isPlaying) {
-                    // If already playing, show the player sheet
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => FavoriteAudioPlayerSheet(
-                        favorite: _convertToFavoriteRecording(download),
+                  if (isCurrentlyPlaying) {
+                    // Navigate to player page
+                    NavigationService.navigateTo(
+                      AppRoutes.audioPlayer,
+                      arguments: AudioPlayerArgs(
+                        recording: _convertToRecording(download),
                       ),
                     );
-                  } else if (isCurrentlyPlaying && !isPlaying) {
-                    await audioService.resume();
-                    // Show player sheet after resuming
-                    if (context.mounted) {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => FavoriteAudioPlayerSheet(
-                          favorite: _convertToFavoriteRecording(download),
-                        ),
-                      );
-                    }
                   } else {
                     ref.read(currentPlayingRecordingProvider.notifier).state =
                         download.recordingId;
-                    // Play from local file
-                    await audioService.play(
+                    // Play from local file (don't await to avoid UI delay)
+                    audioService.play(
                       download.localAudioPath,
                       title: download.prayerName,
                       artist: download.sheikhName,
                     );
 
-                    // Show player sheet after starting playback
+                    // Navigate immediately
                     if (context.mounted) {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => FavoriteAudioPlayerSheet(
-                          favorite: _convertToFavoriteRecording(download),
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(
+                          recording: _convertToRecording(download),
                         ),
                       );
                     }
@@ -316,6 +322,7 @@ class DownloadsPage extends ConsumerWidget {
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
+                  alignment: Alignment.center,
                   child: Icon(
                     showPlayButton ? LucideIcons.play : LucideIcons.pause,
                     color: Colors.white,
@@ -330,21 +337,25 @@ class DownloadsPage extends ConsumerWidget {
     );
   }
 
-  // Helper to convert DownloadedRecording to FavoriteRecording for the player sheet
-  dynamic _convertToFavoriteRecording(DownloadedRecording download) {
-    // We're using FavoriteAudioPlayerSheet which expects FavoriteRecording
-    // Since they have the same structure, we can create a compatible object
-    return FavoriteRecording(
-      recordingId: download.recordingId,
-      localAudioPath: download.localAudioPath,
-      audioUrl:
-          '', // Downloads don't store audioUrl, but it's not needed for local playback
-      prayerName: download.prayerName,
-      sheikhName: download.sheikhName,
+  // Helper to convert DownloadedRecording to Recording for the player page
+  Recording _convertToRecording(DownloadedRecording download) {
+    // Try to find matching prayer, default to Fajr if not found
+    final prayer = Prayer.values.firstWhere(
+      (p) =>
+          p.englishName == download.prayerName ||
+          p.arabicName == download.prayerName,
+      orElse: () => Prayer.fajr,
+    );
+
+    return Recording(
+      id: download.recordingId,
       mosqueId: download.mosqueId,
       dayId: download.dayId,
+      prayer: prayer,
+      sheikhName: download.sheikhName,
+      audioUrl: download.localAudioPath, // Use local path
       fileSize: download.fileSize,
-      savedAt: download.downloadedAt,
+      createdAt: download.downloadedAt,
     );
   }
 }

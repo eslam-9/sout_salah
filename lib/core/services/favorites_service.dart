@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/favorite_recording.dart';
 import '../../features/mosques/domain/entities/recording.dart';
+import '../utils/app_logger.dart';
 
 /// Service to manage favorite recordings with reactive updates
 class FavoritesService {
   static const String _favoritesKey = 'favorite_recordings';
   final SharedPreferences _prefs;
+  final AppLogger _logger;
   late final StreamController<List<FavoriteRecording>> _favoritesController;
 
-  FavoritesService(this._prefs) {
+  FavoritesService(this._prefs, this._logger) {
     _favoritesController = StreamController<List<FavoriteRecording>>.broadcast(
       onListen: () {
         _emitFavorites();
@@ -32,7 +32,7 @@ class FavoritesService {
       final favorites = await getFavorites();
       _favoritesController.add(favorites);
     } catch (e) {
-      debugPrint('❌ Error emitting favorites: $e');
+      _logger.e('❌ Error emitting favorites: $e');
     }
   }
 
@@ -41,7 +41,7 @@ class FavoritesService {
     try {
       // Check if already favorited
       if (await isFavorite(recording.id)) {
-        debugPrint('Recording ${recording.id} is already favorited');
+        _logger.i('Recording ${recording.id} is already favorited');
         return;
       }
 
@@ -59,13 +59,11 @@ class FavoritesService {
         // File is already downloaded, use existing file
         localPath = possiblePath;
         fileSize = await downloadedFile.length();
-        debugPrint('✅ Using existing downloaded file for favorite');
+        _logger.i('✅ Using existing downloaded file for favorite');
       } else {
-        // File not downloaded, download it now
-        localPath = await _downloadAudioFile(recording.audioUrl, recording.id);
-        final file = File(localPath);
-        fileSize = await file.length();
-        debugPrint('✅ Downloaded file for favorite');
+        // File not downloaded, just save metadata with streaming URL
+        localPath = '';
+        _logger.i('✅ Adding favorite without local file (will stream)');
       }
 
       // Create favorite recording object
@@ -89,10 +87,9 @@ class FavoritesService {
       // Notify listeners
       _favoritesController.add(favorites);
 
-      debugPrint('✅ Added recording ${recording.id} to favorites');
+      _logger.i('✅ Added recording ${recording.id} to favorites');
     } catch (e, stackTrace) {
-      debugPrint('❌ Error adding favorite: $e');
-      debugPrint('Stack trace: $stackTrace');
+      _logger.e('❌ Error adding favorite: $e', e, stackTrace);
       rethrow;
     }
   }
@@ -121,10 +118,9 @@ class FavoritesService {
       // Notify listeners
       _favoritesController.add(favorites);
 
-      debugPrint('✅ Removed recording $recordingId from favorites (file kept)');
+      _logger.i('✅ Removed recording $recordingId from favorites (file kept)');
     } catch (e, stackTrace) {
-      debugPrint('❌ Error removing favorite: $e');
-      debugPrint('Stack trace: $stackTrace');
+      _logger.e('❌ Error removing favorite: $e', e, stackTrace);
       rethrow;
     }
   }
@@ -148,44 +144,8 @@ class FavoritesService {
           .map((json) => FavoriteRecording.fromJson(json))
           .toList();
     } catch (e) {
-      debugPrint('❌ Error loading favorites: $e');
+      _logger.e('❌ Error loading favorites: $e');
       return [];
-    }
-  }
-
-  /// Download audio file from URL and save locally
-  Future<String> _downloadAudioFile(String url, String recordingId) async {
-    try {
-      debugPrint('📥 Downloading audio file for recording $recordingId...');
-
-      // Get app's documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final favoritesDir = Directory('${directory.path}/favorites');
-
-      // Create favorites directory if it doesn't exist
-      if (!await favoritesDir.exists()) {
-        await favoritesDir.create(recursive: true);
-      }
-
-      // Create file path
-      final filePath = '${favoritesDir.path}/$recordingId.mp3';
-
-      // Download the file
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-        debugPrint('✅ Downloaded audio file to: $filePath');
-        return filePath;
-      } else {
-        throw Exception(
-          'Failed to download audio file: ${response.statusCode}',
-        );
-      }
-    } catch (e) {
-      debugPrint('❌ Error downloading audio file: $e');
-      rethrow;
     }
   }
 

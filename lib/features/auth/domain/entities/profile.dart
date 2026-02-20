@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 /// Note: Roles are per-mosque for admin and publisher
 enum UserRole {
   /// Super admin (not currently used, reserved for future)
-  superAdmin('super_admin'),
+  superAdmin('admin'),
 
   /// Mosque admin - creator of a mosque
   mosqueAdmin('mosque_admin'),
@@ -20,7 +20,7 @@ enum UserRole {
 
   static UserRole fromString(String value) {
     switch (value) {
-      case 'super_admin':
+      case 'admin':
         return UserRole.superAdmin;
       case 'mosque_admin':
         return UserRole.mosqueAdmin;

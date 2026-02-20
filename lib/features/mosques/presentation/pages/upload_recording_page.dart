@@ -1,13 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import '../../../../core/utils/app_logger.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/prayer.dart';
 import '../../domain/usecases/upload_recording_params.dart';
 import '../providers/mosque_data_providers.dart';
-import 'device_audio_selection_page.dart';
 
 class UploadRecordingPage extends ConsumerStatefulWidget {
   final String mosqueId;
@@ -39,21 +42,12 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
   }
 
   Future<void> _pickFile() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const DeviceAudioSelectionPage()),
+    final result = await NavigationService.navigateTo(
+      AppRoutes.deviceAudioSelection,
     );
 
     if (result != null && result is Map) {
       setState(() {
-        // The result is a map with 'path', 'name', 'size', 'duration'
-        // We might need to adjust logic if the path is content:// URI (Android 10+)
-        // But on_audio_query usually returns absolute path for older androids,
-        // and for newer ones we might need to handle differently if we were playing.
-        // For upload, we need a File object.
-        // Note: on latest androids, direct file access might be restricted.
-        // However, on_audio_query's 'data' field usually provides a path we can try to use.
-
         _selectedFile = File(result['path']);
       });
     }
@@ -81,18 +75,20 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
         fileSize: fileSize,
       );
 
-      // Simulate upload progress
-      for (var i = 0; i <= 100; i += 10) {
-        await Future.delayed(const Duration(milliseconds: 100));
-        setState(() {
-          _uploadProgress = i / 100;
-        });
-      }
-
       // Call upload use case
       final result = await ref
           .read(uploadRecordingUseCaseProvider)
-          .call(params);
+          .call(
+            params.copyWith(
+              onProgress: (progress) {
+                if (mounted) {
+                  setState(() {
+                    _uploadProgress = progress;
+                  });
+                }
+              },
+            ),
+          );
 
       if (mounted) {
         result.fold(
@@ -131,7 +127,8 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      GetIt.I<AppLogger>().e('Upload Error: $e', e, stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

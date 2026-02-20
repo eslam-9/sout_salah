@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/mosque.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../providers/ramadan_days_provider.dart';
-import 'day_detail_page.dart';
+import '../../../../features/auth/presentation/providers/auth_controller.dart';
+import '../../../../features/auth/presentation/bloc/auth_state.dart';
+import 'add_publisher_page.dart';
 
 class MosqueDetailPage extends ConsumerStatefulWidget {
   final Mosque mosque;
@@ -60,6 +64,30 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
           ],
         ),
         centerTitle: true,
+        actions: [
+          // Show add publisher button only for admins
+          Consumer(
+            builder: (context, ref, child) {
+              final authState = ref.watch(authProvider);
+              if (authState is AuthAuthenticated &&
+                  authState.user.role == 'admin') {
+                return IconButton(
+                  icon: const Icon(LucideIcons.userPlus, color: Colors.black),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AddPublisherPage(mosqueId: widget.mosque.id),
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
       body: state is RamadanDaysLoading
           ? const Center(child: CircularProgressIndicator())
@@ -176,10 +204,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DayDetailPage(day: day)),
-        );
+        NavigationService.navigateTo(AppRoutes.dayDetail, arguments: day);
       },
       child: Container(
         decoration: BoxDecoration(

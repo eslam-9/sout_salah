@@ -12,7 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
-  flutter_svg: ^2.2.3
   google_fonts: ^8.0.1
   internet_connection_checker: ^3.0.1
   logger: ^2.6.2
@@ -25,25 +24,38 @@ dependencies:
   permission_handler: ^12.0.1
   just_audio_background: ^0.0.1-beta.17
   shared_preferences: ^2.2.2
-  http: ^1.2.0
   path_provider: ^2.1.2
   flutter_dotenv: ^5.1.0
   crypto: ^3.0.3
+  dio: ^5.9.1
+  get_it: ^9.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
 
 flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon.png"
-  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_foreground: "assets/c.png"
+
+flutter_native_splash:
+  color: "##FFFFFF"
+  image: assets/splash_icon.png
+  android: true
+  ios: true
+  android_12:
+    color: "##FFFFFF"
+    image: assets/splash_icon.png
 
 flutter:
   uses-material-design: true
 
   assets:
     - .env
+    - assets/icon.png
+    - assets/splash_icon.png

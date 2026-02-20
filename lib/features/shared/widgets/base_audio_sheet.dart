@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/services/audio_player_service.dart';
+import '../../../core/di/providers.dart';
 import '../../../../core/theme/app_theme.dart';
 
 /// A reusable bottom sheet for audio playback.

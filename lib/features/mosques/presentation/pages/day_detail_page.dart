@@ -7,13 +7,15 @@ import '../../domain/entities/ramadan_day.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/entities/prayer.dart';
 import '../providers/mosque_data_providers.dart';
-import '../../../../core/services/audio_player_service.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
-import '../widgets/audio_player_sheet.dart';
-import 'upload_recording_page.dart';
+
 import '../../../../core/utils/permission_checker.dart';
-import '../../../home/presentation/providers/favorites_provider.dart';
+import 'package:sout_salah/features/home/presentation/providers/favorites_provider.dart';
+import 'package:sout_salah/features/home/presentation/providers/downloads_provider.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
+import '../../../../core/services/navigation_service.dart';
 
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
@@ -95,7 +97,7 @@ class DayDetailPage extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -127,7 +129,100 @@ class DayDetailPage extends ConsumerWidget {
             // Upload/Download/Favorite icons (left side)
             Column(
               children: [
-                Icon(LucideIcons.cloud, color: Colors.grey.shade400, size: 20),
+                // Download button
+                Consumer(
+                  builder: (context, ref, child) {
+                    final downloadsService = ref.watch(
+                      downloadsServiceProvider,
+                    );
+                    final isDownloadedAsync = ref.watch(
+                      isDownloadedProvider(recording.id),
+                    );
+
+                    return isDownloadedAsync.when(
+                      data: (isDownloaded) {
+                        if (isDownloaded) {
+                          return Icon(
+                            LucideIcons.cloud,
+                            color: AppColors.primary,
+                            size: 20,
+                          );
+                        }
+
+                        return StreamBuilder<double>(
+                          stream: downloadsService.progressStream(recording.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircularProgressIndicator(
+                                      value: snapshot.data,
+                                      strokeWidth: 2,
+                                      color: AppColors.primary,
+                                    ),
+                                    Text(
+                                      '${(snapshot.data! * 100).toInt()}',
+                                      style: GoogleFonts.cairo(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return InkWell(
+                              onTap: () async {
+                                try {
+                                  await downloadsService.downloadRecording(
+                                    recording,
+                                  );
+                                  ref.invalidate(
+                                    isDownloadedProvider(recording.id),
+                                  );
+                                  ref.invalidate(allDownloadsProvider);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'فشل التنزيل: $e',
+                                          style: GoogleFonts.cairo(),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Icon(
+                                LucideIcons.download,
+                                color: Colors.grey.shade400,
+                                size: 20,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      loading: () => SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      error: (_, s) => Icon(
+                        LucideIcons.alertCircle,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: 12),
                 // Favorite button
                 isFavoriteAsync.when(
@@ -235,7 +330,7 @@ class DayDetailPage extends ConsumerWidget {
                       color: Colors.grey.shade400,
                     ),
                   ),
-                  error: (_, __) => Icon(
+                  error: (_, s) => Icon(
                     LucideIcons.heart,
                     color: Colors.grey.shade400,
                     size: 20,
@@ -394,31 +489,27 @@ class DayDetailPage extends ConsumerWidget {
                   onTap: () async {
                     if (isCurrentlyPlaying) {
                       // If already playing, show the player sheet
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            AudioPlayerSheet(recording: recording),
+                      // If already playing, navigate to player page
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(recording: recording),
                       );
                     } else {
                       // Start playing
                       ref.read(currentPlayingRecordingProvider.notifier).state =
                           recording.id;
-                      await audioService.play(
+                      // Don't await playback to ensure instant navigation
+                      audioService.play(
                         recording.audioUrl,
                         title: recording.prayer.arabicName,
                         artist: recording.sheikhName,
                       );
 
-                      // Show player sheet after starting playback
+                      // Navigate immediately
                       if (context.mounted) {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) =>
-                              AudioPlayerSheet(recording: recording),
+                        NavigationService.navigateTo(
+                          AppRoutes.audioPlayer,
+                          arguments: AudioPlayerArgs(recording: recording),
                         );
                       }
                     }
@@ -430,6 +521,7 @@ class DayDetailPage extends ConsumerWidget {
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
+                    alignment: Alignment.center,
                     child: Icon(
                       showPlayButton ? LucideIcons.play : LucideIcons.barChart2,
                       color: Colors.white,
@@ -466,13 +558,11 @@ class DayDetailPage extends ConsumerWidget {
 
                 return InkWell(
                   onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UploadRecordingPage(
-                          mosqueId: day.mosqueId,
-                          dayId: day.id,
-                        ),
+                    final result = await NavigationService.navigateTo(
+                      AppRoutes.uploadRecording,
+                      arguments: UploadRecordingArgs(
+                        mosqueId: day.mosqueId,
+                        dayId: day.id,
                       ),
                     );
 

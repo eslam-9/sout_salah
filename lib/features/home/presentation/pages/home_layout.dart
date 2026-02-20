@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/services/navigation_service.dart';
+import '../../../auth/presentation/providers/auth_controller.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+
 import 'mosques_page.dart';
 import 'downloads_page.dart';
 import 'settings_page.dart';
 import 'saved_recordings_page.dart';
 
-class HomeLayout extends StatefulWidget {
+class HomeLayout extends ConsumerStatefulWidget {
   const HomeLayout({super.key});
 
   @override
-  State<HomeLayout> createState() => _HomeLayoutState();
+  ConsumerState<HomeLayout> createState() => _HomeLayoutState();
 }
 
-class _HomeLayoutState extends State<HomeLayout> {
+class _HomeLayoutState extends ConsumerState<HomeLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
@@ -25,6 +31,15 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen for auth state changes
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next is AuthUnauthenticated) {
+        NavigationService.navigateAndRemoveUntil(
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
+    });
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(

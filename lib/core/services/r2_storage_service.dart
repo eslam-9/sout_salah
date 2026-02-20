@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import '../utils/app_logger.dart';
 
@@ -12,6 +12,7 @@ class R2StorageService {
   late final String _bucket;
   late final String _cdnUrl;
   final AppLogger _logger = AppLogger();
+  final Dio _dio = Dio();
 
   R2StorageService() {
     _endpoint = dotenv.env['R2_ENDPOINT']!;
@@ -23,25 +24,41 @@ class R2StorageService {
     _logger.i('R2StorageService initialized: bucket=$_bucket, cdn=$_cdnUrl');
   }
 
-  Future<String> uploadFile(String key, File file) async {
+  Future<String> uploadFile(
+    String key,
+    File file, {
+    void Function(double)? onProgress,
+  }) async {
     try {
       _logger.i('Uploading file to R2: $key');
 
       final fileBytes = await file.readAsBytes();
-      final url = Uri.parse('$_endpoint/$_bucket/$key');
+      // Encode key segments to ensure spaces and special chars are handled correctly
+      // matching S3 canonical URI requirements
+      final encodedKey = key.split('/').map(Uri.encodeComponent).join('/');
+      final url = '$_endpoint/$_bucket/$encodedKey';
 
       final headers = _generateHeaders(
         method: 'PUT',
-        path: '/$_bucket/$key',
+        path: '/$_bucket/$encodedKey',
         contentType: 'audio/mpeg',
         contentLength: fileBytes.length,
       );
 
-      final response = await http.put(url, headers: headers, body: fileBytes);
+      final response = await _dio.put(
+        url,
+        data: fileBytes,
+        options: Options(headers: headers, contentType: 'audio/mpeg'),
+        onSendProgress: (sent, total) {
+          if (total != -1 && onProgress != null) {
+            onProgress(sent / total);
+          }
+        },
+      );
 
       if (response.statusCode != 200) {
         throw Exception(
-          'Upload failed: ${response.statusCode} ${response.body}',
+          'Upload failed: ${response.statusCode} ${response.statusMessage} - ${response.data}',
         );
       }
 
@@ -58,17 +75,21 @@ class R2StorageService {
     try {
       _logger.i('Deleting file from R2: $key');
 
-      final url = Uri.parse('$_endpoint/$_bucket/$key');
+      final encodedKey = key.split('/').map(Uri.encodeComponent).join('/');
+      final url = '$_endpoint/$_bucket/$encodedKey';
       final headers = _generateHeaders(
         method: 'DELETE',
-        path: '/$_bucket/$key',
+        path: '/$_bucket/$encodedKey',
       );
 
-      final response = await http.delete(url, headers: headers);
+      final response = await _dio.delete(
+        url,
+        options: Options(headers: headers),
+      );
 
       if (response.statusCode != 204 && response.statusCode != 200) {
         throw Exception(
-          'Delete failed: ${response.statusCode} ${response.body}',
+          'Delete failed: ${response.statusCode} ${response.statusMessage}',
         );
       }
 
@@ -80,7 +101,8 @@ class R2StorageService {
   }
 
   String getPublicUrl(String key) {
-    return '$_cdnUrl/$key';
+    final encodedKey = key.split('/').map(Uri.encodeComponent).join('/');
+    return '$_cdnUrl/$encodedKey';
   }
 
   Map<String, String> _generateHeaders({

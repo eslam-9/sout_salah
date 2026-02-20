@@ -74,6 +74,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
     required String filePath,
     required int fileSize,
     int? duration,
+    void Function(double)? onProgress,
   }) async {
     try {
       final recording = await remoteDataSource.uploadRecording(
@@ -84,6 +85,7 @@ class MosqueRepositoryImpl implements MosqueRepository {
         filePath: filePath,
         fileSize: fileSize,
         duration: duration,
+        onProgress: onProgress,
       );
       return Right(recording);
     } on ServerException {
@@ -98,6 +100,21 @@ class MosqueRepositoryImpl implements MosqueRepository {
       return const Right(null);
     } on ServerException {
       return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addPublisher(
+    String mosqueId,
+    String email,
+  ) async {
+    try {
+      await remoteDataSource.addPublisher(mosqueId, email);
+      return const Right(null);
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
     }
   }
 }

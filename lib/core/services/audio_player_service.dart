@@ -1,6 +1,5 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Audio player service for playing recordings
 class AudioPlayerService {
@@ -70,13 +69,3 @@ class AudioPlayerService {
     _player.dispose();
   }
 }
-
-/// Provider for audio player service
-final audioPlayerServiceProvider = Provider<AudioPlayerService>((ref) {
-  final service = AudioPlayerService();
-  ref.onDispose(() => service.dispose());
-  return service;
-});
-
-/// Current playing recording ID provider
-final currentPlayingRecordingProvider = StateProvider<String?>((ref) => null);

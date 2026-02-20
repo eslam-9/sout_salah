@@ -3,21 +3,18 @@ import '../../../../core/models/downloaded_recording.dart';
 import '../../../../core/di/providers.dart';
 
 /// Provider for checking if a recording is downloaded
-final isDownloadedProvider = FutureProvider.family<bool, String>((
+final isDownloadedProvider = Provider.family<AsyncValue<bool>, String>((
   ref,
   recordingId,
-) async {
-  final downloadsService = ref.watch(downloadsServiceProvider);
-  return await downloadsService.isDownloaded(recordingId);
+) {
+  final downloadsAsync = ref.watch(downloadsStreamProvider);
+  return downloadsAsync.whenData(
+    (downloads) => downloads.any((d) => d.recordingId == recordingId),
+  );
 });
 
 /// Provider for all downloads
-final allDownloadsProvider = FutureProvider<List<DownloadedRecording>>((
-  ref,
-) async {
-  final downloadsService = ref.watch(downloadsServiceProvider);
-  return await downloadsService.getDownloads();
-});
+final allDownloadsProvider = downloadsStreamProvider;
 
 /// Provider for downloads stream
 final downloadsStreamProvider = StreamProvider<List<DownloadedRecording>>((

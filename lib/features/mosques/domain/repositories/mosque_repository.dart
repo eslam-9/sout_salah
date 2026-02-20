@@ -23,7 +23,9 @@ abstract class MosqueRepository {
     required String filePath,
     required int fileSize,
     int? duration,
+    void Function(double)? onProgress,
   });
 
   Future<Either<Failure, void>> deleteRecording(String recordingId);
+  Future<Either<Failure, void>> addPublisher(String mosqueId, String email);
 }
