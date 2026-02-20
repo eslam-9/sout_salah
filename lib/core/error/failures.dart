@@ -10,6 +10,9 @@ abstract class Failure extends Equatable {
 }
 
 // General Failures
-class ServerFailure extends Failure {}
+class ServerFailure extends Failure {
+  final String? message;
+  const ServerFailure([this.message]);
+}
 
 class CacheFailure extends Failure {}
