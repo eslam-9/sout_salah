@@ -94,9 +94,21 @@ class DayDetailPage extends ConsumerWidget {
       }
     }
 
-    // Standard prayers (excluding 'other')
+    final defaultPrayers = [
+      Prayer.fajr,
+      Prayer.isha,
+      Prayer.taraweeh1,
+      Prayer.taraweeh2,
+      Prayer.taraweeh3,
+      Prayer.taraweeh4,
+    ];
+
     final standardPrayers = Prayer.allPrayers
-        .where((p) => p != Prayer.other)
+        .where(
+          (p) =>
+              p != Prayer.other &&
+              (defaultPrayers.contains(p) || prayerGroups.containsKey(p)),
+        )
         .toList();
 
     return ListView(
