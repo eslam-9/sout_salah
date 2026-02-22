@@ -28,7 +28,7 @@ class HomeAppBar extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Search Bar
-          TextField(
+          TextField(textDirection: TextDirection.ltr, 
             textAlign: TextAlign.right,
             onChanged: onSearchChanged,
             decoration: InputDecoration(

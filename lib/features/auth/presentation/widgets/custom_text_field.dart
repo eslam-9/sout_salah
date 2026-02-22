@@ -31,9 +31,10 @@ class CustomTextField extends StatelessWidget {
       ),
       const SizedBox(height: 8),
       TextFormField(
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.left,
         controller: ctrl,
         obscureText: pass,
-        textAlign: TextAlign.end,
         validator: validator,
         decoration: InputDecoration(
           hintText: hint,

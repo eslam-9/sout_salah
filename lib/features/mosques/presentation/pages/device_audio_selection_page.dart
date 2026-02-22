@@ -132,7 +132,7 @@ class _DeviceAudioSelectionPageState
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
+            child: TextField(textDirection: TextDirection.ltr, 
               controller: _searchController,
               textAlign: TextAlign.right,
               style: TextStyle(),

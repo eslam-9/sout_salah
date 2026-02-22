@@ -65,10 +65,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
       appBar: AppBar(
         title: Text(
           'إضافة ناشر',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -99,6 +96,8 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
               ),
               const SizedBox(height: 24),
               TextFormField(
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.left,
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(

@@ -91,16 +91,16 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 const SizedBox(height: 8),
                 Text(
                   'أنشئ حسابك للوصول إلى جميع المميزات',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
 
                 // Username field (optional)
                 TextFormField(
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+
                   controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: 'اسم المستخدم (اختياري)',
@@ -118,6 +118,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                 // Email field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
+
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
@@ -145,6 +148,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                 // Password field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
+
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
@@ -182,6 +188,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                 // Confirm Password field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(

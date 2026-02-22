@@ -90,10 +90,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'حجم الملف يتجاوز 100 ميجابايت',
-              style: TextStyle(),
-            ),
+            content: Text('حجم الملف يتجاوز 100 ميجابايت', style: TextStyle()),
             backgroundColor: Colors.red,
           ),
         );
@@ -152,10 +149,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
             Navigator.pop(context, true);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'تم رفع التلاوة بنجاح',
-                  style: TextStyle(),
-                ),
+                content: Text('تم رفع التلاوة بنجاح', style: TextStyle()),
                 backgroundColor: AppColors.primary,
               ),
             );
@@ -200,10 +194,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                   ),
                   Text(
                     'رفع تلاوة جديدة',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(width: 48),
                 ],
@@ -230,14 +221,13 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        textDirection: TextDirection.rtl,
                         controller: _sheikhNameController,
                         textAlign: TextAlign.right,
                         style: TextStyle(),
                         decoration: InputDecoration(
                           hintText: 'أدخل اسم الشيخ',
-                          hintStyle: TextStyle(
-                            color: Colors.grey.shade400,
-                          ),
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
                           filled: true,
                           fillColor: Colors.grey.shade50,
                           border: OutlineInputBorder(
@@ -318,6 +308,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                         ),
                         const SizedBox(height: 8),
                         TextFormField(
+                          textDirection: TextDirection.rtl,
                           controller: _customPrayerController,
                           textAlign: TextAlign.right,
                           style: TextStyle(),

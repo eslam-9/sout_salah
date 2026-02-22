@@ -353,10 +353,7 @@ class DayDetailPage extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'في انتظار الرفع...',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade400,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
               ),
             ],
           ),
@@ -612,9 +609,7 @@ class DayDetailPage extends ConsumerWidget {
                               builder: (context) => AlertDialog(
                                 title: Text(
                                   'حذف التلاوة',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.right,
                                 ),
                                 content: Text(
@@ -628,9 +623,7 @@ class DayDetailPage extends ConsumerWidget {
                                         Navigator.pop(context, false),
                                     child: Text(
                                       'إلغاء',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                      ),
+                                      style: TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                   TextButton(
@@ -638,9 +631,7 @@ class DayDetailPage extends ConsumerWidget {
                                         Navigator.pop(context, true),
                                     child: Text(
                                       'حذف',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                      ),
+                                      style: TextStyle(color: Colors.red),
                                     ),
                                   ),
                                 ],
@@ -715,10 +706,7 @@ class DayDetailPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     recording.sheikhName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   ),
                 ],
               ),
@@ -833,10 +821,7 @@ class DayDetailPage extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'قارئ ضيف',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade400,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
               ),
             ],
           ),
@@ -924,10 +909,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
             Navigator.pop(context, _prayerNameController.text.trim());
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'تم إضافة التلاوة بنجاح',
-                  style: TextStyle(),
-                ),
+                content: Text('تم إضافة التلاوة بنجاح', style: TextStyle()),
                 backgroundColor: AppColors.primary,
               ),
             );
@@ -965,6 +947,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
+              textDirection: TextDirection.rtl,
               controller: _prayerNameController,
               textAlign: TextAlign.right,
               style: TextStyle(),
