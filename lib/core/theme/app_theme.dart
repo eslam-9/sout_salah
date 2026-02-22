@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   // Primary Greens
@@ -28,7 +27,13 @@ class AppColors {
 }
 
 class AppTextStyles {
-  static TextTheme get textTheme => GoogleFonts.cairoTextTheme();
+  static const String fontFamily = 'Rubik';
+
+  static TextTheme get textTheme => Typography.material2021().englishLike.apply(
+    fontFamily: fontFamily,
+    bodyColor: AppColors.black,
+    displayColor: AppColors.black,
+  );
 }
 
 class AppTheme {
@@ -43,6 +48,7 @@ class AppTheme {
         error: AppColors.error,
       ),
       useMaterial3: true,
+      fontFamily: AppTextStyles.fontFamily,
       textTheme: AppTextStyles.textTheme,
       scaffoldBackgroundColor: AppColors.greyLight,
       appBarTheme: const AppBarTheme(
@@ -54,7 +60,7 @@ class AppTheme {
           color: AppColors.black,
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Cairo',
+          fontFamily: AppTextStyles.fontFamily,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

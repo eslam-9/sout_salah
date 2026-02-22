@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -56,7 +55,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             const SizedBox(width: 8),
             Text(
               widget.mosque.name,
-              style: GoogleFonts.cairo(
+              style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -118,7 +117,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             children: [
               Text(
                 'الأيام $completedDays/$totalDays',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -126,7 +125,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
               ),
               Text(
                 'تقدمي',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -227,16 +226,17 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      day.dayNumber.toString(),
-                      style: GoogleFonts.cairo(
+                      _toArabicNumerals(day.dayNumber),
+                      style: TextStyle(
+                        fontFamily: 'Rubik',
                         color: textColor,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
                     ),
                     Text(
                       'اليوم',
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
                         color: textColor,
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
@@ -249,10 +249,11 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      day.dayNumber.toString(),
-                      style: GoogleFonts.cairo(
+                      _toArabicNumerals(day.dayNumber),
+                      style: TextStyle(
+                        fontFamily: 'Rubik',
                         color: textColor,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
                     ),
@@ -264,16 +265,27 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                   ],
                 )
               : Text(
-                  day.dayNumber.toString(),
-                  style: GoogleFonts.cairo(
+                  _toArabicNumerals(day.dayNumber),
+                  style: TextStyle(
+                    fontFamily: 'Rubik',
                     color: textColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                   ),
                 ),
         ),
       ),
     );
+  }
+
+  String _toArabicNumerals(int number) {
+    const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    String result = number.toString();
+    for (int i = 0; i < western.length; i++) {
+      result = result.replaceAll(western[i], arabic[i]);
+    }
+    return result;
   }
 
   Widget _buildLegendItem(String label, Color color) {
@@ -287,7 +299,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: GoogleFonts.cairo(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
       ],
     );

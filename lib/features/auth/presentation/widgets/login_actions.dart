@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'custom_button.dart';
 
 class LoginActions extends StatelessWidget {
@@ -25,7 +24,7 @@ class LoginActions extends StatelessWidget {
           const Expanded(child: Divider()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('أو', style: GoogleFonts.cairo(color: Colors.grey)),
+            child: Text('أو', style: TextStyle(color: Colors.grey)),
           ),
           const Expanded(child: Divider()),
         ],

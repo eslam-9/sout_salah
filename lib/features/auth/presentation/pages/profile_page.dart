@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_controller.dart';
@@ -18,7 +17,7 @@ class ProfilePage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'الملف الشخصي',
-          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -88,7 +87,7 @@ class ProfilePage extends ConsumerWidget {
                       icon: const Icon(LucideIcons.edit),
                       label: Text(
                         'تعديل الملف الشخصي',
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -147,11 +146,11 @@ class ProfilePage extends ConsumerWidget {
             children: [
               Text(
                 label,
-                style: GoogleFonts.cairo(fontSize: 12, color: Colors.grey[500]),
+                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
               ),
               Text(
                 value,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/favorites_provider.dart';
@@ -27,7 +26,7 @@ class SavedRecordingsPage extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'المحفوظات',
-          style: GoogleFonts.cairo(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -50,7 +49,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     'لا توجد تلاوات محفوظة',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey.shade600,
                     ),
@@ -58,7 +57,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Text(
                     'اضغط على ❤️ لحفظ التلاوات المفضلة',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade500,
                     ),
@@ -80,7 +79,7 @@ class SavedRecordingsPage extends ConsumerWidget {
         error: (error, stack) => Center(
           child: Text(
             'حدث خطأ في تحميل المحفوظات',
-            style: GoogleFonts.cairo(color: Colors.red),
+            style: TextStyle(color: Colors.red),
           ),
         ),
       ),
@@ -120,12 +119,12 @@ class SavedRecordingsPage extends ConsumerWidget {
                 builder: (context) => AlertDialog(
                   title: Text(
                     'إزالة من المحفوظات',
-                    style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.right,
                   ),
                   content: Text(
                     'هل تريد إزالة هذه التلاوة من المحفوظات؟',
-                    style: GoogleFonts.cairo(),
+                    style: TextStyle(),
                     textAlign: TextAlign.right,
                   ),
                   actions: [
@@ -133,14 +132,14 @@ class SavedRecordingsPage extends ConsumerWidget {
                       onPressed: () => Navigator.pop(context, false),
                       child: Text(
                         'إلغاء',
-                        style: GoogleFonts.cairo(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       child: Text(
                         'إزالة',
-                        style: GoogleFonts.cairo(color: Colors.red),
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
@@ -161,7 +160,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'تم إزالة التلاوة من المحفوظات',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: AppColors.primary,
                       ),
@@ -173,7 +172,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'فشل إزالة التلاوة',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: Colors.red,
                       ),
@@ -197,7 +196,7 @@ class SavedRecordingsPage extends ConsumerWidget {
               children: [
                 Text(
                   favorite.prayerName,
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -206,7 +205,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   favorite.sheikhName,
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
                   ),
@@ -215,7 +214,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     _formatFileSize(favorite.fileSize!),
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade500,
                     ),

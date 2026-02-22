@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/models/favorite_recording.dart';
@@ -31,7 +30,7 @@ class FavoriteAudioPlayerSheet extends ConsumerWidget {
             const SizedBox(width: 6),
             Text(
               'محفوظ للتشغيل بدون إنترنت',
-              style: GoogleFonts.cairo(
+              style: TextStyle(
                 fontSize: 12,
                 color: Colors.green.shade700,
                 fontWeight: FontWeight.w500,

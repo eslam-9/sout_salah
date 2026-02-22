@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AuthHeader extends StatelessWidget {
   const AuthHeader({super.key});
@@ -27,7 +26,7 @@ class AuthHeader extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           'أهلاً بك',
-          style: GoogleFonts.cairo(
+          style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: const Color(0xFF1B1B1B),
@@ -38,7 +37,7 @@ class AuthHeader extends StatelessWidget {
           child: Text(
             'قم بتسجيل الدخول للاستماع إلى تلاوات المسجد',
             textAlign: TextAlign.center,
-            style: GoogleFonts.cairo(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
         ),
         const Spacer(),

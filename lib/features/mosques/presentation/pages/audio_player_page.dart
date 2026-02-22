@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/di/providers.dart';
@@ -37,7 +36,7 @@ class AudioPlayerPage extends ConsumerWidget {
         ),
         title: Text(
           'تشغيل التلاوة',
-          style: GoogleFonts.cairo(
+          style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
@@ -73,7 +72,7 @@ class AudioPlayerPage extends ConsumerWidget {
               // Title and Sheikh name
               Text(
                 recording.prayer.arabicName,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -83,7 +82,7 @@ class AudioPlayerPage extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 recording.sheikhName,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w500,
@@ -152,7 +151,7 @@ class AudioPlayerPage extends ConsumerWidget {
                         children: [
                           Text(
                             _formatDuration(position),
-                            style: GoogleFonts.cairo(
+                            style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.bold,
@@ -160,7 +159,7 @@ class AudioPlayerPage extends ConsumerWidget {
                           ),
                           Text(
                             _formatDuration(duration),
-                            style: GoogleFonts.cairo(
+                            style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.bold,
@@ -291,25 +290,25 @@ class AudioPlayerPage extends ConsumerWidget {
                 builder: (context) => AlertDialog(
                   title: Text(
                     'حذف التنزيل',
-                    style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.right,
                   ),
                   content: Text(
                     'هل تريد حذف هذا التنزيل؟ سيتم حذف الملف من جهازك.',
-                    style: GoogleFonts.cairo(),
+                    style: TextStyle(),
                     textAlign: TextAlign.right,
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: Text('إلغاء', style: GoogleFonts.cairo()),
+                      child: Text('إلغاء', style: TextStyle()),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       style: TextButton.styleFrom(foregroundColor: Colors.red),
                       child: Text(
                         'حذف',
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -327,7 +326,7 @@ class AudioPlayerPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'تم حذف التنزيل',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: Colors.green,
                       ),
@@ -339,7 +338,7 @@ class AudioPlayerPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'فشل حذف التنزيل',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: Colors.red,
                       ),
@@ -375,7 +374,7 @@ class AudioPlayerPage extends ConsumerWidget {
                           ),
                           Text(
                             '${(snapshot.data! * 100).toInt()}',
-                            style: GoogleFonts.cairo(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,
@@ -407,7 +406,7 @@ class AudioPlayerPage extends ConsumerWidget {
                               const SizedBox(width: 16),
                               Text(
                                 'جاري التنزيل...',
-                                style: GoogleFonts.cairo(),
+                                style: TextStyle(),
                               ),
                             ],
                           ),
@@ -426,7 +425,7 @@ class AudioPlayerPage extends ConsumerWidget {
                           SnackBar(
                             content: Text(
                               'تم التنزيل بنجاح',
-                              style: GoogleFonts.cairo(),
+                              style: TextStyle(),
                             ),
                             backgroundColor: Colors.green,
                           ),
@@ -439,7 +438,7 @@ class AudioPlayerPage extends ConsumerWidget {
                           SnackBar(
                             content: Text(
                               'فشل التنزيل',
-                              style: GoogleFonts.cairo(),
+                              style: TextStyle(),
                             ),
                             backgroundColor: Colors.red,
                           ),
@@ -489,7 +488,7 @@ class AudioPlayerPage extends ConsumerWidget {
                 SnackBar(
                   content: Text(
                     'تم إزالة التلاوة من المحفوظات',
-                    style: GoogleFonts.cairo(),
+                    style: TextStyle(),
                   ),
                   backgroundColor: Colors.grey.shade700,
                 ),
@@ -507,7 +506,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   SnackBar(
                     content: Text(
                       '❤️ تم حفظ التلاوة',
-                      style: GoogleFonts.cairo(),
+                      style: TextStyle(),
                     ),
                     backgroundColor: AppColors.primary,
                   ),
@@ -520,7 +519,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   SnackBar(
                     content: Text(
                       'فشل حفظ التلاوة',
-                      style: GoogleFonts.cairo(),
+                      style: TextStyle(),
                     ),
                     backgroundColor: Colors.red,
                   ),

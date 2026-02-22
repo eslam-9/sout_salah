@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/mosque_controller.dart';
@@ -93,7 +92,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
       appBar: AppBar(
         title: Text(
           'إضافة مسجد جديد',
-          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -162,7 +161,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
                       )
                     : Text(
                         'إضافة المسجد',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -190,7 +189,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
       textAlign: TextAlign.right,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.cairo(),
+        labelStyle: TextStyle(),
         prefixIcon: Icon(icon, color: AppColors.primary),
         filled: true,
         fillColor: Colors.white,

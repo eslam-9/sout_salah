@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/ramadan_day.dart';
@@ -40,19 +39,34 @@ class DayDetailPage extends ConsumerWidget {
           children: [
             Text(
               'رمضان 1447',
-              style: GoogleFonts.cairo(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: AppColors.primary,
                 letterSpacing: 1.2,
               ),
             ),
-            Text(
-              'اليوم ${day.dayNumber}',
-              style: GoogleFonts.cairo(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'اليوم ',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  TextSpan(
+                    text: _toArabicNumerals(day.dayNumber),
+                    style: const TextStyle(
+                      fontFamily: 'Rubik',
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -126,7 +140,7 @@ class DayDetailPage extends ConsumerWidget {
                     icon: const Icon(LucideIcons.plus),
                     label: Text(
                       'إضافة تلاوة جديدة',
-                      style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -243,12 +257,12 @@ class DayDetailPage extends ConsumerWidget {
                       builder: (context) => AlertDialog(
                         title: Text(
                           'حذف التلاوة',
-                          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                           textAlign: TextAlign.right,
                         ),
                         content: Text(
                           'هل أنت متأكد من حذف هذه التلاوة؟',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                           textAlign: TextAlign.right,
                         ),
                         actions: [
@@ -256,14 +270,14 @@ class DayDetailPage extends ConsumerWidget {
                             onPressed: () => Navigator.pop(context, false),
                             child: Text(
                               'إلغاء',
-                              style: GoogleFonts.cairo(color: Colors.grey),
+                              style: TextStyle(color: Colors.grey),
                             ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
                             child: Text(
                               'حذف',
-                              style: GoogleFonts.cairo(color: Colors.red),
+                              style: TextStyle(color: Colors.red),
                             ),
                           ),
                         ],
@@ -285,7 +299,7 @@ class DayDetailPage extends ConsumerWidget {
                               SnackBar(
                                 content: Text(
                                   'فشل حذف التلاوة',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                 ),
                                 backgroundColor: Colors.red,
                               ),
@@ -301,7 +315,7 @@ class DayDetailPage extends ConsumerWidget {
                               SnackBar(
                                 content: Text(
                                   'تم حذف التلاوة بنجاح',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                 ),
                                 backgroundColor: AppColors.primary,
                               ),
@@ -330,7 +344,7 @@ class DayDetailPage extends ConsumerWidget {
                 recording.prayer == Prayer.other
                     ? (recording.customPrayerName ?? 'أخرى')
                     : recording.prayer.arabicName,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -339,7 +353,7 @@ class DayDetailPage extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'في انتظار الرفع...',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade400,
                 ),
@@ -412,7 +426,7 @@ class DayDetailPage extends ConsumerWidget {
                                     ),
                                     Text(
                                       '${(snapshot.data! * 100).toInt()}',
-                                      style: GoogleFonts.cairo(
+                                      style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.primary,
@@ -438,7 +452,7 @@ class DayDetailPage extends ConsumerWidget {
                                       SnackBar(
                                         content: Text(
                                           'فشل التنزيل: $e',
-                                          style: GoogleFonts.cairo(),
+                                          style: TextStyle(),
                                         ),
                                         backgroundColor: Colors.red,
                                       ),
@@ -485,7 +499,7 @@ class DayDetailPage extends ConsumerWidget {
                             SnackBar(
                               content: Text(
                                 'تم إزالة التلاوة من المحفوظات',
-                                style: GoogleFonts.cairo(),
+                                style: TextStyle(),
                               ),
                               backgroundColor: Colors.grey.shade700,
                             ),
@@ -513,7 +527,7 @@ class DayDetailPage extends ConsumerWidget {
                                     SizedBox(width: 12),
                                     Text(
                                       'جاري تحميل التلاوة...',
-                                      style: GoogleFonts.cairo(),
+                                      style: TextStyle(),
                                     ),
                                   ],
                                 ),
@@ -531,7 +545,7 @@ class DayDetailPage extends ConsumerWidget {
                               SnackBar(
                                 content: Text(
                                   '❤️ تم حفظ التلاوة',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                 ),
                                 backgroundColor: AppColors.primary,
                               ),
@@ -544,7 +558,7 @@ class DayDetailPage extends ConsumerWidget {
                               SnackBar(
                                 content: Text(
                                   'فشل حفظ التلاوة',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                 ),
                                 backgroundColor: Colors.red,
                               ),
@@ -598,14 +612,14 @@ class DayDetailPage extends ConsumerWidget {
                               builder: (context) => AlertDialog(
                                 title: Text(
                                   'حذف التلاوة',
-                                  style: GoogleFonts.cairo(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.right,
                                 ),
                                 content: Text(
                                   'هل أنت متأكد من حذف هذه التلاوة؟',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                   textAlign: TextAlign.right,
                                 ),
                                 actions: [
@@ -614,7 +628,7 @@ class DayDetailPage extends ConsumerWidget {
                                         Navigator.pop(context, false),
                                     child: Text(
                                       'إلغاء',
-                                      style: GoogleFonts.cairo(
+                                      style: TextStyle(
                                         color: Colors.grey,
                                       ),
                                     ),
@@ -624,7 +638,7 @@ class DayDetailPage extends ConsumerWidget {
                                         Navigator.pop(context, true),
                                     child: Text(
                                       'حذف',
-                                      style: GoogleFonts.cairo(
+                                      style: TextStyle(
                                         color: Colors.red,
                                       ),
                                     ),
@@ -647,7 +661,7 @@ class DayDetailPage extends ConsumerWidget {
                                       SnackBar(
                                         content: Text(
                                           'فشل حذف التلاوة',
-                                          style: GoogleFonts.cairo(),
+                                          style: TextStyle(),
                                         ),
                                         backgroundColor: Colors.red,
                                       ),
@@ -661,7 +675,7 @@ class DayDetailPage extends ConsumerWidget {
                                       SnackBar(
                                         content: Text(
                                           'تم حذف التلاوة بنجاح',
-                                          style: GoogleFonts.cairo(),
+                                          style: TextStyle(),
                                         ),
                                         backgroundColor: AppColors.primary,
                                       ),
@@ -692,7 +706,7 @@ class DayDetailPage extends ConsumerWidget {
                     recording.prayer == Prayer.other
                         ? (recording.customPrayerName ?? 'أخرى')
                         : recording.prayer.arabicName,
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -701,7 +715,7 @@ class DayDetailPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     recording.sheikhName,
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade600,
                     ),
@@ -810,7 +824,7 @@ class DayDetailPage extends ConsumerWidget {
             children: [
               Text(
                 prayer.arabicName,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -819,7 +833,7 @@ class DayDetailPage extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'قارئ ضيف',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade400,
                 ),
@@ -843,6 +857,16 @@ class DayDetailPage extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  String _toArabicNumerals(int number) {
+    const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    String result = number.toString();
+    for (int i = 0; i < western.length; i++) {
+      result = result.replaceAll(western[i], arabic[i]);
+    }
+    return result;
   }
 }
 
@@ -890,7 +914,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
               SnackBar(
                 content: Text(
                   'فشل إضافة التلاوة: ${failure.toString()}',
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                 ),
                 backgroundColor: Colors.red,
               ),
@@ -902,7 +926,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
               SnackBar(
                 content: Text(
                   'تم إضافة التلاوة بنجاح',
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                 ),
                 backgroundColor: AppColors.primary,
               ),
@@ -914,7 +938,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('حدث خطأ غير متوقع', style: GoogleFonts.cairo()),
+            content: Text('حدث خطأ غير متوقع', style: TextStyle()),
             backgroundColor: Colors.red,
           ),
         );
@@ -931,7 +955,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
     return AlertDialog(
       title: Text(
         'إضافة تلاوة جديدة',
-        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold),
         textAlign: TextAlign.right,
       ),
       content: Form(
@@ -943,11 +967,11 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
             TextFormField(
               controller: _prayerNameController,
               textAlign: TextAlign.right,
-              style: GoogleFonts.cairo(),
+              style: TextStyle(),
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'اسم التلاوة (مثل: تهجد)',
-                labelStyle: GoogleFonts.cairo(),
+                labelStyle: TextStyle(),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -965,7 +989,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: Text('إلغاء', style: GoogleFonts.cairo(color: Colors.grey)),
+          child: Text('إلغاء', style: TextStyle(color: Colors.grey)),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _addPrayer,
@@ -984,7 +1008,7 @@ class _AddPrayerDialogState extends ConsumerState<_AddPrayerDialog> {
                     color: Colors.white,
                   ),
                 )
-              : Text('إضافة', style: GoogleFonts.cairo(color: Colors.white)),
+              : Text('إضافة', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

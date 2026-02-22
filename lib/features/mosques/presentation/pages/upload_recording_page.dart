@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import '../../../../core/utils/app_logger.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -77,7 +76,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
       if (_selectedFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('الرجاء اختيار ملف صوتي', style: GoogleFonts.cairo()),
+            content: Text('الرجاء اختيار ملف صوتي', style: TextStyle()),
             backgroundColor: Colors.red,
           ),
         );
@@ -93,7 +92,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
           SnackBar(
             content: Text(
               'حجم الملف يتجاوز 100 ميجابايت',
-              style: GoogleFonts.cairo(),
+              style: TextStyle(),
             ),
             backgroundColor: Colors.red,
           ),
@@ -143,7 +142,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
               SnackBar(
                 content: Text(
                   'فشل رفع التلاوة: ${failure.toString()}',
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                 ),
                 backgroundColor: Colors.red,
               ),
@@ -155,7 +154,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
               SnackBar(
                 content: Text(
                   'تم رفع التلاوة بنجاح',
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                 ),
                 backgroundColor: AppColors.primary,
               ),
@@ -168,7 +167,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('فشل رفع التلاوة: $e', style: GoogleFonts.cairo()),
+            content: Text('فشل رفع التلاوة: $e', style: TextStyle()),
             backgroundColor: Colors.red,
           ),
         );
@@ -201,7 +200,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                   ),
                   Text(
                     'رفع تلاوة جديدة',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -223,7 +222,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       // Sheikh name input
                       Text(
                         'اسم القارئ',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade700,
                         ),
@@ -233,10 +232,10 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       TextFormField(
                         controller: _sheikhNameController,
                         textAlign: TextAlign.right,
-                        style: GoogleFonts.cairo(),
+                        style: TextStyle(),
                         decoration: InputDecoration(
                           hintText: 'أدخل اسم الشيخ',
-                          hintStyle: GoogleFonts.cairo(
+                          hintStyle: TextStyle(
                             color: Colors.grey.shade400,
                           ),
                           filled: true,
@@ -263,7 +262,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       // Prayer selection
                       Text(
                         'عنوان التلاوة',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade700,
                         ),
@@ -298,7 +297,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                             alignment: Alignment.centerRight,
                             child: Text(
                               prayer.arabicName,
-                              style: GoogleFonts.cairo(),
+                              style: TextStyle(),
                               textAlign: TextAlign.right,
                             ),
                           );
@@ -311,7 +310,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                         const SizedBox(height: 16),
                         Text(
                           'اسم التلاوة',
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade700,
                           ),
@@ -321,7 +320,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                         TextFormField(
                           controller: _customPrayerController,
                           textAlign: TextAlign.right,
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                           readOnly:
                               widget.pendingRecordingId !=
                               null, // Make read-only if editing pending slot
@@ -398,7 +397,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                                   children: [
                                     Text(
                                       _selectedFile!.path.split('/').last,
-                                      style: GoogleFonts.cairo(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                       ),
                                       maxLines: 1,
@@ -417,7 +416,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                                       const SizedBox(height: 4),
                                       Text(
                                         '${(_uploadProgress * 100).toInt()}%',
-                                        style: GoogleFonts.cairo(
+                                        style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey.shade600,
                                         ),
@@ -457,7 +456,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
                       const SizedBox(width: 12),
                       Text(
                         'مشاركة التلاوة',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -497,7 +496,7 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
             const SizedBox(height: 12),
             Text(
               label,
-              style: GoogleFonts.cairo(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade700,
