@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/permission_checker.dart';
@@ -83,7 +82,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                   const SizedBox(height: 16),
                                   Text(
                                     'فشل تحميل المساجد',
-                                    style: GoogleFonts.cairo(
+                                    style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black87,
@@ -92,7 +91,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'تأكد من اتصالك بالإنترنت',
-                                    style: GoogleFonts.cairo(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey.shade600,
                                     ),
@@ -114,7 +113,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                     icon: const Icon(LucideIcons.refreshCw),
                                     label: Text(
                                       'إعادة المحاولة',
-                                      style: GoogleFonts.cairo(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -141,7 +140,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                   _searchQuery.isEmpty
                                       ? 'لا توجد مساجد متاحة حاليا'
                                       : 'لا نتائج لهذا البحث',
-                                  style: GoogleFonts.cairo(),
+                                  style: TextStyle(),
                                 ),
                               ),
                             ),
@@ -185,7 +184,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
               icon: const Icon(LucideIcons.plus),
               label: Text(
                 'إضافة مسجد',
-                style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             )
           : null,

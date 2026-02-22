@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -87,7 +86,7 @@ class _DeviceAudioSelectionPageState
             SnackBar(
               content: Text(
                 'يجب تفعيل الصلاحيات من الإعدادات',
-                style: GoogleFonts.cairo(),
+                style: TextStyle(),
               ),
               action: SnackBarAction(
                 label: 'الإعدادات',
@@ -117,7 +116,7 @@ class _DeviceAudioSelectionPageState
       appBar: AppBar(
         title: Text(
           'اختر التلاوة',
-          style: GoogleFonts.cairo(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -133,13 +132,13 @@ class _DeviceAudioSelectionPageState
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
+            child: TextField(textDirection: TextDirection.ltr, 
               controller: _searchController,
               textAlign: TextAlign.right,
-              style: GoogleFonts.cairo(),
+              style: TextStyle(),
               decoration: InputDecoration(
                 hintText: 'بحث عن تلاوة...',
-                hintStyle: GoogleFonts.cairo(color: Colors.grey.shade400),
+                hintStyle: TextStyle(color: Colors.grey.shade400),
                 prefixIcon: const Icon(LucideIcons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.grey.shade100,
@@ -165,7 +164,7 @@ class _DeviceAudioSelectionPageState
                   const SizedBox(height: 16),
                   Text(
                     'الرجاء منح صلاحية الوصول للملفات',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade700,
                     ),
@@ -181,7 +180,7 @@ class _DeviceAudioSelectionPageState
                     ),
                     child: Text(
                       'منح الصلاحية',
-                      style: GoogleFonts.cairo(color: Colors.white),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -199,7 +198,7 @@ class _DeviceAudioSelectionPageState
                   return Center(
                     child: Text(
                       'حدث خطأ في تحميل الملفات',
-                      style: GoogleFonts.cairo(),
+                      style: TextStyle(),
                     ),
                   );
                 }
@@ -214,7 +213,7 @@ class _DeviceAudioSelectionPageState
                   return Center(
                     child: Text(
                       'لا توجد ملفات صوتية',
-                      style: GoogleFonts.cairo(),
+                      style: TextStyle(),
                     ),
                   );
                 }
@@ -235,7 +234,7 @@ class _DeviceAudioSelectionPageState
                   return Center(
                     child: Text(
                       'لا توجد تلاوات تطابق بحثك',
-                      style: GoogleFonts.cairo(),
+                      style: TextStyle(),
                     ),
                   );
                 }
@@ -276,7 +275,7 @@ class _DeviceAudioSelectionPageState
                         ),
                         title: Text(
                           song.displayNameWOExt,
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -287,7 +286,7 @@ class _DeviceAudioSelectionPageState
                           children: [
                             Text(
                               _formatDuration(song.duration),
-                              style: GoogleFonts.cairo(
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade600,
                               ),
@@ -301,7 +300,7 @@ class _DeviceAudioSelectionPageState
                             Expanded(
                               child: Text(
                                 '${(song.size / (1024 * 1024)).toStringAsFixed(2)} MB',
-                                style: GoogleFonts.cairo(
+                                style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey.shade600,
                                 ),

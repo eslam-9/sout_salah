@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/di/providers.dart';
@@ -74,7 +73,7 @@ class BaseAudioSheet extends ConsumerWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -84,7 +83,7 @@ class BaseAudioSheet extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       subtitle,
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
                         fontSize: 16,
                         color: AppColors.primary,
                         fontWeight: FontWeight.w500,
@@ -156,7 +155,7 @@ class BaseAudioSheet extends ConsumerWidget {
                       children: [
                         Text(
                           _formatDuration(position),
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.bold,
@@ -164,7 +163,7 @@ class BaseAudioSheet extends ConsumerWidget {
                         ),
                         Text(
                           _formatDuration(duration),
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.bold,

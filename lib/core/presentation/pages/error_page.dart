@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/app_theme.dart';
 import '../../routes/app_routes.dart';
@@ -40,7 +39,7 @@ class ErrorPage extends StatelessWidget {
                 // Error Title
                 Text(
                   'الصفحة غير موجودة',
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -52,7 +51,7 @@ class ErrorPage extends StatelessWidget {
                 // Error Description
                 Text(
                   'عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها',
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey.shade600,
                   ),
@@ -71,7 +70,7 @@ class ErrorPage extends StatelessWidget {
                       ),
                       child: Text(
                         'المسار: $routeName',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade700,
                         ),
@@ -104,7 +103,7 @@ class ErrorPage extends StatelessWidget {
                   icon: const Icon(LucideIcons.home),
                   label: Text(
                     'العودة للرئيسية',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

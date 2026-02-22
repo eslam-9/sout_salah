@@ -151,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: FadeTransition(
                     opacity: _textFadeAnimation,
                     child: const Text(
-                      'صوت صلاح',
+                      'صوت صلاه',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,

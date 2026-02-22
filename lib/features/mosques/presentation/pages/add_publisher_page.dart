@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/validators/validators.dart';
@@ -66,10 +65,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
       appBar: AppBar(
         title: Text(
           'إضافة ناشر',
-          style: GoogleFonts.cairo(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -87,7 +83,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
             children: [
               Text(
                 'أدخل البريد الإلكتروني للناشر',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
@@ -96,10 +92,12 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
               const SizedBox(height: 8),
               Text(
                 'يجب أن يكون المستخدم مسجلاً بالفعل في التطبيق.',
-                style: GoogleFonts.cairo(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
               const SizedBox(height: 24),
               TextFormField(
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.left,
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
@@ -133,7 +131,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
                         )
                       : Text(
                           'إضافة الناشر',
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

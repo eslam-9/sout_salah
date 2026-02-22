@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 
@@ -19,7 +18,7 @@ class HomeAppBar extends StatelessWidget {
             children: [
               Text(
                 'المساجد',
-                style: GoogleFonts.cairo(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
@@ -29,12 +28,12 @@ class HomeAppBar extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Search Bar
-          TextField(
+          TextField(textDirection: TextDirection.ltr, 
             textAlign: TextAlign.right,
             onChanged: onSearchChanged,
             decoration: InputDecoration(
               hintText: '...ابحث عن مسجد',
-              hintStyle: GoogleFonts.cairo(color: Colors.grey[400]),
+              hintStyle: TextStyle(color: Colors.grey[400]),
               border: InputBorder.none,
               suffixIcon: const Icon(
                 LucideIcons.search,
@@ -80,7 +79,7 @@ class FilterChips extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.cairo(
+        style: TextStyle(
           color: isSelected ? Colors.white : Colors.grey[600],
           fontWeight: FontWeight.bold,
         ),

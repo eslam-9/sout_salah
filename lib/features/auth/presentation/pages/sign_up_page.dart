@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/auth_controller.dart';
 import '../bloc/auth_state.dart';
@@ -82,7 +81,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 const SizedBox(height: 20),
                 Text(
                   'إنشاء حساب جديد',
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
@@ -92,20 +91,20 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 const SizedBox(height: 8),
                 Text(
                   'أنشئ حسابك للوصول إلى جميع المميزات',
-                  style: GoogleFonts.cairo(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
 
                 // Username field (optional)
                 TextFormField(
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+
                   controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: 'اسم المستخدم (اختياري)',
-                    labelStyle: GoogleFonts.cairo(),
+                    labelStyle: TextStyle(),
                     prefixIcon: const Icon(LucideIcons.user),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -113,17 +112,20 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                 ),
                 const SizedBox(height: 16),
 
                 // Email field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
+
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: 'البريد الإلكتروني',
-                    labelStyle: GoogleFonts.cairo(),
+                    labelStyle: TextStyle(),
                     prefixIcon: const Icon(LucideIcons.mail),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -131,7 +133,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'الرجاء إدخال البريد الإلكتروني';
@@ -146,11 +148,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                 // Password field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
+
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'كلمة المرور',
-                    labelStyle: GoogleFonts.cairo(),
+                    labelStyle: TextStyle(),
                     prefixIcon: const Icon(LucideIcons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -168,7 +173,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'الرجاء إدخال كلمة المرور';
@@ -183,11 +188,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
                 // Confirm Password field
                 TextFormField(
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.left,
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'تأكيد كلمة المرور',
-                    labelStyle: GoogleFonts.cairo(),
+                    labelStyle: TextStyle(),
                     prefixIcon: const Icon(LucideIcons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -207,7 +214,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
-                  style: GoogleFonts.cairo(),
+                  style: TextStyle(),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'الرجاء تأكيد كلمة المرور';
@@ -245,7 +252,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         )
                       : Text(
                           'إنشاء حساب',
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -259,13 +266,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   children: [
                     Text(
                       'لديك حساب بالفعل؟',
-                      style: GoogleFonts.cairo(color: Colors.grey.shade600),
+                      style: TextStyle(color: Colors.grey.shade600),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'تسجيل الدخول',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),

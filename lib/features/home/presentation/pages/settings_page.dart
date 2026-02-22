@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -32,7 +31,7 @@ class SettingsPage extends ConsumerWidget {
         children: [
           Text(
             'الإعدادات',
-            style: GoogleFonts.cairo(
+            style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
@@ -99,7 +98,7 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(width: 16),
             Text(
               title,
-              style: GoogleFonts.cairo(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: textColor,

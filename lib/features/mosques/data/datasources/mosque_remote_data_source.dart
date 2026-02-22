@@ -70,7 +70,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     try {
       final response = await supabaseClient
           .from('ramadan_days')
-          .select()
+          .select('*, recordings(count)')
           .eq('mosque_id', mosqueId)
           .order('day_number', ascending: true);
 

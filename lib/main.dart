@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Sout Salah',
+      title: 'صوت صلاه',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
 

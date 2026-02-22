@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/downloads_provider.dart';
@@ -33,7 +32,7 @@ class DownloadsPage extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       'التنزيلات',
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -74,7 +73,7 @@ class DownloadsPage extends ConsumerWidget {
                           const SizedBox(height: 16),
                           Text(
                             'لا توجد تنزيلات',
-                            style: GoogleFonts.cairo(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade600,
@@ -83,7 +82,7 @@ class DownloadsPage extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             'قم بتنزيل التسجيلات للاستماع بدون إنترنت',
-                            style: GoogleFonts.cairo(
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade500,
                             ),
@@ -107,7 +106,7 @@ class DownloadsPage extends ConsumerWidget {
                 error: (error, stack) => Center(
                   child: Text(
                     'حدث خطأ في تحميل التنزيلات',
-                    style: GoogleFonts.cairo(color: Colors.red),
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
               ),
@@ -151,25 +150,25 @@ class DownloadsPage extends ConsumerWidget {
                 builder: (context) => AlertDialog(
                   title: Text(
                     'حذف التنزيل',
-                    style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.right,
                   ),
                   content: Text(
                     'هل تريد حذف هذا التنزيل؟ سيتم حذف الملف من جهازك.',
-                    style: GoogleFonts.cairo(),
+                    style: TextStyle(),
                     textAlign: TextAlign.right,
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: Text('إلغاء', style: GoogleFonts.cairo()),
+                      child: Text('إلغاء', style: TextStyle()),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       style: TextButton.styleFrom(foregroundColor: Colors.red),
                       child: Text(
                         'حذف',
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -188,7 +187,7 @@ class DownloadsPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'تم حذف التنزيل',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: Colors.green,
                       ),
@@ -200,7 +199,7 @@ class DownloadsPage extends ConsumerWidget {
                       SnackBar(
                         content: Text(
                           'فشل حذف التنزيل',
-                          style: GoogleFonts.cairo(),
+                          style: TextStyle(),
                         ),
                         backgroundColor: Colors.red,
                       ),
@@ -224,7 +223,7 @@ class DownloadsPage extends ConsumerWidget {
               children: [
                 Text(
                   download.prayerName,
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -234,7 +233,7 @@ class DownloadsPage extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   download.sheikhName,
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
                     fontSize: 14,
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
@@ -245,7 +244,7 @@ class DownloadsPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     '${(download.fileSize! / 1024 / 1024).toStringAsFixed(1)} MB',
-                    style: GoogleFonts.cairo(
+                    style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade600,
                     ),

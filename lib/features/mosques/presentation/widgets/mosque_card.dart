@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../mosques/domain/entities/mosque.dart';
@@ -40,7 +39,7 @@ class MosqueCard extends StatelessWidget {
                   children: [
                     Text(
                       mosque.name,
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -52,7 +51,7 @@ class MosqueCard extends StatelessWidget {
                       children: [
                         Text(
                           mosque.location ?? 'Unknown Location',
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
                           ),
@@ -126,7 +125,7 @@ class MosqueCard extends StatelessWidget {
         children: [
           Text(
             text,
-            style: GoogleFonts.cairo(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: textColor,
