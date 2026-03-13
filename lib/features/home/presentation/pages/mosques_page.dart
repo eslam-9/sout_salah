@@ -30,9 +30,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
   Future<void> _checkPermissions() async {
     final canAdd = await ref.read(permissionCheckerProvider).canAddMosque();
     if (mounted) {
-      setState(() {
-        _canAddMosque = canAdd;
-      });
+      setState(() => _canAddMosque = canAdd);
     }
   }
 
@@ -45,16 +43,12 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
     final state = ref.watch(mosqueProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB), // Light Grey Background
+      backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
         child: Column(
           children: [
             HomeAppBar(
-              onSearchChanged: (query) {
-                setState(() {
-                  _searchQuery = query;
-                });
-              },
+              onSearchChanged: (query) => setState(() => _searchQuery = query),
             ),
             Expanded(
               child: RefreshIndicator(
@@ -62,9 +56,23 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                 color: AppColors.primary,
                 child: Builder(
                   builder: (context) {
+                    // Loading — always wrap in ListView so RefreshIndicator resolves
                     if (state is MosqueLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is MosqueError) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    // Error — wrap in ListView so pull-to-retry works
+                    if (state is MosqueError) {
                       return ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
@@ -80,7 +88,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                     color: Colors.grey.shade400,
                                   ),
                                   const SizedBox(height: 16),
-                                  Text(
+                                  const Text(
                                     'فشل تحميل المساجد',
                                     style: TextStyle(
                                       fontSize: 20,
@@ -111,7 +119,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                       ),
                                     ),
                                     icon: const Icon(LucideIcons.refreshCw),
-                                    label: Text(
+                                    label: const Text(
                                       'إعادة المحاولة',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -124,10 +132,13 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                           ),
                         ],
                       );
-                    } else if (state is MosqueLoaded) {
-                      final mosques = state.mosques.where((mosque) {
-                        return mosque.name.contains(_searchQuery);
-                      }).toList();
+                    }
+
+                    // Loaded
+                    if (state is MosqueLoaded) {
+                      final mosques = state.mosques
+                          .where((m) => m.name.contains(_searchQuery))
+                          .toList();
 
                       if (mosques.isEmpty) {
                         return ListView(
@@ -140,34 +151,28 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                                   _searchQuery.isEmpty
                                       ? 'لا توجد مساجد متاحة حاليا'
                                       : 'لا نتائج لهذا البحث',
-                                  style: TextStyle(),
                                 ),
                               ),
                             ),
                           ],
                         );
                       }
+
                       return ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(16),
                         itemCount: mosques.length,
-                        itemBuilder: (context, index) {
-                          return MosqueCard(
-                            mosque: mosques[index],
-                            onTap: () {
-                              NavigationService.navigateTo(
-                                AppRoutes.mosqueDetail,
-                                arguments: mosques[index],
-                              );
-                            },
-                          );
-                        },
+                        itemBuilder: (context, index) => MosqueCard(
+                          mosque: mosques[index],
+                          onTap: () => NavigationService.navigateTo(
+                            AppRoutes.mosqueDetail,
+                            arguments: mosques[index],
+                          ),
+                        ),
                       );
                     }
-                    return ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [SizedBox()],
-                    );
+
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
@@ -177,12 +182,11 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
       ),
       floatingActionButton: _canAddMosque
           ? FloatingActionButton.extended(
-              onPressed: () {
-                NavigationService.navigateTo(AppRoutes.addMosque);
-              },
+              onPressed: () =>
+                  NavigationService.navigateTo(AppRoutes.addMosque),
               backgroundColor: AppColors.primary,
               icon: const Icon(LucideIcons.plus),
-              label: Text(
+              label: const Text(
                 'إضافة مسجد',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),

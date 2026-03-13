@@ -11,6 +11,7 @@ import '../services/downloads_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
 import '../services/startup_service.dart';
+import '../constants/app_constants.dart';
 
 // Import Feature Data Sources
 import '../../features/mosques/data/datasources/mosque_remote_data_source.dart';
@@ -44,9 +45,9 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(
     () => Dio(
       BaseOptions(
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(minutes: 5),
-        sendTimeout: const Duration(minutes: 5),
+        connectTimeout: NetworkConfig.standardTimeout,
+        receiveTimeout: NetworkConfig.standardTimeout,
+        sendTimeout: NetworkConfig.standardTimeout,
       ),
     ),
   );
