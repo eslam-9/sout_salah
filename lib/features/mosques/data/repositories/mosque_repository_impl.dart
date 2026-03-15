@@ -25,11 +25,43 @@ class MosqueRepositoryImpl implements MosqueRepository {
 
   @override
   Future<Either<Failure, List<RamadanDay>>> getRamadanDays(
+    String mosqueId, {
+    int? month,
+    int? year,
+  }) async {
+    try {
+      final remoteDays = await remoteDataSource.getRamadanDays(
+        mosqueId,
+        month: month,
+        year: year,
+      );
+      return Right(remoteDays);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addMonth({
+    required String mosqueId,
+    required int month,
+    required int year,
+  }) async {
+    try {
+      await remoteDataSource.addMonth(mosqueId: mosqueId, month: month, year: year);
+      return const Right(null);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Map<String, int>>>> getAvailableMonths(
     String mosqueId,
   ) async {
     try {
-      final remoteDays = await remoteDataSource.getRamadanDays(mosqueId);
-      return Right(remoteDays);
+      final months = await remoteDataSource.getAvailableMonths(mosqueId);
+      return Right(months);
     } on ServerException {
       return Left(ServerFailure());
     }

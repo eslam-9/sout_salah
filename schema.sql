@@ -32,10 +32,12 @@ create table public.ramadan_days (
   id uuid default uuid_generate_v4() not null primary key,
   mosque_id uuid references public.mosques(id) on delete cascade not null,
   day_number integer not null,
+  month integer not null,
+  year integer not null,
   status text default 'red'::text not null, -- 'red', 'yellow', 'green'
   active boolean default true not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(mosque_id, day_number)
+  unique(mosque_id, day_number, month, year)
 );
 
 -- RECORDINGS TABLE
@@ -116,7 +118,11 @@ create policy "Mosque admins/publishers can insert days."
     exists (
       select 1 from public.mosques 
       where id = mosque_id 
-      and (admin_id = auth.uid() or exists (select 1 from public.mosque_publishers where mosque_id = mosques.id and publisher_id = auth.uid()))
+      and (
+        admin_id = auth.uid() 
+        or exists (select 1 from public.mosque_publishers where mosque_id = mosques.id and publisher_id = auth.uid())
+        or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+      )
     )
   );
 

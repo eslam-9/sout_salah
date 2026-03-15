@@ -7,7 +7,19 @@ import '../entities/prayer.dart';
 
 abstract class MosqueRepository {
   Future<Either<Failure, List<Mosque>>> getMosques();
-  Future<Either<Failure, List<RamadanDay>>> getRamadanDays(String mosqueId);
+  Future<Either<Failure, List<RamadanDay>>> getRamadanDays(
+    String mosqueId, {
+    int? month,
+    int? year,
+  });
+  Future<Either<Failure, void>> addMonth({
+    required String mosqueId,
+    required int month,
+    required int year,
+  });
+  Future<Either<Failure, List<Map<String, int>>>> getAvailableMonths(
+    String mosqueId,
+  );
   Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId);
   Future<Either<Failure, Mosque>> addMosque({
     required String name,

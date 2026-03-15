@@ -6,8 +6,14 @@ import '../repositories/mosque_repository.dart';
 
 class GetRamadanDaysParams {
   final String mosqueId;
+  final int? month;
+  final int? year;
 
-  const GetRamadanDaysParams({required this.mosqueId});
+  const GetRamadanDaysParams({
+    required this.mosqueId,
+    this.month,
+    this.year,
+  });
 }
 
 class GetRamadanDaysUseCase
@@ -20,6 +26,10 @@ class GetRamadanDaysUseCase
   Future<Either<Failure, List<RamadanDay>>> call(
     GetRamadanDaysParams params,
   ) async {
-    return await repository.getRamadanDays(params.mosqueId);
+    return await repository.getRamadanDays(
+      params.mosqueId,
+      month: params.month,
+      year: params.year,
+    );
   }
 }
