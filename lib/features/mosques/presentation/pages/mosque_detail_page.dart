@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/mosque.dart';
 import '../../domain/entities/ramadan_day.dart';
@@ -12,7 +12,6 @@ import '../providers/month_year.dart';
 import '../../../../features/auth/presentation/providers/auth_controller.dart';
 import '../../../../features/auth/presentation/bloc/auth_state.dart';
 import 'add_publisher_page.dart';
-import 'dart:ui';
 
 class MosqueDetailPage extends ConsumerStatefulWidget {
   final Mosque mosque;
@@ -439,7 +438,10 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
 
     return GestureDetector(
       onTap: () {
-        NavigationService.navigateTo(AppRoutes.dayDetail, arguments: day);
+        NavigationService.navigateTo(
+          AppRoutes.dayDetail,
+          arguments: DayDetailArgs(day: day),
+        );
       },
       child: Container(
         decoration: BoxDecoration(

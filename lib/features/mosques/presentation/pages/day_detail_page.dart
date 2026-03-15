@@ -168,6 +168,38 @@ class DayDetailPage extends ConsumerWidget {
             );
           },
         ),
+
+        // Add Schedule Button (for everyone)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              NavigationService.navigateTo(
+                AppRoutes.daySchedule,
+                arguments: DayScheduleArgs(
+                  dayId: day.id,
+                  mosqueId: day.mosqueId,
+                  dayNumber: day.dayNumber,
+                ),
+              );
+            },
+            icon: const Icon(LucideIcons.calendar),
+            label: const Text(
+              'عرض جدول الشيوخ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.primary,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppColors.primary, width: 2),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

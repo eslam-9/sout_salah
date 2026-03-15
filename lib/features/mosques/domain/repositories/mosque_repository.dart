@@ -4,6 +4,7 @@ import '../entities/mosque.dart';
 import '../entities/ramadan_day.dart';
 import '../entities/recording.dart';
 import '../entities/prayer.dart';
+import '../entities/day_schedule_entry.dart';
 
 abstract class MosqueRepository {
   Future<Either<Failure, List<Mosque>>> getMosques();
@@ -46,4 +47,23 @@ abstract class MosqueRepository {
     required String dayId,
     required String prayerName,
   });
+
+  // Day Schedule Methods
+  Future<Either<Failure, List<DayScheduleEntry>>> getDaySchedule(String dayId);
+  Future<Either<Failure, DayScheduleEntry>> addScheduleEntry({
+    required String dayId,
+    required String mosqueId,
+    required String salah,
+    required String shikh,
+    String? comments,
+    int sortOrder = 0,
+  });
+  Future<Either<Failure, DayScheduleEntry>> updateScheduleEntry({
+    required String entryId,
+    required String salah,
+    required String shikh,
+    String? comments,
+  });
+  Future<Either<Failure, void>> deleteScheduleEntry(String entryId);
 }
+

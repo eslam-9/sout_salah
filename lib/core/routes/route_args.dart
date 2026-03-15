@@ -45,3 +45,16 @@ class DayDetailArgs {
 
   DayDetailArgs({required this.day});
 }
+
+/// Route arguments for day schedule page
+class DayScheduleArgs {
+  final String dayId;
+  final String mosqueId;
+  final int dayNumber;
+
+  DayScheduleArgs({
+    required this.dayId,
+    required this.mosqueId,
+    required this.dayNumber,
+  });
+}

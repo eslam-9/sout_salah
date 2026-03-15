@@ -17,6 +17,7 @@ class AppRoutes {
   // Mosque routes
   static const String mosqueDetail = '/mosque-detail';
   static const String dayDetail = '/day-detail';
+  static const String daySchedule = '/day-schedule';
   static const String uploadRecording = '/upload-recording';
   static const String addMosque = '/add-mosque';
   static const String deviceAudioSelection = '/device-audio-selection';
@@ -34,6 +35,7 @@ class AppRoutes {
     home,
     mosqueDetail,
     dayDetail,
+    daySchedule,
     downloads,
     savedRecordings,
     settings,

@@ -21,8 +21,6 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _logoController;
   late final AnimationController _textController;
 
-  late final Animation<double> _logoFadeAnimation;
-  late final Animation<double> _logoScaleAnimation;
   late final Animation<double> _textFadeAnimation;
   late final Animation<Offset> _textSlideAnimation;
 
@@ -44,15 +42,6 @@ class _SplashScreenState extends State<SplashScreen>
     _logoController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
-    );
-
-    _logoFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeOut));
-
-    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
     );
 
     // Text animation controller
