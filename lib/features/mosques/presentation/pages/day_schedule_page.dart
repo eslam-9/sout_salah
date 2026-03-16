@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/day_schedule_table_widget.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/permission_checker.dart';
+import '../../../../core/services/notification_service.dart';
 
 class DaySchedulePage extends ConsumerWidget {
   final String dayId;
   final String mosqueId;
   final int dayNumber;
+  final int month;
 
   const DaySchedulePage({
     super.key,
     required this.dayId,
     required this.mosqueId,
     required this.dayNumber,
+    required this.month,
   });
 
   String _toArabicNumerals(int number) {
@@ -47,12 +52,73 @@ class DaySchedulePage extends ConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: DayScheduleTableWidget(
-            dayId: dayId,
-            mosqueId: mosqueId,
-          ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: DayScheduleTableWidget(
+                dayId: dayId,
+                mosqueId: mosqueId,
+              ),
+            ),
+            FutureBuilder<bool>(
+              future: ref.watch(
+                permissionCheckerProvider.select(
+                  (checker) => checker.canShowUploadButton(mosqueId),
+                ),
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data == true) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await NotificationService.sendNotification(
+                            type: 'day_schedule',
+                            data: {
+                              'dayId': dayId,
+                              'mosqueId': mosqueId,
+                              'dayNumber': dayNumber,
+                              'month': month,
+                            },
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('تم إرسال الإشعار بنجاح', style: TextStyle()),
+                                backgroundColor: AppColors.primary,
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(LucideIcons.send, color: Colors.white),
+                        label: const Text(
+                          'إرسال إشعار بالجدول',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );

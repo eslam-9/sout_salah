@@ -120,6 +120,7 @@ class AppRouter {
             dayId: args.dayId,
             mosqueId: args.mosqueId,
             dayNumber: args.dayNumber,
+            month: args.month,
           ),
           settings,
         );
@@ -143,6 +144,8 @@ class AppRouter {
           UploadRecordingPage(
             mosqueId: args.mosqueId,
             dayId: args.dayId,
+            dayNumber: args.dayNumber,
+            month: args.month,
             prayer: args.prayer,
             customPrayerName: args.customPrayerName,
             pendingRecordingId: args.pendingRecordingId,

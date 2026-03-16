@@ -180,6 +180,7 @@ class DayDetailPage extends ConsumerWidget {
                   dayId: day.id,
                   mosqueId: day.mosqueId,
                   dayNumber: day.dayNumber,
+                  month: day.month,
                 ),
               );
             },
@@ -261,6 +262,8 @@ class DayDetailPage extends ConsumerWidget {
                       arguments: UploadRecordingArgs(
                         mosqueId: recording.mosqueId,
                         dayId: recording.dayId,
+                        dayNumber: day.dayNumber,
+                        month: day.month,
                         prayer: recording.prayer,
                         customPrayerName: recording.customPrayerName,
                         pendingRecordingId: recording.id,
@@ -832,6 +835,8 @@ class DayDetailPage extends ConsumerWidget {
                       arguments: UploadRecordingArgs(
                         mosqueId: day.mosqueId,
                         dayId: day.id,
+                        dayNumber: day.dayNumber,
+                        month: day.month,
                         prayer: prayer, // Pass the prayer
                       ),
                     );

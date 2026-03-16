@@ -10,10 +10,13 @@ import '../../../../core/services/navigation_service.dart';
 import '../../domain/entities/prayer.dart';
 import '../../domain/usecases/upload_recording_params.dart';
 import '../providers/mosque_data_providers.dart';
+import '../../../../core/services/notification_service.dart';
 
 class UploadRecordingPage extends ConsumerStatefulWidget {
   final String mosqueId;
   final String dayId;
+  final int dayNumber;
+  final int month;
   final String? pendingRecordingId;
   final Prayer? prayer;
   final String? customPrayerName;
@@ -22,6 +25,8 @@ class UploadRecordingPage extends ConsumerStatefulWidget {
     super.key,
     required this.mosqueId,
     required this.dayId,
+    required this.dayNumber,
+    required this.month,
     this.prayer,
     this.customPrayerName,
     this.pendingRecordingId,
@@ -146,6 +151,21 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
             );
           },
           (recording) {
+            // Trigger push notification to other users
+            NotificationService.sendNotification(
+              type: 'new_recording',
+              data: {
+                'salah': _selectedPrayer == Prayer.other 
+                  ? _customPrayerController.text.trim()
+                  : _selectedPrayer!.arabicName,
+                'shikh': _sheikhNameController.text.trim(),
+                'dayId': widget.dayId,
+                'mosqueId': widget.mosqueId,
+                'dayNumber': widget.dayNumber,
+                'month': widget.month,
+              },
+            );
+
             Navigator.pop(context, true);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

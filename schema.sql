@@ -77,6 +77,17 @@ create table public.mosque_publishers (
   unique(mosque_id, publisher_id)
 );
 
+-- FCM TOKENS TABLE
+create table public.fcm_tokens (
+  id uuid default uuid_generate_v4() not null primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  token text not null,
+  platform text default 'android'::text,  -- 'android' or 'ios'
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, token)
+);
+
 -- STORAGE BUCKETS SETUP (Row Level Security for Storage)
 -- Assuming 'recordings' bucket exists in Supabase Storage
 
@@ -89,6 +100,7 @@ alter table public.ramadan_days enable row level security;
 alter table public.recordings enable row level security;
 alter table public.mosque_publishers enable row level security;
 alter table public.day_schedule enable row level security;
+alter table public.fcm_tokens enable row level security;
 
 -- PROFILES POLICIES
 create policy "Public profiles are viewable by everyone."
@@ -202,6 +214,11 @@ create policy "Mosque admins can remove publishers"
       and admin_id = auth.uid()
     )
   );
+
+-- FCM TOKENS POLICIES
+create policy "Users can manage own tokens"
+  on public.fcm_tokens for all
+  using ( auth.uid() = user_id );
 
 -- FUNCTIONS & TRIGGERS
 

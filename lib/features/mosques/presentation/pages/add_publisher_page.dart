@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/validators/validators.dart';
 import '../providers/mosque_data_providers.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AddPublisherPage extends ConsumerStatefulWidget {
   final String mosqueId;
@@ -46,6 +47,15 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
         );
       },
       (_) {
+        // Trigger push notification to the added publisher
+        NotificationService.sendNotification(
+          type: 'publisher_added',
+          data: {
+            'publisherEmail': _emailController.text.trim(),
+            'mosqueId': widget.mosqueId,
+          },
+        );
+
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
