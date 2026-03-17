@@ -32,10 +32,12 @@ create table public.ramadan_days (
   id uuid default uuid_generate_v4() not null primary key,
   mosque_id uuid references public.mosques(id) on delete cascade not null,
   day_number integer not null,
+  month integer not null,
+  year integer not null,
   status text default 'red'::text not null, -- 'red', 'yellow', 'green'
   active boolean default true not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(mosque_id, day_number)
+  unique(mosque_id, day_number, month, year)
 );
 
 -- RECORDINGS TABLE
@@ -52,6 +54,18 @@ create table public.recordings (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- DAY SCHEDULE TABLE
+create table public.day_schedule (
+  id uuid default uuid_generate_v4() not null primary key,
+  day_id uuid references public.ramadan_days(id) on delete cascade not null,
+  mosque_id uuid references public.mosques(id) on delete cascade not null,
+  salah text not null,        -- e.g. "الفجر", "التراويح"
+  shikh text not null,        -- sheikh name
+  comments text,                 -- optional notes
+  sort_order integer default 0,    -- row ordering
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- MOSQUE PUBLISHERS TABLE
 -- Junction table for linking publishers to mosques (if multiple publishers per mosque are allowed)
 create table public.mosque_publishers (
@@ -61,6 +75,17 @@ create table public.mosque_publishers (
   added_by uuid references public.profiles(id) on delete set null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   unique(mosque_id, publisher_id)
+);
+
+-- FCM TOKENS TABLE
+create table public.fcm_tokens (
+  id uuid default uuid_generate_v4() not null primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  token text not null,
+  platform text default 'android'::text,  -- 'android' or 'ios'
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, token)
 );
 
 -- STORAGE BUCKETS SETUP (Row Level Security for Storage)
@@ -74,6 +99,8 @@ alter table public.mosques enable row level security;
 alter table public.ramadan_days enable row level security;
 alter table public.recordings enable row level security;
 alter table public.mosque_publishers enable row level security;
+alter table public.day_schedule enable row level security;
+alter table public.fcm_tokens enable row level security;
 
 -- PROFILES POLICIES
 create policy "Public profiles are viewable by everyone."
@@ -116,7 +143,11 @@ create policy "Mosque admins/publishers can insert days."
     exists (
       select 1 from public.mosques 
       where id = mosque_id 
-      and (admin_id = auth.uid() or exists (select 1 from public.mosque_publishers where mosque_id = mosques.id and publisher_id = auth.uid()))
+      and (
+        admin_id = auth.uid() 
+        or exists (select 1 from public.mosque_publishers where mosque_id = mosques.id and publisher_id = auth.uid())
+        or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+      )
     )
   );
 
@@ -138,6 +169,26 @@ create policy "Mosque admins/publishers can upload recordings."
 create policy "Publishers can delete their own recordings"
   on public.recordings for delete
   using ( publisher_id = auth.uid() );
+
+-- DAY SCHEDULE POLICIES
+create policy "All users can view schedule"
+  on public.day_schedule for select
+  using ( true );
+
+create policy "Admins and publishers can manage schedule"
+  on public.day_schedule for all
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    )
+    or
+    exists (
+      select 1 from public.mosque_publishers
+      where mosque_id = day_schedule.mosque_id
+      and publisher_id = auth.uid()
+    )
+  );
 
 -- MOSQUE PUBLISHERS POLICIES
 create policy "Mosque publishers viewable by everyone"
@@ -163,6 +214,11 @@ create policy "Mosque admins can remove publishers"
       and admin_id = auth.uid()
     )
   );
+
+-- FCM TOKENS POLICIES
+create policy "Users can manage own tokens"
+  on public.fcm_tokens for all
+  using ( auth.uid() = user_id );
 
 -- FUNCTIONS & TRIGGERS
 

@@ -4,10 +4,23 @@ import '../entities/mosque.dart';
 import '../entities/ramadan_day.dart';
 import '../entities/recording.dart';
 import '../entities/prayer.dart';
+import '../entities/day_schedule_entry.dart';
 
 abstract class MosqueRepository {
   Future<Either<Failure, List<Mosque>>> getMosques();
-  Future<Either<Failure, List<RamadanDay>>> getRamadanDays(String mosqueId);
+  Future<Either<Failure, List<RamadanDay>>> getRamadanDays(
+    String mosqueId, {
+    int? month,
+    int? year,
+  });
+  Future<Either<Failure, void>> addMonth({
+    required String mosqueId,
+    required int month,
+    required int year,
+  });
+  Future<Either<Failure, List<Map<String, int>>>> getAvailableMonths(
+    String mosqueId,
+  );
   Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId);
   Future<Either<Failure, Mosque>> addMosque({
     required String name,
@@ -34,4 +47,23 @@ abstract class MosqueRepository {
     required String dayId,
     required String prayerName,
   });
+
+  // Day Schedule Methods
+  Future<Either<Failure, List<DayScheduleEntry>>> getDaySchedule(String dayId);
+  Future<Either<Failure, DayScheduleEntry>> addScheduleEntry({
+    required String dayId,
+    required String mosqueId,
+    required String salah,
+    required String shikh,
+    String? comments,
+    int sortOrder = 0,
+  });
+  Future<Either<Failure, DayScheduleEntry>> updateScheduleEntry({
+    required String entryId,
+    required String salah,
+    required String shikh,
+    String? comments,
+  });
+  Future<Either<Failure, void>> deleteScheduleEntry(String entryId);
 }
+

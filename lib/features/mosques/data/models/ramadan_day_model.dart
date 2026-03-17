@@ -7,6 +7,8 @@ class RamadanDayModel extends RamadanDay {
     required super.dayNumber,
     required super.status,
     required super.active,
+    required super.month,
+    required super.year,
   });
 
   factory RamadanDayModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,8 @@ class RamadanDayModel extends RamadanDay {
       dayNumber: json['day_number'],
       status: calculatedStatus,
       active: json['active'] ?? true,
+      month: json['month'] ?? 9,
+      year: json['year'] ?? 1445,
     );
   }
 }

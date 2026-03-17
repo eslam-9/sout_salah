@@ -13,12 +13,39 @@ class MosqueDetailPage extends ConsumerStatefulWidget {
 }
 
 class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
+  MonthYear? selectedMonth;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(ramadanDaysProvider.notifier).loadDays(widget.mosque.id);
     });
+  }
+
+  Future<void> _loadInitialData() async {
+    // 1. Fetch available months
+    final months = await ref.read(
+      availableMonthsProvider(widget.mosque.id).future,
+    );
+
+    if (months.isNotEmpty) {
+      // Pick the last month as default (most recent)
+      setState(() {
+        selectedMonth = months.last;
+      });
+      // 2. Load days for that month
+      ref
+          .read(ramadanDaysProvider.notifier)
+          .loadDays(
+            widget.mosque.id,
+            month: selectedMonth!.month,
+            year: selectedMonth!.year,
+          );
+    } else {
+      // Fallback if no months exist (default to Ramadan 1445 for backward compatibility)
+      ref.read(ramadanDaysProvider.notifier).loadDays(widget.mosque.id);
+    }
   }
 
   @override

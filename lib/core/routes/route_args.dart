@@ -7,6 +7,8 @@ import '../../features/mosques/domain/entities/prayer.dart';
 class UploadRecordingArgs {
   final String mosqueId;
   final String dayId;
+  final int dayNumber;
+  final int month;
   final Prayer? prayer;
   final String? customPrayerName;
   final String? pendingRecordingId;
@@ -14,6 +16,8 @@ class UploadRecordingArgs {
   UploadRecordingArgs({
     required this.mosqueId,
     required this.dayId,
+    required this.dayNumber,
+    required this.month,
     this.prayer,
     this.customPrayerName,
     this.pendingRecordingId,
@@ -44,4 +48,19 @@ class DayDetailArgs {
   final RamadanDay day;
 
   DayDetailArgs({required this.day});
+}
+
+/// Route arguments for day schedule page
+class DayScheduleArgs {
+  final String dayId;
+  final String mosqueId;
+  final int dayNumber;
+  final int month;
+
+  DayScheduleArgs({
+    required this.dayId,
+    required this.mosqueId,
+    required this.dayNumber,
+    required this.month,
+  });
 }

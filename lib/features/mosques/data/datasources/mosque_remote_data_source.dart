@@ -5,12 +5,15 @@ import '../../../../core/services/r2_storage_service.dart';
 import '../models/mosque_model.dart';
 import '../models/ramadan_day_model.dart';
 import '../models/recording_model.dart';
+import '../models/day_schedule_entry_model.dart';
 import '../../domain/entities/prayer.dart';
 import 'dart:io';
 
 abstract class MosqueRemoteDataSource {
   Future<List<MosqueModel>> getMosques();
-  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId);
+  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId, {int? month, int? year});
+  Future<void> addMonth({required String mosqueId, required int month, required int year});
+  Future<List<Map<String, int>>> getAvailableMonths(String mosqueId);
   Future<List<RecordingModel>> getDayRecordings(String dayId);
   Future<MosqueModel> addMosque({
     required String name,
@@ -35,6 +38,24 @@ abstract class MosqueRemoteDataSource {
     required String dayId,
     required String prayerName,
   });
+  
+  // Day Schedule Methods
+  Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId);
+  Future<DayScheduleEntryModel> addScheduleEntry({
+    required String dayId,
+    required String mosqueId,
+    required String salah,
+    required String shikh,
+    String? comments,
+    int sortOrder = 0,
+  });
+  Future<DayScheduleEntryModel> updateScheduleEntry({
+    required String entryId,
+    required String salah,
+    required String shikh,
+    String? comments,
+  });
+  Future<void> deleteScheduleEntry(String entryId);
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
@@ -65,14 +86,22 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   }
 
   @override
-  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId) async {
-    logger.i('Fetching Ramadan days for mosque: $mosqueId');
+  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId, {int? month, int? year}) async {
+    logger.i('Fetching Ramadan days for mosque: $mosqueId, month: $month, year: $year');
     try {
-      final response = await supabaseClient
+      var query = supabaseClient
           .from('ramadan_days')
           .select('*, recordings(count)')
-          .eq('mosque_id', mosqueId)
-          .order('day_number', ascending: true);
+          .eq('mosque_id', mosqueId);
+          
+      if (month != null) {
+        query = query.eq('month', month);
+      }
+      if (year != null) {
+        query = query.eq('year', year);
+      }
+
+      final response = await query.order('day_number', ascending: true);
 
       final data = response as List<dynamic>;
       logger.i('Fetched ${data.length} days');
@@ -106,6 +135,72 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     } catch (e, stackTrace) {
       logger.e('Error adding mosque', e, stackTrace);
       logger.e('Error details: ${e.toString()}');
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> addMonth({
+    required String mosqueId,
+    required int month,
+    required int year,
+  }) async {
+    logger.i('Adding new month: $month/$year for mosque $mosqueId');
+    try {
+      final List<Map<String, dynamic>> daysToInsert = [];
+      for (int i = 1; i <= 30; i++) {
+        daysToInsert.add({
+          'mosque_id': mosqueId,
+          'day_number': i,
+          'month': month,
+          'year': year,
+          'status': 'red',
+          'active': true,
+        });
+      }
+
+      await supabaseClient
+          .from('ramadan_days')
+          .insert(daysToInsert);
+          
+      logger.i('Successfully added 30 days for month $month/$year');
+    } catch (e, stackTrace) {
+      logger.e('Error adding month', e, stackTrace);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<Map<String, int>>> getAvailableMonths(String mosqueId) async {
+    logger.i('Fetching available months for mosque: $mosqueId');
+    try {
+      final response = await supabaseClient
+          .from('ramadan_days')
+          .select('month, year')
+          .eq('mosque_id', mosqueId);
+          
+      final data = response as List<dynamic>;
+      final uniqueMonths = <String, Map<String, int>>{};
+      
+      for (var row in data) {
+        final m = row['month'] as int?;
+        final y = row['year'] as int?;
+        if (m != null && y != null) {
+          uniqueMonths['$y-$m'] = {'month': m, 'year': y};
+        }
+      }
+      
+      final result = uniqueMonths.values.toList();
+      // Sort ascending by year then month
+      result.sort((a, b) {
+        final yearCmp = a['year']!.compareTo(b['year']!);
+        if (yearCmp != 0) return yearCmp;
+        return a['month']!.compareTo(b['month']!);
+      });
+      
+      return result;
+    } catch (e, stackTrace) {
+      logger.e('Error fetching available months', e, stackTrace);
       throw ServerException();
     }
   }
@@ -297,4 +392,99 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       throw ServerException();
     }
   }
+
+  // --- Day Schedule Methods ---
+
+  @override
+  Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId) async {
+    logger.i('Fetching schedule for day: $dayId');
+    try {
+      final response = await supabaseClient
+          .from('day_schedule')
+          .select()
+          .eq('day_id', dayId)
+          .order('sort_order', ascending: true)
+          .order('created_at', ascending: true);
+
+      final data = response as List<dynamic>;
+      logger.i('Fetched ${data.length} schedule entries');
+      return data.map((json) => DayScheduleEntryModel.fromJson(json)).toList();
+    } catch (e, stackTrace) {
+      logger.e('Error fetching day schedule', e, stackTrace);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<DayScheduleEntryModel> addScheduleEntry({
+    required String dayId,
+    required String mosqueId,
+    required String salah,
+    required String shikh,
+    String? comments,
+    int sortOrder = 0,
+  }) async {
+    logger.i('Adding schedule entry for $salah by $shikh');
+    try {
+      final response = await supabaseClient
+          .from('day_schedule')
+          .insert({
+            'day_id': dayId,
+            'mosque_id': mosqueId,
+            'salah': salah,
+            'shikh': shikh,
+            ...?comments != null ? {'comments': comments} : null,
+            'sort_order': sortOrder,
+          })
+          .select()
+          .single();
+
+      logger.i('Schedule entry added successfully');
+      return DayScheduleEntryModel.fromJson(response);
+    } catch (e, stackTrace) {
+      logger.e('Error adding schedule entry', e, stackTrace);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<DayScheduleEntryModel> updateScheduleEntry({
+    required String entryId,
+    required String salah,
+    required String shikh,
+    String? comments,
+  }) async {
+    logger.i('Updating schedule entry: $entryId');
+    try {
+      final response = await supabaseClient
+          .from('day_schedule')
+          .update({
+            'salah': salah,
+            'shikh': shikh,
+            'comments': comments,
+          })
+          .eq('id', entryId)
+          .select()
+          .single();
+
+      logger.i('Schedule entry updated successfully');
+      return DayScheduleEntryModel.fromJson(response);
+    } catch (e, stackTrace) {
+      logger.e('Error updating schedule entry', e, stackTrace);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> deleteScheduleEntry(String entryId) async {
+    logger.i('Deleting schedule entry: $entryId');
+    try {
+      await supabaseClient.from('day_schedule').delete().eq('id', entryId);
+      logger.i('Schedule entry deleted successfully');
+    } catch (e, stackTrace) {
+      logger.e('Error deleting schedule entry', e, stackTrace);
+      throw ServerException();
+    }
+  }
 }
+

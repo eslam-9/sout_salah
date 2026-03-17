@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/usecases/get_ramadan_days_usecase.dart';
+import '../../domain/usecases/add_month_usecase.dart';
 import '../../domain/entities/ramadan_day.dart';
 import 'mosque_data_providers.dart';
+import 'month_year.dart';
 import '../../../../core/error/failures.dart';
 
 // State for Ramadan Days
@@ -32,9 +34,12 @@ final getRamadanDaysUseCaseProvider = Provider(
 // StateNotifier for Ramadan Days
 class RamadanDaysNotifier extends StateNotifier<RamadanDaysState> {
   final GetRamadanDaysUseCase getRamadanDaysUseCase;
+  final AddMonthUseCase addMonthUseCase;
 
-  RamadanDaysNotifier({required this.getRamadanDaysUseCase})
-    : super(RamadanDaysInitial());
+  RamadanDaysNotifier({
+    required this.getRamadanDaysUseCase,
+    required this.addMonthUseCase,
+  }) : super(RamadanDaysInitial());
 
   Future<void> loadDays(String mosqueId) async {
     final currentState = state;
@@ -50,7 +55,7 @@ class RamadanDaysNotifier extends StateNotifier<RamadanDaysState> {
     }
 
     final result = await getRamadanDaysUseCase(
-      GetRamadanDaysParams(mosqueId: mosqueId),
+      GetRamadanDaysParams(mosqueId: mosqueId, month: month, year: year),
     );
     result.fold(
       (failure) => state = RamadanDaysError(
@@ -58,6 +63,17 @@ class RamadanDaysNotifier extends StateNotifier<RamadanDaysState> {
         previousData: oldData,
       ),
       (days) => state = RamadanDaysLoadedState(days),
+    );
+  }
+
+  Future<bool> addMonth(String mosqueId, int month, int year) async {
+    final result = await addMonthUseCase(
+      AddMonthParams(mosqueId: mosqueId, month: month, year: year),
+    );
+    
+    return result.fold(
+      (failure) => false,
+      (_) => true,
     );
   }
 
@@ -77,5 +93,16 @@ final ramadanDaysProvider =
     StateNotifierProvider<RamadanDaysNotifier, RamadanDaysState>((ref) {
       return RamadanDaysNotifier(
         getRamadanDaysUseCase: ref.watch(getRamadanDaysUseCaseProvider),
+        addMonthUseCase: ref.watch(addMonthUseCaseProvider),
       );
     });
+
+// Provider for fetching available months for a mosque
+final availableMonthsProvider = FutureProvider.family<List<MonthYear>, String>((ref, mosqueId) async {
+  final repo = ref.watch(mosqueRepositoryProvider);
+  final result = await repo.getAvailableMonths(mosqueId);
+  return result.fold(
+    (failure) => [],
+    (months) => months.map((m) => MonthYear(month: m['month']!, year: m['year']!)).toList(),
+  );
+});

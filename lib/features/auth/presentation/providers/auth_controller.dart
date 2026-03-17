@@ -9,6 +9,7 @@ import '../bloc/auth_state.dart'; // Reuse existing state classes
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/usecases/sign_up_params.dart';
+import '../../../../core/services/notification_service.dart';
 
 // UseCases Providers (or direct usage)
 final signInUseCaseProvider = Provider(
@@ -69,7 +70,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await getCurrentUserUseCase(NoParams());
     result.fold(
       (failure) => state = AuthUnauthenticated(),
-      (user) => state = AuthAuthenticated(user: user),
+      (user) {
+        NotificationService.registerToken(user.id);
+        state = AuthAuthenticated(user: user);
+      },
     );
   }
 
@@ -88,6 +92,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
         sharedPreferences.setBool('is_guest_mode', false);
+        NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
     );
@@ -106,6 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
         sharedPreferences.setBool('is_guest_mode', false);
+        NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
     );
@@ -121,12 +127,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
         sharedPreferences.setBool('is_guest_mode', false);
+        NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
     );
   }
 
   Future<void> signOut() async {
+    // Remove token before logging out
+    if (state is AuthAuthenticated) {
+      final userId = (state as AuthAuthenticated).user.id;
+      NotificationService.removeToken(userId);
+    }
+    
     state = AuthLoading();
 
     // Check if we are in guest mode

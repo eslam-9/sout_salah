@@ -12,6 +12,7 @@ import 'core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
 import 'core/routes/app_routes.dart';
 import 'core/widgets/startup_check_wrapper.dart';
+import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,10 @@ void main() async {
 
   // Initialize Service Locator
   await di.setupServiceLocator();
+
+  // Initialize Notification Service for Push Notifications
+  GetIt.I<AppLogger>().i('Initializing NotificationService...');
+  await NotificationService.initialize();
 
   // Initialize JustAudioBackground for background audio and notifications
   try {

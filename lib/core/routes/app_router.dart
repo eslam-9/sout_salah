@@ -8,12 +8,12 @@ import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/pages/profile_page.dart';
 import '../../features/mosques/presentation/pages/mosque_detail_page.dart';
 import '../../features/mosques/presentation/pages/day_detail_page.dart';
+import '../../features/mosques/presentation/pages/day_schedule_page.dart';
 import '../../features/mosques/presentation/pages/add_mosque_page.dart';
 import '../../features/mosques/presentation/pages/upload_recording_page.dart';
 import '../../features/mosques/presentation/pages/device_audio_selection_page.dart';
 import '../../features/mosques/presentation/pages/audio_player_page.dart';
 import '../../features/mosques/domain/entities/mosque.dart';
-import '../../features/mosques/domain/entities/ramadan_day.dart';
 
 import '../presentation/pages/error_page.dart';
 import '../presentation/pages/splash_screen.dart';
@@ -95,15 +95,33 @@ class AppRouter {
 
       case AppRoutes.dayDetail:
         // Validate arguments
-        if (settings.arguments is! RamadanDay) {
+        if (settings.arguments is! DayDetailArgs) {
           GetIt.I<AppLogger>().e(
             '❌ AppRouter: Invalid arguments for dayDetail',
           );
           return _errorRoute(settings);
         }
-        final day = settings.arguments as RamadanDay;
+        final args = settings.arguments as DayDetailArgs;
         return RouteTransitions.slideTransition(
-          DayDetailPage(day: day),
+          DayDetailPage(day: args.day),
+          settings,
+        );
+
+      case AppRoutes.daySchedule:
+        if (settings.arguments is! DayScheduleArgs) {
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for daySchedule',
+          );
+          return _errorRoute(settings);
+        }
+        final args = settings.arguments as DayScheduleArgs;
+        return RouteTransitions.slideTransition(
+          DaySchedulePage(
+            dayId: args.dayId,
+            mosqueId: args.mosqueId,
+            dayNumber: args.dayNumber,
+            month: args.month,
+          ),
           settings,
         );
 
@@ -126,6 +144,8 @@ class AppRouter {
           UploadRecordingPage(
             mosqueId: args.mosqueId,
             dayId: args.dayId,
+            dayNumber: args.dayNumber,
+            month: args.month,
             prayer: args.prayer,
             customPrayerName: args.customPrayerName,
             pendingRecordingId: args.pendingRecordingId,
