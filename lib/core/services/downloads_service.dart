@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/downloaded_recording.dart';
 import '../../features/mosques/domain/entities/recording.dart';
 import '../utils/app_logger.dart';
+import '../constants/app_constants.dart';
 
 /// Service to manage downloaded recordings with reactive updates
 class DownloadsService {
@@ -59,6 +60,7 @@ class DownloadsService {
   /// Download a recording and save metadata
   Future<void> downloadRecording(Recording recording) async {
     final recordingId = recording.id;
+    String? localFilePath;
 
     try {
       // Check if already downloaded
@@ -83,6 +85,7 @@ class DownloadsService {
       // Prepare file path and cancel token
       final fileName = '$recordingId.mp3';
       final filePath = '${downloadsDir.path}/$fileName';
+      localFilePath = filePath;
       final cancelToken = CancelToken();
       _cancelTokens[recordingId] = cancelToken;
 
@@ -99,6 +102,7 @@ class DownloadsService {
         recording.audioUrl,
         filePath,
         cancelToken: cancelToken,
+        options: Options(receiveTimeout: NetworkConfig.audioTimeout),
         onReceiveProgress: (received, total) {
           if (total != -1) {
             final progress = received / total;
@@ -130,11 +134,34 @@ class DownloadsService {
       // Update stream
       await _emitDownloads();
     } catch (e) {
-      if (e is DioException && CancelToken.isCancel(e)) {
-        _logger.i('ℹ️ Download canceled for $recordingId');
-        // Clean up partial file if needed
+      if (e is DioException) {
+        if (CancelToken.isCancel(e)) {
+          _logger.i('ℹ️ Download canceled for $recordingId');
+        } else {
+          _logger.e('❌ Network error downloading recording: $e');
+        }
+
+        // Clean up partial file on failure or manual cancellation
+        if (localFilePath != null) {
+          final file = File(localFilePath);
+          if (await file.exists()) {
+            await file.delete();
+            _logger.i('🗑️ Cleaned up partial download: $localFilePath');
+          }
+        }
+
+        if (!CancelToken.isCancel(e)) {
+          rethrow;
+        }
       } else {
         _logger.e('❌ Error downloading recording: $e');
+
+        if (localFilePath != null) {
+          final file = File(localFilePath);
+          if (await file.exists()) {
+            await file.delete();
+          }
+        }
         rethrow;
       }
     } finally {

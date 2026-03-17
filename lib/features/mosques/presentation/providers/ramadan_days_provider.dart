@@ -22,7 +22,8 @@ class RamadanDaysLoadedState extends RamadanDaysState {
 
 class RamadanDaysError extends RamadanDaysState {
   final String message;
-  const RamadanDaysError(this.message);
+  final List<RamadanDay>? previousData;
+  const RamadanDaysError(this.message, {this.previousData});
 }
 
 // Provider for GetRamadanDaysUseCase
@@ -40,13 +41,27 @@ class RamadanDaysNotifier extends StateNotifier<RamadanDaysState> {
     required this.addMonthUseCase,
   }) : super(RamadanDaysInitial());
 
-  Future<void> loadDays(String mosqueId, {int? month, int? year}) async {
-    state = RamadanDaysLoading();
+  Future<void> loadDays(String mosqueId) async {
+    final currentState = state;
+    List<RamadanDay>? oldData;
+    if (currentState is RamadanDaysLoadedState) {
+      oldData = currentState.days;
+    } else if (currentState is RamadanDaysError) {
+      oldData = currentState.previousData;
+    }
+
+    if (oldData == null) {
+      state = RamadanDaysLoading();
+    }
+
     final result = await getRamadanDaysUseCase(
       GetRamadanDaysParams(mosqueId: mosqueId, month: month, year: year),
     );
     result.fold(
-      (failure) => state = RamadanDaysError(_mapFailureToMessage(failure)),
+      (failure) => state = RamadanDaysError(
+        _mapFailureToMessage(failure),
+        previousData: oldData,
+      ),
       (days) => state = RamadanDaysLoadedState(days),
     );
   }
