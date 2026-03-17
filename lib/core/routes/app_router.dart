@@ -21,21 +21,21 @@ import 'app_routes.dart';
 import 'route_args.dart';
 import 'route_transitions.dart';
 
-import 'package:shared_preferences/shared_preferences.dart'; // Add import
+
 
 /// Centralized router for the application
 ///
 /// Handles route generation, authentication guards, and custom transitions
 class AppRouter {
-  /// Check if user is authenticated (not guest)
+  /// Check if user is authenticated (including anonymous guests)
   static bool _isAuthenticated() {
-    final user = GetIt.I<SupabaseClient>().auth.currentUser;
-    return user != null;
-  }
-
-  /// Check if user is in guest mode
-  static bool _isGuest() {
-    return GetIt.I<SharedPreferences>().getBool('is_guest_mode') ?? false;
+    try {
+      final user = GetIt.I<SupabaseClient>().auth.currentUser;
+      return user != null;
+    } catch (_) {
+      // Return false if Supabase throws (e.g., offline)
+      return false;
+    }
   }
 
   /// Main route generator
@@ -62,9 +62,9 @@ class AppRouter {
         return RouteTransitions.fadeTransition(const SplashScreen(), settings);
 
       case AppRoutes.home:
-        if (!_isAuthenticated() && !_isGuest()) {
+        if (!_isAuthenticated()) {
           GetIt.I<AppLogger>().i(
-            'Redirecting home to login (not authenticated or guest)',
+            'Redirecting home to login (not authenticated)',
           );
           return RouteTransitions.fadeTransition(const LoginPage(), settings);
         }

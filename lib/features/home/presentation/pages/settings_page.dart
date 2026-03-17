@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
@@ -22,7 +24,8 @@ class SettingsPage extends ConsumerWidget {
     });
 
     final authState = ref.watch(authProvider);
-    final isGuest = authState is AuthGuest;
+    final isGuest =
+        GetIt.I<SharedPreferences>().getBool('is_guest_mode') ?? false;
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

@@ -205,7 +205,7 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
         height: 60,
         child: Center(child: LinearProgressIndicator(minHeight: 2)),
       ),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 
