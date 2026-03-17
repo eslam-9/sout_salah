@@ -60,13 +60,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> checkAuthStatus() async {
     state = AuthLoading();
 
-    // Check for guest mode first
-    final isGuest = sharedPreferences.getBool('is_guest_mode') ?? false;
-    if (isGuest) {
-      state = AuthGuest();
-      return;
-    }
-
     final result = await getCurrentUserUseCase(NoParams());
     result.fold(
       (failure) => state = AuthUnauthenticated(),
@@ -77,11 +70,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> enterAsGuest() async {
-    state = AuthLoading();
-    await sharedPreferences.setBool('is_guest_mode', true);
-    state = AuthGuest();
-  }
+
 
   Future<void> signIn(String email, String password) async {
     state = AuthLoading();
@@ -118,15 +107,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> signInAnonymously() async {
-    // Legacy method - might remove or keep as backup
-    // For now, we redirect to enterAsGuest if used, or just let it be
-    // but the UI should call enterAsGuest
     state = AuthLoading();
     final result = await signInAnonymouslyUseCase(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
-        sharedPreferences.setBool('is_guest_mode', false);
+        sharedPreferences.setBool('is_guest_mode', true);
         NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
@@ -140,17 +126,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       NotificationService.removeToken(userId);
     }
     
-    state = AuthLoading();
-
-    // Check if we are in guest mode
-    final isGuest = state is AuthGuest;
-
-    if (isGuest) {
-      await sharedPreferences.setBool('is_guest_mode', false);
-      state = AuthUnauthenticated();
-      return;
-    }
-
     final result = await signOutUseCase(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),

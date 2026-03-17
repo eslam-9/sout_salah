@@ -18,17 +18,31 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Supabase
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseAnonKey,
-  );
+  try {
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
+    );
+  } catch (e) {
+    GetIt.I<AppLogger>().i(
+      'Failed to initialize Supabase (likely offline): $e',
+    );
+  }
 
   // Initialize Service Locator
   await di.setupServiceLocator();
 
   // Initialize Notification Service for Push Notifications
   GetIt.I<AppLogger>().i('Initializing NotificationService...');
-  await NotificationService.initialize();
+  try {
+    await NotificationService.initialize();
+  } catch (e, stackTrace) {
+    GetIt.I<AppLogger>().e(
+      'Failed to initialize NotificationService (likely offline)',
+      e,
+      stackTrace,
+    );
+  }
 
   // Initialize JustAudioBackground for background audio and notifications
   try {
