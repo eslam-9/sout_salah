@@ -1,4 +1,4 @@
-package com.example.sout_salah
+package com.eslam.soutsalah
 
 import io.flutter.embedding.android.FlutterActivity
 
