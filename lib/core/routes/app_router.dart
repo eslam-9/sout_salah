@@ -13,6 +13,7 @@ import '../../features/mosques/presentation/pages/add_mosque_page.dart';
 import '../../features/mosques/presentation/pages/upload_recording_page.dart';
 import '../../features/mosques/presentation/pages/device_audio_selection_page.dart';
 import '../../features/mosques/presentation/pages/audio_player_page.dart';
+import '../../features/mosques/presentation/pages/video_player_page.dart';
 import '../../features/mosques/presentation/pages/daily_video_page.dart';
 import '../../features/mosques/presentation/pages/upload_daily_video_page.dart';
 import '../../features/mosques/domain/entities/mosque.dart';
@@ -177,6 +178,19 @@ class AppRouter {
         final args = settings.arguments as AudioPlayerArgs;
         return RouteTransitions.slideTransition(
           AudioPlayerPage(recording: args.recording),
+          settings,
+        );
+
+      case AppRoutes.videoPlayer:
+        if (settings.arguments is! VideoPlayerArgs) {
+          GetIt.I<AppLogger>().e(
+            '❌ AppRouter: Invalid arguments for videoPlayer',
+          );
+          return _errorRoute(settings);
+        }
+        final args = settings.arguments as VideoPlayerArgs;
+        return RouteTransitions.slideTransition(
+          VideoPlayerPage(video: args.video),
           settings,
         );
 

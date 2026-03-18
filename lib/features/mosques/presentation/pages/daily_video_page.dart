@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../providers/daily_video_providers.dart';
-import '../widgets/daily_video_widget.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
+import '../../../../core/services/navigation_service.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class DailyVideoPage extends ConsumerWidget {
@@ -43,13 +45,82 @@ class DailyVideoPage extends ConsumerWidget {
               ),
             );
           }
-
           return ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: videos.length,
             itemBuilder: (context, index) {
               final video = videos[index];
-              return DailyVideoWidget(video: video);
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    NavigationService.navigateTo(
+                      AppRoutes.videoPlayer,
+                      arguments: VideoPlayerArgs(video: video),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            LucideIcons.playCircle,
+                            color: AppColors.primary,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                video.title?.isNotEmpty == true
+                                    ? video.title!
+                                    : 'فيديو ${index + 1}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              if (video.description?.isNotEmpty == true) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  video.description!,
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 14,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          LucideIcons.chevronLeft,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
             },
           );
         },
@@ -57,9 +128,9 @@ class DailyVideoPage extends ConsumerWidget {
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
         error: (error, stack) => Center(
-          child: Text(
+          child: const Text(
             'حدث خطأ في تحميل الفيديوهات',
-            style: const TextStyle(color: Colors.red),
+            style: TextStyle(color: Colors.red),
           ),
         ),
       ),
