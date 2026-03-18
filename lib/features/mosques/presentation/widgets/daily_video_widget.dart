@@ -8,11 +8,8 @@ import '../../data/models/daily_video_model.dart';
 
 class DailyVideoWidget extends StatefulWidget {
   final DailyVideoModel video;
-  
-  const DailyVideoWidget({
-    super.key,
-    required this.video,
-  });
+
+  const DailyVideoWidget({super.key, required this.video});
 
   @override
   State<DailyVideoWidget> createState() => _DailyVideoWidgetState();
@@ -22,6 +19,7 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
   late VideoPlayerController _controller;
   bool _isInit = false;
   bool _hasError = false;
+  bool _isFullscreen = false;
   final AppLogger _logger = GetIt.I<AppLogger>();
 
   @override
@@ -32,7 +30,9 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
 
   Future<void> _initializeVideo() async {
     try {
-      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.video.videoUrl));
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.video.videoUrl),
+      );
       await _controller.initialize();
       setState(() {
         _isInit = true;
@@ -50,6 +50,33 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      _controller.value.isPlaying ? _controller.pause() : _controller.play();
+    });
+  }
+
+  void _skipForward() {
+    final newPosition =
+        _controller.value.position + const Duration(seconds: 10);
+    final duration = _controller.value.duration;
+    _controller.seekTo(newPosition > duration ? duration : newPosition);
+  }
+
+  void _skipBackward() {
+    final newPosition =
+        _controller.value.position - const Duration(seconds: 10);
+    _controller.seekTo(
+      newPosition < Duration.zero ? Duration.zero : newPosition,
+    );
+  }
+
+  void _toggleFullscreen() {
+    setState(() {
+      _isFullscreen = !_isFullscreen;
+    });
   }
 
   @override
@@ -82,9 +109,7 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -94,71 +119,98 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
+            aspectRatio: _isFullscreen
+                ? MediaQuery.of(context).size.aspectRatio
+                : _controller.value.aspectRatio,
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: <Widget>[
                 VideoPlayer(_controller),
-                _ControlsOverlay(controller: _controller),
                 VideoProgressIndicator(_controller, allowScrubbing: true),
               ],
             ),
           ),
         ),
-        if (widget.video.description != null && widget.video.description!.isNotEmpty) ...[
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Skip Backward Button
+            IconButton(
+              onPressed: _skipBackward,
+              icon: const Icon(LucideIcons.rewind, size: 24),
+              color: Theme.of(context).colorScheme.primary,
+              tooltip: 'التراجع 10 ثواني',
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '-10',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 24),
+            // Play/Pause Button
+            IconButton(
+              onPressed: _togglePlayPause,
+              icon: Icon(
+                _controller.value.isPlaying
+                    ? LucideIcons.pause
+                    : LucideIcons.play,
+                size: 32,
+              ),
+              color: Theme.of(context).colorScheme.primary,
+              tooltip: _controller.value.isPlaying ? 'إيقاف' : 'تشغيل',
+            ),
+            const SizedBox(width: 24),
+            // Skip Forward Button
+            Text(
+              '+10',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: _skipForward,
+              icon: const Icon(LucideIcons.fastForward, size: 24),
+              color: Theme.of(context).colorScheme.primary,
+              tooltip: 'التقدم 10 ثواني',
+            ),
+            const SizedBox(width: 24),
+            // Fullscreen Button
+            IconButton(
+              onPressed: _toggleFullscreen,
+              icon: Icon(
+                _isFullscreen ? LucideIcons.maximize2 : LucideIcons.maximize,
+                size: 24,
+              ),
+              color: Theme.of(context).colorScheme.primary,
+              tooltip: _isFullscreen ? 'إغلاق الشاشة الكاملة' : 'شاشة كاملة',
+            ),
+          ],
+        ),
+        if (widget.video.description != null &&
+            widget.video.description!.isNotEmpty) ...[
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               widget.video.description!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(height: 1.5),
             ),
           ),
-        ]
-      ],
-    );
-  }
-}
-
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({required this.controller});
-
-  final VideoPlayerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 50),
-          reverseDuration: const Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? const SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: const Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 60.0,
-                      semanticLabel: 'Play',
-                    ),
-                  ),
-                ),
-        ),
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-          child: const SizedBox.expand(),
-        ),
+        ],
       ],
     );
   }
