@@ -10,26 +10,27 @@ class VideoRepository {
   final SupabaseClient supabaseClient;
   final R2StorageService r2StorageService;
   final AppLogger _logger;
-  
+
   VideoRepository({
     required this.supabaseClient,
     required this.r2StorageService,
     required AppLogger logger,
   }) : _logger = logger;
 
-  Future<DailyVideoModel?> getVideoForDay(String dayId) async {
+  /// Returns all videos for a given day (multiple videos supported).
+  Future<List<DailyVideoModel>> getVideosForDay(String dayId) async {
     try {
       final response = await supabaseClient
           .from('daily_videos')
           .select()
           .eq('day_id', dayId)
-          .maybeSingle();
+          .order('created_at', ascending: true);
 
-      if (response == null) return null;
-
-      return DailyVideoModel.fromJson(response);
+      return (response as List)
+          .map((e) => DailyVideoModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      _logger.e('Error fetching daily video for day $dayId', e);
+      _logger.e('Error fetching daily videos for day $dayId', e);
       rethrow;
     }
   }
@@ -39,6 +40,7 @@ class VideoRepository {
     required String mosqueId,
     required String dayId,
     required int dayNumber,
+    String? title,
     String? description,
     void Function(double)? onProgress,
   }) async {
@@ -63,6 +65,7 @@ class VideoRepository {
             'day_id': dayId,
             'publisher_id': supabaseClient.auth.currentUser?.id,
             'video_url': publicUrl,
+            'title': title,
             'description': description,
           })
           .select()
@@ -78,7 +81,6 @@ class VideoRepository {
   Future<void> deleteVideo(DailyVideoModel video) async {
     try {
       // 1. Delete from R2
-      // We extract the exact path from the CDN URL
       final urlParts = video.videoUrl.split('.dev/');
       if (urlParts.length == 2) {
         final r2Path = Uri.decodeComponent(urlParts[1]);

@@ -39,9 +39,9 @@ class AudioPlayerArgs {
 
 /// Route arguments for daily video page
 class DailyVideoArgs {
-  final DailyVideoModel video;
+  final String dayId;
 
-  DailyVideoArgs({required this.video});
+  DailyVideoArgs({required this.dayId});
 }
 
 /// Route arguments for mosque detail page

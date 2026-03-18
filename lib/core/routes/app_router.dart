@@ -187,9 +187,9 @@ class AppRouter {
           return _errorRoute(settings);
         }
         final args = settings.arguments as DailyVideoArgs;
-        return RouteTransitions.slideTransition(
-          DailyVideoPage(video: args.video),
-          settings,
+        return MaterialPageRoute(
+          builder: (_) => DailyVideoPage(dayId: args.dayId),
+          settings: settings,
         );
 
       default:

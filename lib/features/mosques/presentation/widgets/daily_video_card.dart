@@ -4,12 +4,11 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/route_args.dart';
-import '../../data/models/daily_video_model.dart';
 
 class DailyVideoCard extends StatelessWidget {
-  final DailyVideoModel video;
+  final String dayId;
 
-  const DailyVideoCard({super.key, required this.video});
+  const DailyVideoCard({super.key, required this.dayId});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class DailyVideoCard extends StatelessWidget {
           onTap: () {
             NavigationService.navigateTo(
               AppRoutes.dailyVideo,
-              arguments: DailyVideoArgs(video: video),
+              arguments: DailyVideoArgs(dayId: dayId),
             );
           },
           borderRadius: BorderRadius.circular(16),
@@ -54,7 +53,7 @@ class DailyVideoCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'مشاهدة فيديو اليوم',
+                        'مشاهدة فيديوهات اليوم',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -62,7 +61,7 @@ class DailyVideoCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'عرض التلاوة المرئية والوصف',
+                        'عرض التلاوات المرئية والوصف',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,

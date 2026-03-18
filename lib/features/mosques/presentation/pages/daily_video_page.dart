@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../data/models/daily_video_model.dart';
+
+import '../providers/daily_video_providers.dart';
 import '../widgets/daily_video_widget.dart';
+import '../../../../core/theme/app_theme.dart';
 
-class DailyVideoPage extends StatelessWidget {
-  final DailyVideoModel video;
+class DailyVideoPage extends ConsumerWidget {
+  final String dayId;
 
-  const DailyVideoPage({super.key, required this.video});
+  const DailyVideoPage({super.key, required this.dayId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final videosAsyncValue = ref.watch(dailyVideoListProvider(dayId));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -20,7 +25,7 @@ class DailyVideoPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'فيديو اليوم',
+          'فيديوهات اليوم',
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
@@ -28,17 +33,33 @@ class DailyVideoPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DailyVideoWidget(video: video),
-              const SizedBox(height: 24),
-              // We can add more info here if needed later, 
-              // like the mosque name or date.
-            ],
+      body: videosAsyncValue.when(
+        data: (videos) {
+          if (videos.isEmpty) {
+            return const Center(
+              child: Text(
+                'لا توجد فيديوهات لهذا اليوم',
+                style: TextStyle(fontSize: 18, color: Colors.black54),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: videos.length,
+            itemBuilder: (context, index) {
+              final video = videos[index];
+              return DailyVideoWidget(video: video);
+            },
+          );
+        },
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+        error: (error, stack) => Center(
+          child: Text(
+            'حدث خطأ في تحميل الفيديوهات',
+            style: const TextStyle(color: Colors.red),
           ),
         ),
       ),

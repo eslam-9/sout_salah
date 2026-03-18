@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/utils/app_logger.dart';
 
 import '../../data/models/daily_video_model.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class DailyVideoWidget extends StatefulWidget {
   final DailyVideoModel video;
@@ -16,30 +19,54 @@ class DailyVideoWidget extends StatefulWidget {
 }
 
 class _DailyVideoWidgetState extends State<DailyVideoWidget> {
-  late VideoPlayerController _controller;
-  bool _isInit = false;
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
   bool _hasError = false;
-  bool _isFullscreen = false;
   final AppLogger _logger = GetIt.I<AppLogger>();
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
+    _initializePlayer();
   }
 
-  Future<void> _initializeVideo() async {
+  Future<void> _initializePlayer() async {
     try {
-      _controller = VideoPlayerController.networkUrl(
+      _videoPlayerController = VideoPlayerController.networkUrl(
         Uri.parse(widget.video.videoUrl),
       );
-      await _controller.initialize();
-      setState(() {
-        _isInit = true;
-      });
-      _logger.i('DailyVideoWidget: Video initialized successfully');
+
+      await _videoPlayerController.initialize();
+
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: false,
+        looping: false,
+        allowFullScreen: true,
+        allowMuting: true,
+        showControls: true,
+        deviceOrientationsAfterFullScreen: const [
+           // Return to portrait after full screen
+          DeviceOrientation.portraitUp,
+        ],
+        placeholder: Container(
+          color: Colors.black,
+          child: const Center(
+             child: CircularProgressIndicator(),
+          ),
+        ),
+        materialProgressColors: ChewieProgressColors(
+          playedColor: AppColors.primary,
+          handleColor: AppColors.primary,
+          backgroundColor: Colors.grey,
+          bufferedColor: AppColors.primary.withValues(alpha: 0.3),
+        ),
+      );
+
+      setState(() {});
+      _logger.i('DailyVideoWidget: Video player initialized successfully');
     } catch (e) {
-      _logger.e('DailyVideoWidget: Error initializing video', e);
+      _logger.e('DailyVideoWidget: Error initializing video player', e);
       setState(() {
         _hasError = true;
       });
@@ -48,35 +75,9 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _videoPlayerController.dispose();
+    _chewieController?.dispose();
     super.dispose();
-  }
-
-  void _togglePlayPause() {
-    setState(() {
-      _controller.value.isPlaying ? _controller.pause() : _controller.play();
-    });
-  }
-
-  void _skipForward() {
-    final newPosition =
-        _controller.value.position + const Duration(seconds: 10);
-    final duration = _controller.value.duration;
-    _controller.seekTo(newPosition > duration ? duration : newPosition);
-  }
-
-  void _skipBackward() {
-    final newPosition =
-        _controller.value.position - const Duration(seconds: 10);
-    _controller.seekTo(
-      newPosition < Duration.zero ? Duration.zero : newPosition,
-    );
-  }
-
-  void _toggleFullscreen() {
-    setState(() {
-      _isFullscreen = !_isFullscreen;
-    });
   }
 
   @override
@@ -88,11 +89,11 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
           color: Colors.red.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(LucideIcons.alertCircle, color: Colors.red, size: 32),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'حدث خطأ أثناء تحميل الفيديو',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
@@ -102,116 +103,61 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
       );
     }
 
-    if (!_isInit) {
-      return Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: AspectRatio(
-            aspectRatio: _isFullscreen
-                ? MediaQuery.of(context).size.aspectRatio
-                : _controller.value.aspectRatio,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: <Widget>[
-                VideoPlayer(_controller),
-                VideoProgressIndicator(_controller, allowScrubbing: true),
-              ],
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Aspect Ratio Container for the Video Player
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: AspectRatio(
+              aspectRatio: _videoPlayerController.value.isInitialized 
+                 ? _videoPlayerController.value.aspectRatio 
+                 : 16 / 9,
+              child: _chewieController != null &&
+                      _chewieController!.videoPlayerController.value.isInitialized
+                  ? Chewie(controller: _chewieController!)
+                  : Container(
+                      color: Colors.black12,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Skip Backward Button
-            IconButton(
-              onPressed: _skipBackward,
-              icon: const Icon(LucideIcons.rewind, size: 24),
-              color: Theme.of(context).colorScheme.primary,
-              tooltip: 'التراجع 10 ثواني',
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '-10',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+          
+          // Title and Description Area
+          if ((widget.video.title != null && widget.video.title!.isNotEmpty) ||
+              (widget.video.description != null && widget.video.description!.isNotEmpty))
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.video.title != null && widget.video.title!.isNotEmpty) ...[
+                    Text(
+                      widget.video.title!,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (widget.video.description != null &&
+                      widget.video.description!.isNotEmpty)
+                    Text(
+                      widget.video.description!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            height: 1.5,
+                            color: Colors.black87,
+                          ),
+                    ),
+                ],
               ),
             ),
-            const SizedBox(width: 24),
-            // Play/Pause Button
-            IconButton(
-              onPressed: _togglePlayPause,
-              icon: Icon(
-                _controller.value.isPlaying
-                    ? LucideIcons.pause
-                    : LucideIcons.play,
-                size: 32,
-              ),
-              color: Theme.of(context).colorScheme.primary,
-              tooltip: _controller.value.isPlaying ? 'إيقاف' : 'تشغيل',
-            ),
-            const SizedBox(width: 24),
-            // Skip Forward Button
-            Text(
-              '+10',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: _skipForward,
-              icon: const Icon(LucideIcons.fastForward, size: 24),
-              color: Theme.of(context).colorScheme.primary,
-              tooltip: 'التقدم 10 ثواني',
-            ),
-            const SizedBox(width: 24),
-            // Fullscreen Button
-            IconButton(
-              onPressed: _toggleFullscreen,
-              icon: Icon(
-                _isFullscreen ? LucideIcons.maximize2 : LucideIcons.maximize,
-                size: 24,
-              ),
-              color: Theme.of(context).colorScheme.primary,
-              tooltip: _isFullscreen ? 'إغلاق الشاشة الكاملة' : 'شاشة كاملة',
-            ),
-          ],
-        ),
-        if (widget.video.description != null &&
-            widget.video.description!.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              widget.video.description!,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(height: 1.5),
-            ),
-          ),
         ],
-      ],
+      ),
     );
   }
 }

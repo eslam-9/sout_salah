@@ -49,7 +49,7 @@ class DaySchedulePage extends ConsumerWidget {
     );
 
     if (uploaded == true) {
-      ref.invalidate(dailyVideoProvider(dayId));
+      ref.invalidate(dailyVideoListProvider(dayId));
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -63,7 +63,7 @@ class DaySchedulePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoAsync = ref.watch(dailyVideoProvider(dayId));
+    final videoAsync = ref.watch(dailyVideoListProvider(dayId));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -91,46 +91,49 @@ class DaySchedulePage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: videoAsync.when(
-                data: (video) {
-                  if (video != null) {
-                    return DailyVideoCard(video: video);
-                  }
-
-                  // No video found, show upload button if admin/publisher
-                  return FutureBuilder<bool>(
-                    future: ref.read(
-                      permissionCheckerProvider.select(
-                        (checker) => checker.canShowUploadButton(mosqueId),
-                      ),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data == true) {
-                        return SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () => _showUploadVideoSheet(context, ref),
-                            icon: const Icon(LucideIcons.video, color: AppColors.primary),
-                            label: const Text(
-                              'إضافة فيديو اليوم',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: const BorderSide(color: AppColors.primary, width: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
+                data: (videos) {
+                  // Render both the card (if videos exist) and the upload button (if admin)
+                  return Column(
+                    children: [
+                      if (videos.isNotEmpty) ...[
+                        DailyVideoCard(dayId: dayId),
+                        const SizedBox(height: 16),
+                      ],
+                      FutureBuilder<bool>(
+                        future: ref.read(
+                          permissionCheckerProvider.select(
+                            (checker) => checker.canShowUploadButton(mosqueId),
                           ),
-                        );
-                      }
-                      // Regular user, no video available
-                      return const SizedBox.shrink();
-                    },
+                        ),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data == true) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () => _showUploadVideoSheet(context, ref),
+                                icon: const Icon(LucideIcons.video, color: AppColors.primary),
+                                label: const Text(
+                                  'إضافة فيديوهات اليوم',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  side: const BorderSide(color: AppColors.primary, width: 2),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),

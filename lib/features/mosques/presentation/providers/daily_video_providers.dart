@@ -12,10 +12,9 @@ final videoRepositoryProvider = Provider<VideoRepository>((ref) {
   );
 });
 
-final dailyVideoProvider = FutureProvider.family<DailyVideoModel?, String>((
-  ref,
-  dayId,
-) async {
+/// Fetches ALL videos for a given day (supports multiple videos per day).
+final dailyVideoListProvider =
+    FutureProvider.family<List<DailyVideoModel>, String>((ref, dayId) async {
   final repository = ref.watch(videoRepositoryProvider);
-  return repository.getVideoForDay(dayId);
+  return repository.getVideosForDay(dayId);
 });

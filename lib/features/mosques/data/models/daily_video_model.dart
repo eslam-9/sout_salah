@@ -6,6 +6,7 @@ class DailyVideoModel extends Equatable {
   final String dayId;
   final String? publisherId;
   final String videoUrl;
+  final String? title;
   final String? description;
   final DateTime createdAt;
 
@@ -15,6 +16,7 @@ class DailyVideoModel extends Equatable {
     required this.dayId,
     this.publisherId,
     required this.videoUrl,
+    this.title,
     this.description,
     required this.createdAt,
   });
@@ -26,6 +28,7 @@ class DailyVideoModel extends Equatable {
       dayId: json['day_id'] as String,
       publisherId: json['publisher_id'] as String?,
       videoUrl: json['video_url'] as String,
+      title: json['title'] as String?,
       description: json['description'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
     );
@@ -38,6 +41,7 @@ class DailyVideoModel extends Equatable {
       'day_id': dayId,
       'publisher_id': publisherId,
       'video_url': videoUrl,
+      'title': title,
       'description': description,
       'created_at': createdAt.toUtc().toIso8601String(),
     };
@@ -50,6 +54,7 @@ class DailyVideoModel extends Equatable {
         dayId,
         publisherId,
         videoUrl,
+        title,
         description,
         createdAt,
       ];
