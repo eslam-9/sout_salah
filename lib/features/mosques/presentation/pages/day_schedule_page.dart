@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:sout_salah/features/mosques/presentation/providers/daily_video_providers.dart';
 import '../widgets/day_schedule_table_widget.dart';
 import '../widgets/daily_video_card.dart';
-import '../widgets/upload_daily_video_sheet.dart';
-import '../providers/daily_video_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/permission_checker.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/navigation_service.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../../core/routes/route_args.dart';
 
 class DaySchedulePage extends ConsumerWidget {
   final String dayId;
@@ -33,15 +35,13 @@ class DaySchedulePage extends ConsumerWidget {
     return result;
   }
 
-  Future<void> _showUploadVideoSheet(BuildContext context, WidgetRef ref) async {
-    final uploaded = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => UploadDailyVideoSheet(
+  Future<void> _showUploadVideoSheet(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final uploaded = await NavigationService.navigateTo(
+      AppRoutes.uploadDailyVideo,
+      arguments: UploadDailyVideoArgs(
         mosqueId: mosqueId,
         dayId: dayId,
         dayNumber: dayNumber,
@@ -110,8 +110,12 @@ class DaySchedulePage extends ConsumerWidget {
                             return SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
-                                onPressed: () => _showUploadVideoSheet(context, ref),
-                                icon: const Icon(LucideIcons.video, color: AppColors.primary),
+                                onPressed: () =>
+                                    _showUploadVideoSheet(context, ref),
+                                icon: const Icon(
+                                  LucideIcons.video,
+                                  color: AppColors.primary,
+                                ),
                                 label: const Text(
                                   'إضافة فيديوهات اليوم',
                                   style: TextStyle(
@@ -121,8 +125,13 @@ class DaySchedulePage extends ConsumerWidget {
                                   ),
                                 ),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  side: const BorderSide(color: AppColors.primary, width: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  side: const BorderSide(
+                                    color: AppColors.primary,
+                                    width: 2,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -137,19 +146,19 @@ class DaySchedulePage extends ConsumerWidget {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => const Text('فشل تحميل الفيديو', style: TextStyle(color: Colors.red)),
+                error: (err, stack) => const Text(
+                  'فشل تحميل الفيديو',
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
             ),
 
             // Schedule Matrix
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DayScheduleTableWidget(
-                dayId: dayId,
-                mosqueId: mosqueId,
-              ),
+              child: DayScheduleTableWidget(dayId: dayId, mosqueId: mosqueId),
             ),
-            
+
             // Notification Button
             FutureBuilder<bool>(
               future: ref.read(
@@ -178,7 +187,10 @@ class DaySchedulePage extends ConsumerWidget {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('تم إرسال الإشعار بنجاح', style: TextStyle()),
+                                content: Text(
+                                  'تم إرسال الإشعار بنجاح',
+                                  style: TextStyle(),
+                                ),
                                 backgroundColor: AppColors.primary,
                               ),
                             );
@@ -214,4 +226,3 @@ class DaySchedulePage extends ConsumerWidget {
     );
   }
 }
-

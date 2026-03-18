@@ -18,7 +18,7 @@ import '../../../../core/routes/route_args.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../providers/daily_video_providers.dart';
 import '../widgets/daily_video_card.dart';
-import '../widgets/upload_daily_video_sheet.dart';
+
 
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
@@ -80,14 +80,9 @@ class DayDetailPage extends ConsumerWidget {
   }
 
   void _showUploadVideoSheet(BuildContext context, WidgetRef ref) async {
-    final uploaded = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => UploadDailyVideoSheet(
+    final uploaded = await NavigationService.navigateTo(
+      AppRoutes.uploadDailyVideo,
+      arguments: UploadDailyVideoArgs(
         mosqueId: day.mosqueId,
         dayId: day.id,
         dayNumber: day.dayNumber,
