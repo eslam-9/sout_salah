@@ -45,6 +45,71 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
         allowFullScreen: true,
         allowMuting: true,
         showControls: true,
+        optionsTranslation: OptionsTranslation(
+          playbackSpeedButtonText: 'سرعة التشغيل',
+          subtitlesButtonText: 'الترجمة',
+          cancelButtonText: 'إلغاء',
+        ),
+        optionsBuilder: (context, defaultOptions) async {
+          await showModalBottomSheet<void>(
+            context: context,
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (BuildContext context) {
+              return SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 12, bottom: 8),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'إعدادات الفيديو',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    ...defaultOptions.map((option) {
+                      return ListTile(
+                        leading: Icon(
+                          option.iconData,
+                          color: AppColors.primary,
+                        ),
+                        title: Text(
+                          option.title,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: option.subtitle != null
+                            ? Text(option.subtitle!)
+                            : null,
+                        trailing: const Icon(LucideIcons.chevronLeft, size: 16, color: AppColors.primary),
+                        onTap: () {
+                          Navigator.pop(context);
+                          option.onTap(context);
+                        },
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            },
+          );
+        },
         deviceOrientationsAfterFullScreen: const [
            // Return to portrait after full screen
           DeviceOrientation.portraitUp,
