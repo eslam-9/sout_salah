@@ -16,6 +16,9 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/route_args.dart';
 import '../../../../core/services/navigation_service.dart';
+import '../providers/daily_video_providers.dart';
+import '../widgets/daily_video_card.dart';
+import '../widgets/upload_daily_video_sheet.dart';
 
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
@@ -24,7 +27,6 @@ class DayDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recordingsAsync = ref.watch(dayRecordingsProvider(day.id));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -73,11 +75,102 @@ class DayDetailPage extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
-      body: recordingsAsync.when(
-        data: (recordings) => _buildPrayersList(recordings),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('خطأ: $error')),
+      body: _buildBody(context, ref),
+    );
+  }
+
+  void _showUploadVideoSheet(BuildContext context, WidgetRef ref) async {
+    final uploaded = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (context) => UploadDailyVideoSheet(
+        mosqueId: day.mosqueId,
+        dayId: day.id,
+        dayNumber: day.dayNumber,
+      ),
+    );
+
+    if (uploaded == true) {
+      ref.invalidate(dailyVideoProvider(day.id));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم رفع الفيديو بنجاح'),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final recordingsAsync = ref.watch(dayRecordingsProvider(day.id));
+    final videoAsync = ref.watch(dailyVideoProvider(day.id));
+
+    return Column(
+      children: [
+        // Daily Video Section
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: videoAsync.when(
+            data: (video) {
+              if (video != null) {
+                return DailyVideoCard(video: video);
+              }
+
+              // No video found, show upload button if admin/publisher
+              return FutureBuilder<bool>(
+                future: ref.read(
+                  permissionCheckerProvider.select(
+                    (checker) => checker.canShowUploadButton(day.mosqueId),
+                  ),
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data == true) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showUploadVideoSheet(context, ref),
+                        icon: const Icon(LucideIcons.video, color: AppColors.primary),
+                        label: const Text(
+                          'إضافة فيديو اليوم',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: AppColors.primary, width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => const Text('فشل تحميل الفيديو', style: TextStyle(color: Colors.red)),
+          ),
+        ),
+        
+        Expanded(
+          child: recordingsAsync.when(
+            data: (recordings) => _buildPrayersList(recordings),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(child: Text('خطأ: $error')),
+          ),
+        ),
+      ],
     );
   }
 

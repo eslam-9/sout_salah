@@ -2,6 +2,7 @@ import '../../features/mosques/domain/entities/mosque.dart';
 import '../../features/mosques/domain/entities/ramadan_day.dart';
 import '../../features/mosques/domain/entities/recording.dart';
 import '../../features/mosques/domain/entities/prayer.dart';
+import '../../features/mosques/data/models/daily_video_model.dart';
 
 /// Route arguments for upload recording page
 class UploadRecordingArgs {
@@ -34,6 +35,13 @@ class AudioPlayerArgs {
   final Recording recording;
 
   AudioPlayerArgs({required this.recording});
+}
+
+/// Route arguments for daily video page
+class DailyVideoArgs {
+  final DailyVideoModel video;
+
+  DailyVideoArgs({required this.video});
 }
 
 /// Route arguments for mosque detail page

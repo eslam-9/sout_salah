@@ -28,9 +28,10 @@ class R2StorageService {
     String key,
     File file, {
     void Function(double)? onProgress,
+    String contentType = 'audio/mpeg',
   }) async {
     try {
-      _logger.i('Uploading file to R2: $key');
+      _logger.i('Uploading file to R2: $key with type: $contentType');
 
       final fileBytes = await file.readAsBytes();
       // Encode key segments to ensure spaces and special chars are handled correctly
@@ -41,14 +42,14 @@ class R2StorageService {
       final headers = _generateHeaders(
         method: 'PUT',
         path: '/$_bucket/$encodedKey',
-        contentType: 'audio/mpeg',
+        contentType: contentType,
         contentLength: fileBytes.length,
       );
 
       final response = await _dio.put(
         url,
         data: fileBytes,
-        options: Options(headers: headers, contentType: 'audio/mpeg'),
+        options: Options(headers: headers, contentType: contentType),
         onSendProgress: (sent, total) {
           if (total != -1 && onProgress != null) {
             onProgress(sent / total);
