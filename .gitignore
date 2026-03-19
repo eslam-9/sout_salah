@@ -51,3 +51,6 @@ android/app/*.jks
 # Environment variables
 .env
 env.json
+
+# Ai files
+docs/
