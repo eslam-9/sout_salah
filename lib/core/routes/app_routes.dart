@@ -22,6 +22,9 @@ class AppRoutes {
   static const String addMosque = '/add-mosque';
   static const String deviceAudioSelection = '/device-audio-selection';
   static const String audioPlayer = '/audio-player';
+  static const String videoPlayer = '/video-player';
+  static const String dailyVideo = '/daily-video';
+  static const String uploadDailyVideo = '/upload-daily-video';
 
   // List of routes that require authentication
   static const List<String> authRequiredRoutes = [
