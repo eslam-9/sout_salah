@@ -33,7 +33,9 @@
 | 👤 **Auth + Guest Mode** | Supabase authentication with full guest-mode support — no account required |
 | 🚀 **Animated Splash** | Lottie-powered animated splash screen displayed on every launch |
 | 🌙 **Ramadan Mode** | Day-by-day Ramadan recordings linked to the configured Ramadan start date |
-| ☁️ **R2 Cloud Storage** | Admin upload of recordings directly to Cloudflare R2 with progress tracking |
+| 📹 **Daily Video** | Mosque admins can upload daily Islamic videos (up to 4K) directly to Cloudflare R2 |
+| ☁️ **R2 Cloud Storage** | Admin upload of recordings and videos directly to Cloudflare R2 with progress tracking |
+| 🔔 **Push Notifications** | Real-time notifications for new recordings, publishers, and schedule updates via FCM |
 
 ---
 
@@ -64,13 +66,21 @@
 | [path_provider](https://pub.dev/packages/path_provider) `^2.1.2` | Access device file system directories |
 | [crypto](https://pub.dev/packages/crypto) `^3.0.3` | HMAC-SHA256 signing for R2 uploads |
 
-### UI
+### UI & Media
 | Package | Purpose |
 |---|---|
 | [lottie](https://pub.dev/packages/lottie) `^3.1.0` | JSON-based vector animations (splash screen) |
 | [google_fonts](https://pub.dev/packages/google_fonts) `^8.0.1` | Custom typography |
 | [lucide_icons](https://pub.dev/packages/lucide_icons) `^0.257.0` | Modern, consistent icon set |
 | [permission_handler](https://pub.dev/packages/permission_handler) `^12.0.1` | Runtime permissions for storage/audio |
+| [video_player](https://pub.dev/packages/video_player) `^2.11.1` | Hardware-accelerated video playback |
+| [chewie](https://pub.dev/packages/chewie) `^1.8.5` | Specialized UI controls for video playback |
+
+### Firebase & Notifications
+| Package | Purpose |
+|---|---|
+| [firebase_messaging](https://pub.dev/packages/firebase_messaging) `^16.1.2` | Cloud-based push notifications (FCM) |
+| [firebase_core](https://pub.dev/packages/firebase_core) `^4.5.0` | Core Firebase project configuration |
 
 ---
 
@@ -163,16 +173,16 @@ lib/
     ├── mosques/                       # Mosque & recording management feature
     │   ├── data/
     │   │   ├── datasources/mosque_remote_data_source.dart
-    │   │   ├── models/mosque_model.dart, recording_model.dart, ramadan_day_model.dart ...
-    │   │   └── repositories/mosque_repository_impl.dart
+    │   │   ├── models/mosque_model.dart, recording_model.dart, daily_video_model.dart ...
+    │   │   └── repositories/mosque_repository_impl.dart, video_repository_impl.dart
     │   ├── domain/
-    │   │   ├── entities/mosque.dart, recording.dart, prayer.dart, ramadan_day.dart ...
-    │   │   ├── repositories/mosque_repository.dart
-    │   │   └── usecases/get_mosques_usecase.dart, upload_recording_usecase.dart ...
+    │   │   ├── entities/mosque.dart, recording.dart, daily_video.dart, ramadan_day.dart ...
+    │   │   ├── repositories/mosque_repository.dart, video_repository.dart
+    │   │   └── usecases/get_mosques_usecase.dart, upload_daily_video_usecase.dart ...
     │   └── presentation/
-    │       ├── pages/mosque_detail_page.dart, day_detail_page.dart, audio_player_page.dart ...
-    │       ├── providers/mosque_controller.dart, recordings_provider.dart ...
-    │       └── widgets/mosque_card.dart, audio_player_sheet.dart
+    │       ├── pages/mosque_detail_page.dart, daily_video_page.dart, upload_daily_video_page.dart ...
+    │       ├── providers/mosque_controller.dart, video_controller.dart ...
+    │       └── widgets/mosque_card.dart, daily_video_widget.dart, audio_player_sheet.dart
     │
     └── shared/
         └── widgets/
@@ -190,8 +200,9 @@ lib/
 | `DownloadsService` | Downloads recordings via `Dio`, tracks per-file progress streams, persists metadata locally |
 | `FavoritesService` | Persists favorite recordings to `SharedPreferences` and broadcasts changes as a `Stream` |
 | `NavigationService` | Provides a global `NavigatorKey` for context-free, type-safe navigation from providers |
-| `R2StorageService` | Uploads/deletes audio files on Cloudflare R2 using AWS4-HMAC-SHA256 request signing |
+| `R2StorageService` | Uploads/deletes audio files and videos on Cloudflare R2 using AWS4 request signing |
 | `StartupService` | Queries Supabase `data` table at launch for dynamic messages or redirect links |
+| `FCMNotificationService` | Handles Firebase Cloud Messaging token registration and background message handling |
 
 ---
 
@@ -269,7 +280,9 @@ Key tables used:
 | `profiles` | User profile data linked to auth |
 | `mosques` | Mosque information (name, location, publisher) |
 | `recordings` | Audio recording metadata (URL, prayer, mosque, day) |
+| `daily_videos` | Video metadata (URL, title, description, day, mosque) |
 | `ramadan_days` | Ramadan day records linked to a mosque |
+| `fcm_tokens` | Stores Firebase Cloud Messaging tokens for push notifications |
 | `data` | Startup notices / redirect links shown at launch |
 
 > **Note:** The `prayer_name` column in `recordings` supports custom values (e.g. `Tahajjud`) in addition to standard prayer names.
