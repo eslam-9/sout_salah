@@ -2,7 +2,7 @@
 
 # 🕌 صوت صلاه — Sout Salah
 
-**A comprehensive Islamic mobile app for Quran recitations, mosque recordings, and daily worship.**
+**A comprehensive Islamic mobile app for Quran recitations, mosque recordings.**
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.10.7+-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart&logoColor=white)](https://dart.dev)
@@ -218,7 +218,7 @@ lib/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/sout_salah.git
+git clone https://github.com/eslam-9/sout_salah.git
 cd sout_salah
 ```
 
@@ -289,11 +289,7 @@ Key tables used:
 
 ---
 
-## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 <div align="center">
 
