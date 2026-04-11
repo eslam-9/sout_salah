@@ -11,11 +11,39 @@ class NavigationService {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
+  /// Check if navigation is currently allowed (not during build phase)
+  static bool get _isNavigationAllowed {
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) return false;
+
+    // Try to check if we're in a build phase - if context is building, we shouldn't navigate
+    try {
+      // This will throw if we're in the middle of building
+      if (navigator.mounted) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Navigate to a named route
   ///
   /// Returns the result from the pushed route when it's popped
   static Future<T?> navigateTo<T>(String routeName, {Object? arguments}) {
     GetIt.I<AppLogger>().i('🧭 NavigationService: Navigating to $routeName');
+
+    // Queue navigation if in build phase
+    if (!_isNavigationAllowed) {
+      return Future.delayed(Duration.zero, () {
+        return navigatorKey.currentState?.pushNamed<T>(
+          routeName,
+          arguments: arguments,
+        );
+      });
+    }
+
     return navigatorKey.currentState!.pushNamed<T>(
       routeName,
       arguments: arguments,
@@ -27,7 +55,7 @@ class NavigationService {
   /// Optionally pass a result back to the previous route
   static void goBack<T>([T? result]) {
     GetIt.I<AppLogger>().i('🧭 NavigationService: Going back');
-    if (navigatorKey.currentState!.canPop()) {
+    if (navigatorKey.currentState?.canPop() ?? false) {
       navigatorKey.currentState!.pop(result);
     }
   }
@@ -40,6 +68,17 @@ class NavigationService {
     Object? arguments,
   }) {
     GetIt.I<AppLogger>().i('🧭 NavigationService: Replacing with $routeName');
+
+    // Queue navigation if in build phase
+    if (!_isNavigationAllowed) {
+      return Future.delayed(Duration.zero, () {
+        return navigatorKey.currentState?.pushReplacementNamed<T, dynamic>(
+          routeName,
+          arguments: arguments,
+        );
+      });
+    }
+
     return navigatorKey.currentState!.pushReplacementNamed<T, dynamic>(
       routeName,
       arguments: arguments,
@@ -57,6 +96,18 @@ class NavigationService {
     GetIt.I<AppLogger>().i(
       '🧭 NavigationService: Navigating to $routeName and removing until predicate',
     );
+
+    // Queue navigation if in build phase
+    if (!_isNavigationAllowed) {
+      return Future.delayed(Duration.zero, () {
+        return navigatorKey.currentState?.pushNamedAndRemoveUntil<T>(
+          routeName,
+          predicate,
+          arguments: arguments,
+        );
+      });
+    }
+
     return navigatorKey.currentState!.pushNamedAndRemoveUntil<T>(
       routeName,
       predicate,

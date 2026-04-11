@@ -34,10 +34,12 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
     // Listen for auth state changes
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthUnauthenticated) {
-        NavigationService.navigateAndRemoveUntil(
-          AppRoutes.login,
-          (route) => false,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          NavigationService.navigateAndRemoveUntil(
+            AppRoutes.login,
+            (route) => false,
+          );
+        });
       }
     });
     return Scaffold(

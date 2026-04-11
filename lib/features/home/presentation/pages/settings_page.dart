@@ -16,10 +16,12 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthUnauthenticated) {
-        NavigationService.navigateAndRemoveUntil(
-          AppRoutes.login,
-          (route) => false,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          NavigationService.navigateAndRemoveUntil(
+            AppRoutes.login,
+            (route) => false,
+          );
+        });
       }
     });
 
