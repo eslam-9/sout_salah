@@ -5,7 +5,7 @@ import '../../../../core/di/providers.dart';
 import '../../domain/usecases/auth_usecases.dart';
 import '../../domain/usecases/sign_in_anonymously_usecase.dart';
 import 'auth_data_providers.dart';
-import '../bloc/auth_state.dart'; // Reuse existing state classes
+import '../bloc/auth_state.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/usecases/sign_up_params.dart';
@@ -28,6 +28,9 @@ final getCurrentUserUseCaseProvider = Provider(
   (ref) => GetCurrentUserUseCase(ref.watch(authRepositoryProvider)),
 );
 
+// Provider to track if initial auth check has been completed
+final initialCheckDoneProvider = StateProvider<bool>((ref) => false);
+
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     signInUseCase: ref.watch(signInUseCaseProvider),
@@ -36,7 +39,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signOutUseCase: ref.watch(signOutUseCaseProvider),
     getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
     sharedPreferences: ref.watch(sharedPreferencesProvider),
-  )..checkAuthStatus(); // Initialize auth status
+  );
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -61,16 +64,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthLoading();
 
     final result = await getCurrentUserUseCase(NoParams());
-    result.fold(
-      (failure) => state = AuthUnauthenticated(),
-      (user) {
-        NotificationService.registerToken(user.id);
-        state = AuthAuthenticated(user: user);
-      },
-    );
+    result.fold((failure) => state = AuthUnauthenticated(), (user) {
+      NotificationService.registerToken(user.id);
+      state = AuthAuthenticated(user: user);
+    });
   }
-
-
 
   Future<void> signIn(String email, String password) async {
     state = AuthLoading();
@@ -125,7 +123,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final userId = (state as AuthAuthenticated).user.id;
       NotificationService.removeToken(userId);
     }
-    
+
     final result = await signOutUseCase(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),

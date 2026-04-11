@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sout_salah/core/utils/app_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/startup_service.dart';
 import '../services/navigation_service.dart';
+import '../../../features/auth/presentation/providers/auth_controller.dart';
 
-class StartupCheckWrapper extends StatefulWidget {
+class StartupCheckWrapper extends ConsumerStatefulWidget {
   final Widget child;
 
   const StartupCheckWrapper({super.key, required this.child});
 
   @override
-  State<StartupCheckWrapper> createState() => _StartupCheckWrapperState();
+  ConsumerState<StartupCheckWrapper> createState() =>
+      _StartupCheckWrapperState();
 }
 
-class _StartupCheckWrapperState extends State<StartupCheckWrapper> {
+class _StartupCheckWrapperState extends ConsumerState<StartupCheckWrapper> {
   @override
   void initState() {
     super.initState();
@@ -27,6 +30,10 @@ class _StartupCheckWrapperState extends State<StartupCheckWrapper> {
     if (!mounted) return;
 
     try {
+      // Check auth status first
+      await _checkAuthStatus();
+
+      // Then check startup data
       final startupService = GetIt.I<StartupService>();
       final data = await startupService.checkStartupData();
 
@@ -36,6 +43,16 @@ class _StartupCheckWrapperState extends State<StartupCheckWrapper> {
       }
     } catch (e) {
       GetIt.I<AppLogger>().e('Error in startup check wrapper', e);
+    }
+  }
+
+  Future<void> _checkAuthStatus() async {
+    try {
+      final authNotifier = ref.read(authProvider.notifier);
+      await authNotifier.checkAuthStatus();
+    } catch (e) {
+      GetIt.I<AppLogger>().e('Error checking auth status', e);
+      // Continue anyway - don't block app startup on auth errors
     }
   }
 

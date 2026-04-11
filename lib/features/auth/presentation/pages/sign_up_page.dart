@@ -50,7 +50,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next is AuthAuthenticated) {
-        NavigationService.navigateAndReplace(AppRoutes.home);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          NavigationService.navigateAndReplace(AppRoutes.home);
+        });
       } else if (next is AuthError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.message), backgroundColor: Colors.red),
