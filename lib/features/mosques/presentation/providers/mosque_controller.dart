@@ -40,13 +40,17 @@ class MosqueNotifier extends StateNotifier<MosqueState> {
 
   Future<void> getMosques() async {
     state = MosqueLoading();
-    final result = await _executeWithTimeoutAndRetry(
-      () => getMosquesUseCase(NoParams()),
-    );
-    result.fold(
-      (failure) => state = MosqueError(_mapFailureToMessage(failure)),
-      (mosques) => state = MosqueLoaded(mosques),
-    );
+    try {
+      final result = await getMosquesUseCase(
+        NoParams(),
+      ).timeout(const Duration(seconds: 3));
+      result.fold(
+        (failure) => state = MosqueError(_mapFailureToMessage(failure)),
+        (mosques) => state = MosqueLoaded(mosques),
+      );
+    } catch (_) {
+      state = MosqueError('لا يوجد اتصال بالإنترنت');
+    }
   }
 
   Future<void> addMosque({

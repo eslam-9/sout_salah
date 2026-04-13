@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:crypto/crypto.dart';
 import '../config/app_config.dart';
 import '../utils/app_logger.dart';
+import '../constants/app_constants.dart';
 
 class R2StorageService {
   late final String _endpoint;
@@ -49,7 +50,12 @@ class R2StorageService {
       final response = await _dio.put(
         url,
         data: fileBytes,
-        options: Options(headers: headers, contentType: contentType),
+        options: Options(
+          headers: headers,
+          contentType: 'audio/mpeg',
+          sendTimeout: NetworkConfig.audioTimeout,
+          receiveTimeout: NetworkConfig.audioTimeout,
+        ),
         onSendProgress: (sent, total) {
           if (total != -1 && onProgress != null) {
             onProgress(sent / total);
