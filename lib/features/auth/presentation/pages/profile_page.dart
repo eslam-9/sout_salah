@@ -73,17 +73,10 @@ class ProfilePage extends ConsumerWidget {
                           'معرف المسجد: ${user.mosqueId}', // We would need to fetch mosque name ideally
                     ),
                   const SizedBox(height: 32),
-                  // Placeholder for Edit Profile
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('تعديل الملف الشخصي قريباً'),
-                          ),
-                        );
-                      },
+                      onPressed: () => _showEditProfileDialog(context, ref),
                       icon: const Icon(LucideIcons.edit),
                       label: Text(
                         'تعديل الملف الشخصي',
@@ -177,5 +170,50 @@ class ProfilePage extends ConsumerWidget {
       default:
         return role;
     }
+  }
+
+  void _showEditProfileDialog(BuildContext context, WidgetRef ref) {
+    final state = ref.read(authProvider);
+    if (state is! AuthAuthenticated) return;
+
+    final controller = TextEditingController(text: state.user.username ?? '');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تعديل الاسم'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'اسم المستخدم',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final newUsername = controller.text.trim();
+              if (newUsername.isEmpty) return;
+
+              Navigator.pop(context);
+              final success = await ref
+                  .read(authProvider.notifier)
+                  .updateUsername(newUsername);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'تم التحديث بنجاح' : 'فشل التحديث'),
+                  ),
+                );
+              }
+            },
+            child: const Text('حفظ'),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -6,6 +6,30 @@ import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 import 'sign_up_params.dart';
 
+class UpdateProfileParams extends Equatable {
+  final String userId;
+  final String? username;
+
+  const UpdateProfileParams({required this.userId, this.username});
+
+  @override
+  List<Object?> get props => [userId, username];
+}
+
+class UpdateProfileUseCase implements UseCase<User, UpdateProfileParams> {
+  final AuthRepository repository;
+
+  UpdateProfileUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, User>> call(UpdateProfileParams params) async {
+    return await repository.updateProfile(
+      params.userId,
+      username: params.username,
+    );
+  }
+}
+
 class SignInParams extends Equatable {
   final String email;
   final String password;
