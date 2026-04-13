@@ -253,8 +253,9 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                       );
                     }),
                     onChanged: (val) {
-                      if (val != null)
+                      if (val != null) {
                         setDialogState(() => selectedMonthIdx = val);
+                      }
                     },
                   ),
                   const SizedBox(height: 16),
