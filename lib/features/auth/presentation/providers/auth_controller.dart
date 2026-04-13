@@ -27,6 +27,9 @@ final signOutUseCaseProvider = Provider(
 final getCurrentUserUseCaseProvider = Provider(
   (ref) => GetCurrentUserUseCase(ref.watch(authRepositoryProvider)),
 );
+final updateProfileUseCaseProvider = Provider(
+  (ref) => UpdateProfileUseCase(ref.watch(authRepositoryProvider)),
+);
 
 // Provider to track if initial auth check has been completed
 final initialCheckDoneProvider = StateProvider<bool>((ref) => false);
@@ -38,6 +41,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signInAnonymouslyUseCase: ref.watch(signInAnonymouslyUseCaseProvider),
     signOutUseCase: ref.watch(signOutUseCaseProvider),
     getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
+    updateProfileUseCase: ref.watch(updateProfileUseCaseProvider),
     sharedPreferences: ref.watch(sharedPreferencesProvider),
   );
 });
@@ -48,6 +52,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final SignInAnonymouslyUseCase signInAnonymouslyUseCase;
   final SignOutUseCase signOutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
 
   final SharedPreferences sharedPreferences;
 
@@ -57,6 +62,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required this.signInAnonymouslyUseCase,
     required this.signOutUseCase,
     required this.getCurrentUserUseCase,
+    required this.updateProfileUseCase,
     required this.sharedPreferences,
   }) : super(AuthInitial());
 
@@ -142,5 +148,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } else {
       return 'Unexpected Error';
     }
+  }
+
+  Future<bool> updateUsername(String username) async {
+    if (state is! AuthAuthenticated) return false;
+    final userId = (state as AuthAuthenticated).user.id;
+
+    final result = await updateProfileUseCase(
+      UpdateProfileParams(userId: userId, username: username),
+    );
+    return result.fold(
+      (failure) {
+        state = AuthError(message: _mapFailureToMessage(failure));
+        return false;
+      },
+      (user) {
+        state = AuthAuthenticated(user: user);
+        return true;
+      },
+    );
   }
 }

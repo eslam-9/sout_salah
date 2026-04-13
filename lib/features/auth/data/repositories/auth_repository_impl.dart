@@ -1,11 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
-
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -90,6 +89,26 @@ class AuthRepositoryImpl implements AuthRepository {
         return Right(user);
       }
       return Left(const ServerFailure(message: 'User not found'));
+    } on AuthException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> updateProfile(
+    String userId, {
+    String? username,
+  }) async {
+    try {
+      final user = await remoteDataSource.updateProfile(
+        userId,
+        username: username,
+      );
+      return Right(user);
     } on AuthException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {

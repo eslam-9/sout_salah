@@ -13,6 +13,7 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> signInAnonymously();
   Future<void> signOut();
   Future<UserModel?> getCurrentUser();
+  Future<UserModel> updateProfile(String userId, {String? username});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -112,6 +113,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       return null;
     } catch (e) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<UserModel> updateProfile(String userId, {String? username}) async {
+    logger.i('Updating profile for user: $userId');
+    try {
+      final updateData = <String, dynamic>{};
+      if (username != null) updateData['username'] = username;
+
+      await supabaseClient.from('profiles').update(updateData).eq('id', userId);
+
+      logger.i('Profile updated successfully for user: $userId');
+      final user = supabaseClient.auth.currentUser;
+      if (user == null) throw ServerException();
+      return _getUserWithProfile(user);
+    } catch (e) {
+      logger.e('Error updating profile for user $userId', e);
       throw ServerException();
     }
   }
