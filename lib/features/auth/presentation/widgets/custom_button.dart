@@ -41,11 +41,7 @@ class CustomButton extends StatelessWidget {
   Widget _c(Color c) {
     var t = Text(
       text,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: c,
-      ),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c),
     );
     return icon != null
         ? Row(

@@ -11,8 +11,16 @@ import 'dart:io';
 
 abstract class MosqueRemoteDataSource {
   Future<List<MosqueModel>> getMosques();
-  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId, {int? month, int? year});
-  Future<void> addMonth({required String mosqueId, required int month, required int year});
+  Future<List<RamadanDayModel>> getRamadanDays(
+    String mosqueId, {
+    int? month,
+    int? year,
+  });
+  Future<void> addMonth({
+    required String mosqueId,
+    required int month,
+    required int year,
+  });
   Future<List<Map<String, int>>> getAvailableMonths(String mosqueId);
   Future<List<RecordingModel>> getDayRecordings(String dayId);
   Future<MosqueModel> addMosque({
@@ -38,7 +46,7 @@ abstract class MosqueRemoteDataSource {
     required String dayId,
     required String prayerName,
   });
-  
+
   // Day Schedule Methods
   Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId);
   Future<DayScheduleEntryModel> addScheduleEntry({
@@ -86,14 +94,20 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   }
 
   @override
-  Future<List<RamadanDayModel>> getRamadanDays(String mosqueId, {int? month, int? year}) async {
-    logger.i('Fetching Ramadan days for mosque: $mosqueId, month: $month, year: $year');
+  Future<List<RamadanDayModel>> getRamadanDays(
+    String mosqueId, {
+    int? month,
+    int? year,
+  }) async {
+    logger.i(
+      'Fetching Ramadan days for mosque: $mosqueId, month: $month, year: $year',
+    );
     try {
       var query = supabaseClient
           .from('ramadan_days')
           .select('*, recordings(count)')
           .eq('mosque_id', mosqueId);
-          
+
       if (month != null) {
         query = query.eq('month', month);
       }
@@ -159,10 +173,8 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
         });
       }
 
-      await supabaseClient
-          .from('ramadan_days')
-          .insert(daysToInsert);
-          
+      await supabaseClient.from('ramadan_days').insert(daysToInsert);
+
       logger.i('Successfully added 30 days for month $month/$year');
     } catch (e, stackTrace) {
       logger.e('Error adding month', e, stackTrace);
@@ -178,10 +190,10 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
           .from('ramadan_days')
           .select('month, year')
           .eq('mosque_id', mosqueId);
-          
+
       final data = response as List<dynamic>;
       final uniqueMonths = <String, Map<String, int>>{};
-      
+
       for (var row in data) {
         final m = row['month'] as int?;
         final y = row['year'] as int?;
@@ -189,7 +201,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
           uniqueMonths['$y-$m'] = {'month': m, 'year': y};
         }
       }
-      
+
       final result = uniqueMonths.values.toList();
       // Sort ascending by year then month
       result.sort((a, b) {
@@ -197,7 +209,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
         if (yearCmp != 0) return yearCmp;
         return a['month']!.compareTo(b['month']!);
       });
-      
+
       return result;
     } catch (e, stackTrace) {
       logger.e('Error fetching available months', e, stackTrace);
@@ -458,11 +470,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     try {
       final response = await supabaseClient
           .from('day_schedule')
-          .update({
-            'salah': salah,
-            'shikh': shikh,
-            'comments': comments,
-          })
+          .update({'salah': salah, 'shikh': shikh, 'comments': comments})
           .eq('id', entryId)
           .select()
           .single();
@@ -487,4 +495,3 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     }
   }
 }
-

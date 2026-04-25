@@ -24,8 +24,6 @@ import 'app_routes.dart';
 import 'route_args.dart';
 import 'route_transitions.dart';
 
-
-
 /// Centralized router for the application
 ///
 /// Handles route generation, authentication guards, and custom transitions

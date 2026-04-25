@@ -49,13 +49,13 @@ class DailyVideoModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        mosqueId,
-        dayId,
-        publisherId,
-        videoUrl,
-        title,
-        description,
-        createdAt,
-      ];
+    id,
+    mosqueId,
+    dayId,
+    publisherId,
+    videoUrl,
+    title,
+    description,
+    createdAt,
+  ];
 }

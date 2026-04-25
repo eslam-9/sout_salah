@@ -116,10 +116,7 @@ class _DeviceAudioSelectionPageState
       appBar: AppBar(
         title: Text(
           'اختر التلاوة',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -132,7 +129,8 @@ class _DeviceAudioSelectionPageState
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(textDirection: TextDirection.ltr, 
+            child: TextField(
+              textDirection: TextDirection.ltr,
               controller: _searchController,
               textAlign: TextAlign.right,
               style: TextStyle(),
@@ -164,10 +162,7 @@ class _DeviceAudioSelectionPageState
                   const SizedBox(height: 16),
                   Text(
                     'الرجاء منح صلاحية الوصول للملفات',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -196,10 +191,7 @@ class _DeviceAudioSelectionPageState
               builder: (context, item) {
                 if (item.hasError) {
                   return Center(
-                    child: Text(
-                      'حدث خطأ في تحميل الملفات',
-                      style: TextStyle(),
-                    ),
+                    child: Text('حدث خطأ في تحميل الملفات', style: TextStyle()),
                   );
                 }
 
@@ -211,10 +203,7 @@ class _DeviceAudioSelectionPageState
 
                 if (item.data!.isEmpty) {
                   return Center(
-                    child: Text(
-                      'لا توجد ملفات صوتية',
-                      style: TextStyle(),
-                    ),
+                    child: Text('لا توجد ملفات صوتية', style: TextStyle()),
                   );
                 }
 

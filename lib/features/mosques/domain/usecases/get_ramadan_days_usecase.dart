@@ -9,11 +9,7 @@ class GetRamadanDaysParams {
   final int? month;
   final int? year;
 
-  const GetRamadanDaysParams({
-    required this.mosqueId,
-    this.month,
-    this.year,
-  });
+  const GetRamadanDaysParams({required this.mosqueId, this.month, this.year});
 }
 
 class GetRamadanDaysUseCase

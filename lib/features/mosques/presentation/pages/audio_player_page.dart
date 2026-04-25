@@ -36,10 +36,7 @@ class AudioPlayerPage extends ConsumerWidget {
         ),
         title: Text(
           'تشغيل التلاوة',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -324,10 +321,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'تم حذف التنزيل',
-                          style: TextStyle(),
-                        ),
+                        content: Text('تم حذف التنزيل', style: TextStyle()),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -336,10 +330,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'فشل حذف التنزيل',
-                          style: TextStyle(),
-                        ),
+                        content: Text('فشل حذف التنزيل', style: TextStyle()),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -404,10 +395,7 @@ class AudioPlayerPage extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              Text(
-                                'جاري التنزيل...',
-                                style: TextStyle(),
-                              ),
+                              Text('جاري التنزيل...', style: TextStyle()),
                             ],
                           ),
                           duration: const Duration(seconds: 30),
@@ -436,10 +424,7 @@ class AudioPlayerPage extends ConsumerWidget {
                         ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
-                              'فشل التنزيل',
-                              style: TextStyle(),
-                            ),
+                            content: Text('فشل التنزيل', style: TextStyle()),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -504,10 +489,7 @@ class AudioPlayerPage extends ConsumerWidget {
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      '❤️ تم حفظ التلاوة',
-                      style: TextStyle(),
-                    ),
+                    content: Text('❤️ تم حفظ التلاوة', style: TextStyle()),
                     backgroundColor: AppColors.primary,
                   ),
                 );
@@ -517,10 +499,7 @@ class AudioPlayerPage extends ConsumerWidget {
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      'فشل حفظ التلاوة',
-                      style: TextStyle(),
-                    ),
+                    content: Text('فشل حفظ التلاوة', style: TextStyle()),
                     backgroundColor: Colors.red,
                   ),
                 );

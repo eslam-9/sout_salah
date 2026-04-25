@@ -51,10 +51,7 @@ class ErrorPage extends StatelessWidget {
                 // Error Description
                 Text(
                   'عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   textAlign: TextAlign.center,
                 ),
 
@@ -103,10 +100,7 @@ class ErrorPage extends StatelessWidget {
                   icon: const Icon(LucideIcons.home),
                   label: Text(
                     'العودة للرئيسية',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],

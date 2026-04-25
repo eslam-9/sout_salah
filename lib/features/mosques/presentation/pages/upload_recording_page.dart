@@ -155,9 +155,9 @@ class _UploadRecordingPageState extends ConsumerState<UploadRecordingPage> {
             NotificationService.sendNotification(
               type: 'new_recording',
               data: {
-                'salah': _selectedPrayer == Prayer.other 
-                  ? _customPrayerController.text.trim()
-                  : _selectedPrayer!.arabicName,
+                'salah': _selectedPrayer == Prayer.other
+                    ? _customPrayerController.text.trim()
+                    : _selectedPrayer!.arabicName,
                 'shikh': _sheikhNameController.text.trim(),
                 'dayId': widget.dayId,
                 'mosqueId': widget.mosqueId,
