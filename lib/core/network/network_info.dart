@@ -15,11 +15,6 @@ class NetworkInfoImpl implements NetworkInfo {
     // In connectivity_plus, result is a list in newer versions, but wait, let's check the version installed.
     // connectivity_plus 6.1.5 uses `List<ConnectivityResult>` for checkConnectivity in 6.0.0+? Wait.
     // connectivity_plus ^6.0.0 uses List<ConnectivityResult>.
-    if (result is List<ConnectivityResult>) {
-      return !result.contains(ConnectivityResult.none) && result.isNotEmpty;
-    } else if (result is ConnectivityResult) {
-      return result != ConnectivityResult.none;
-    }
-    return false;
+    return !result.contains(ConnectivityResult.none) && result.isNotEmpty;
   }
 }

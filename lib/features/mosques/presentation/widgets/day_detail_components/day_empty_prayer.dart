@@ -13,12 +13,16 @@ class DayEmptyPrayerContent extends ConsumerWidget {
   final Prayer prayer;
   final String mosqueId;
   final String dayId;
+  final int dayNumber;
+  final int month;
 
   const DayEmptyPrayerContent({
     super.key,
     required this.prayer,
     required this.mosqueId,
     required this.dayId,
+    required this.dayNumber,
+    required this.month,
   });
 
   @override
@@ -80,6 +84,8 @@ class DayEmptyPrayerContent extends ConsumerWidget {
               arguments: UploadRecordingArgs(
                 mosqueId: mosqueId,
                 dayId: dayId,
+                dayNumber: dayNumber,
+                month: month,
                 prayer: prayer,
               ),
             );

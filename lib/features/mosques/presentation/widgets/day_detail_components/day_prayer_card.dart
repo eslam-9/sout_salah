@@ -10,6 +10,8 @@ class DayPrayerCard extends StatelessWidget {
   final List<Recording> recordings;
   final String mosqueId;
   final String dayId;
+  final int dayNumber;
+  final int month;
 
   const DayPrayerCard({
     super.key,
@@ -17,6 +19,8 @@ class DayPrayerCard extends StatelessWidget {
     required this.recordings,
     required this.mosqueId,
     required this.dayId,
+    required this.dayNumber,
+    required this.month,
   });
 
   @override
@@ -47,12 +51,18 @@ class DayPrayerCard extends StatelessWidget {
       ),
       child: hasRecording
           ? (recording!.audioUrl == 'pending'
-                ? DayPendingRecordingContent(recording: recording)
+                ? DayPendingRecordingContent(
+                    recording: recording,
+                    dayNumber: dayNumber,
+                    month: month,
+                  )
                 : DayRecordingContent(recording: recording))
           : DayEmptyPrayerContent(
               prayer: prayer,
               mosqueId: mosqueId,
               dayId: dayId,
+              dayNumber: dayNumber,
+              month: month,
             ),
     );
   }

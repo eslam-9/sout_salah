@@ -82,7 +82,7 @@ class LoginPage extends ConsumerWidget {
                 ElevatedButton(
                   onPressed: () {
                     // Reset to initial state to allow retry
-                    ref.read(authProvider.notifier).state = AuthInitial();
+                    ref.read(authProvider.notifier).reset();
                     // Reset initial check flag
                     ref
                         .read(initialCheckDoneProvider.notifier)

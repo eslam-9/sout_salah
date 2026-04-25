@@ -331,6 +331,8 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
                             selectedYear,
                           );
 
+                      if (!context.mounted) return;
+
                       if (success) {
                         Navigator.pop(context);
                         // Refresh available months and load the new one

@@ -54,6 +54,8 @@ class DayPrayerList extends StatelessWidget {
             recordings: prayerGroups[prayer] ?? [],
             mosqueId: day.mosqueId,
             dayId: day.id,
+            dayNumber: day.dayNumber,
+            month: day.month,
           ),
         ),
         ...customRecordings.map(
@@ -62,6 +64,8 @@ class DayPrayerList extends StatelessWidget {
             recordings: [recording],
             mosqueId: day.mosqueId,
             dayId: day.id,
+            dayNumber: day.dayNumber,
+            month: day.month,
           ),
         ),
         Consumer(

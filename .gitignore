@@ -51,8 +51,8 @@ android/key.properties
 android/app/*.jks
 
 # Environment variables
-.env
-env.json
+secrets.json
+
 
 # Ai files
 docs/

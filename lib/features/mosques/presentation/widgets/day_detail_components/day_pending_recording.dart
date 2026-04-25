@@ -13,8 +13,15 @@ import '../../../domain/usecases/delete_recording_usecase.dart';
 
 class DayPendingRecordingContent extends ConsumerWidget {
   final Recording recording;
+  final int dayNumber;
+  final int month;
 
-  const DayPendingRecordingContent({super.key, required this.recording});
+  const DayPendingRecordingContent({
+    super.key, 
+    required this.recording,
+    required this.dayNumber,
+    required this.month,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,6 +86,8 @@ class DayPendingRecordingContent extends ConsumerWidget {
               arguments: UploadRecordingArgs(
                 mosqueId: recording.mosqueId,
                 dayId: recording.dayId,
+                dayNumber: dayNumber,
+                month: month,
                 prayer: recording.prayer,
                 customPrayerName: recording.customPrayerName,
                 pendingRecordingId: recording.id,
