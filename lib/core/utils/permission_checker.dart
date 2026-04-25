@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'mosque_permissions.dart';
 
 /// Provider for MosquePermissions utility
@@ -33,8 +35,14 @@ class PermissionChecker {
     return await _permissions.isAdmin(mosqueId);
   }
 
-  /// Check if user can add a new mosque (Super Admin only)
+  /// Check if user can add a new mosque (Available for all authenticated users, but not guests)
   Future<bool> canAddMosque() async {
+    final isGuest = GetIt.I<SharedPreferences>().getBool('is_guest_mode') ?? false;
+    return !isGuest;
+  }
+
+  /// Check if the user is a global super admin
+  Future<bool> isSuperAdmin() async {
     return await _permissions.isSuperAdmin();
   }
 }
