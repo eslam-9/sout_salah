@@ -1,11 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
-import 'package:dartz/dartz.dart';
 import '../../domain/usecases/get_mosques_usecase.dart';
 import '../../domain/usecases/add_mosque_usecase.dart';
 import 'mosque_data_providers.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/retry_executor.dart';
 import '../../../../core/di/providers.dart';

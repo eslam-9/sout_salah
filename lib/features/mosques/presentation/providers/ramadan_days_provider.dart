@@ -5,11 +5,9 @@ import '../../domain/usecases/add_month_usecase.dart';
 import '../../domain/entities/ramadan_day.dart';
 import 'mosque_data_providers.dart';
 import 'month_year.dart';
-import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/retry_executor.dart';
 import '../../../../core/di/providers.dart';
-import 'package:dartz/dartz.dart';
 
 // State for Ramadan Days
 abstract class RamadanDaysState {
@@ -27,7 +25,8 @@ class RamadanDaysLoadedState extends RamadanDaysState {
 
 class RamadanDaysError extends RamadanDaysState {
   final String message;
-  const RamadanDaysError(this.message);
+  final List<RamadanDay>? previousData;
+  const RamadanDaysError(this.message, {this.previousData});
 }
 
 // Provider for GetRamadanDaysUseCase
@@ -49,6 +48,9 @@ class RamadanDaysNotifier extends StateNotifier<RamadanDaysState>
   }) : super(RamadanDaysInitial());
 
   Future<void> loadDays(String mosqueId, {int? month, int? year}) async {
+    final previousData = state is RamadanDaysLoadedState 
+        ? (state as RamadanDaysLoadedState).days 
+        : (state is RamadanDaysError ? (state as RamadanDaysError).previousData : null);
     state = RamadanDaysLoading();
     final result = await executeWithRetry(
       () => getRamadanDaysUseCase(
@@ -57,7 +59,7 @@ class RamadanDaysNotifier extends StateNotifier<RamadanDaysState>
       networkInfo: networkInfo,
     );
     result.fold(
-      (failure) => state = RamadanDaysError(mapFailureToMessage(failure)),
+      (failure) => state = RamadanDaysError(mapFailureToMessage(failure), previousData: previousData),
       (days) => state = RamadanDaysLoadedState(days),
     );
   }

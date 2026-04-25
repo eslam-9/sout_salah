@@ -76,6 +76,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     });
   }
 
+  void reset() {
+    state = AuthInitial();
+  }
+
   Future<void> signIn(String email, String password) async {
     state = AuthLoading();
     final result = await signInUseCase(

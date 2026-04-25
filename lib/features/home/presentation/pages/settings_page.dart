@@ -25,7 +25,6 @@ class SettingsPage extends ConsumerWidget {
       }
     });
 
-    final authState = ref.watch(authProvider);
     final isGuest =
         GetIt.I<SharedPreferences>().getBool('is_guest_mode') ?? false;
 
