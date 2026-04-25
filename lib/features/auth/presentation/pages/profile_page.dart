@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_controller.dart';
 import '../bloc/auth_state.dart';
+import '../../../mosques/presentation/pages/mosque_requests_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -92,6 +93,35 @@ class ProfilePage extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  if (user.role == 'admin') ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MosqueRequestsPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(LucideIcons.inbox),
+                        label: Text(
+                          'إدارة طلبات المساجد',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             );
