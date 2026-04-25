@@ -45,7 +45,11 @@ class DailyVideoCard extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(LucideIcons.play, color: Colors.white, size: 24),
+                  child: const Icon(
+                    LucideIcons.play,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
@@ -62,10 +66,7 @@ class DailyVideoCard extends StatelessWidget {
                       ),
                       Text(
                         'عرض التلاوات المرئية والوصف',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ],
                   ),

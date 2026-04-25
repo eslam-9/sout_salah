@@ -49,7 +49,11 @@ class MosqueRepositoryImpl implements MosqueRepository {
     required int year,
   }) async {
     try {
-      await remoteDataSource.addMonth(mosqueId: mosqueId, month: month, year: year);
+      await remoteDataSource.addMonth(
+        mosqueId: mosqueId,
+        month: month,
+        year: year,
+      );
       return const Right(null);
     } on ServerException {
       return Left(ServerFailure());
@@ -175,7 +179,9 @@ class MosqueRepositoryImpl implements MosqueRepository {
   // --- Day Schedule Methods ---
 
   @override
-  Future<Either<Failure, List<DayScheduleEntry>>> getDaySchedule(String dayId) async {
+  Future<Either<Failure, List<DayScheduleEntry>>> getDaySchedule(
+    String dayId,
+  ) async {
     try {
       final schedule = await remoteDataSource.getDaySchedule(dayId);
       return Right(schedule);
@@ -238,4 +244,3 @@ class MosqueRepositoryImpl implements MosqueRepository {
     }
   }
 }
-

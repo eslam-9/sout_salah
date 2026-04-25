@@ -177,10 +177,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Text(
-                                'جاري تحميل التلاوة...',
-                                style: TextStyle(),
-                              ),
+                              Text('جاري تحميل التلاوة...', style: TextStyle()),
                             ],
                           ),
                           duration: const Duration(seconds: 30),
@@ -210,10 +207,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            'فشل حفظ التلاوة',
-                            style: TextStyle(),
-                          ),
+                          content: Text('فشل حفظ التلاوة', style: TextStyle()),
                           backgroundColor: Colors.red,
                         ),
                       );

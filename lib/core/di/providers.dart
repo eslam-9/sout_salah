@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
+import '../network/network_info.dart';
 
 import 'package:sout_salah/core/utils/app_logger.dart';
 import '../services/favorites_service.dart';
@@ -30,6 +33,9 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
 );
 final audioPlayerServiceProvider = Provider<AudioPlayerService>(
   (ref) => GetIt.I<AudioPlayerService>(),
+);
+final networkInfoProvider = Provider<NetworkInfo>(
+  (ref) => NetworkInfoImpl(Connectivity()),
 );
 
 /// Current playing recording ID provider

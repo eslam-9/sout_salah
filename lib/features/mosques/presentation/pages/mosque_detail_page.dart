@@ -138,7 +138,59 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
             child: state is RamadanDaysLoading
                 ? const Center(child: CircularProgressIndicator())
                 : state is RamadanDaysError
-                ? Center(child: Text(state.message))
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.wifiOff,
+                          size: 64,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          state.message,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            if (selectedMonth != null) {
+                              ref
+                                  .read(ramadanDaysProvider.notifier)
+                                  .loadDays(
+                                    widget.mosque.id,
+                                    month: selectedMonth!.month,
+                                    year: selectedMonth!.year,
+                                  );
+                            } else {
+                              _loadInitialData();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: const Icon(LucideIcons.refreshCw),
+                          label: Text(
+                            'إعادة المحاولة',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 : state is RamadanDaysLoadedState
                 ? _buildCalendarView(context, state.days)
                 : const Center(child: Text('لا توجد بيانات')),

@@ -88,10 +88,7 @@ class VideoRepository {
       }
 
       // 2. Delete from Supabase
-      await supabaseClient
-          .from('daily_videos')
-          .delete()
-          .eq('id', video.id);
+      await supabaseClient.from('daily_videos').delete().eq('id', video.id);
     } catch (e) {
       _logger.e('Error deleting daily video', e);
       rethrow;

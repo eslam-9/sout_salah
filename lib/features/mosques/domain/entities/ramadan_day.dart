@@ -20,5 +20,13 @@ class RamadanDay extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, mosqueId, dayNumber, status, active, month, year];
+  List<Object?> get props => [
+    id,
+    mosqueId,
+    dayNumber,
+    status,
+    active,
+    month,
+    year,
+  ];
 }

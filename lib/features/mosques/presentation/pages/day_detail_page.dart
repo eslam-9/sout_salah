@@ -19,7 +19,6 @@ import '../../../../core/services/navigation_service.dart';
 import '../providers/daily_video_providers.dart';
 import '../widgets/daily_video_card.dart';
 
-
 class DayDetailPage extends ConsumerWidget {
   final RamadanDay day;
 
@@ -27,7 +26,6 @@ class DayDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -131,8 +129,12 @@ class DayDetailPage extends ConsumerWidget {
                         return SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: () => _showUploadVideoSheet(context, ref),
-                            icon: const Icon(LucideIcons.video, color: AppColors.primary),
+                            onPressed: () =>
+                                _showUploadVideoSheet(context, ref),
+                            icon: const Icon(
+                              LucideIcons.video,
+                              color: AppColors.primary,
+                            ),
                             label: const Text(
                               'إضافة فيديوهات اليوم',
                               style: TextStyle(
@@ -143,7 +145,10 @@ class DayDetailPage extends ConsumerWidget {
                             ),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: const BorderSide(color: AppColors.primary, width: 2),
+                              side: const BorderSide(
+                                color: AppColors.primary,
+                                width: 2,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -158,10 +163,13 @@ class DayDetailPage extends ConsumerWidget {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => const Text('فشل تحميل الفيديو', style: TextStyle(color: Colors.red)),
+            error: (err, stack) => const Text(
+              'فشل تحميل الفيديو',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ),
-        
+
         Expanded(
           child: recordingsAsync.when(
             data: (recordings) => _buildPrayersList(recordings),

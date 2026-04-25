@@ -66,4 +66,3 @@ abstract class MosqueRepository {
   });
   Future<Either<Failure, void>> deleteScheduleEntry(String entryId);
 }
-

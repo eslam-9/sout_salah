@@ -185,10 +185,7 @@ class DownloadsPage extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'تم حذف التنزيل',
-                          style: TextStyle(),
-                        ),
+                        content: Text('تم حذف التنزيل', style: TextStyle()),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -197,10 +194,7 @@ class DownloadsPage extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'فشل حذف التنزيل',
-                          style: TextStyle(),
-                        ),
+                        content: Text('فشل حذف التنزيل', style: TextStyle()),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -244,10 +238,7 @@ class DownloadsPage extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     '${(download.fileSize! / 1024 / 1024).toStringAsFixed(1)} MB',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                     textAlign: TextAlign.right,
                   ),
                 ],

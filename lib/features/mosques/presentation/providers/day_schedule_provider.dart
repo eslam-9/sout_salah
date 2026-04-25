@@ -2,20 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/day_schedule_entry.dart';
 import 'mosque_data_providers.dart';
 
-final dayScheduleProvider = FutureProvider.family<List<DayScheduleEntry>, String>((
-  ref,
-  dayId,
-) async {
-  final repository = ref.watch(mosqueRepositoryProvider);
-  final result = await repository.getDaySchedule(dayId);
+final dayScheduleProvider =
+    FutureProvider.family<List<DayScheduleEntry>, String>((ref, dayId) async {
+      final repository = ref.watch(mosqueRepositoryProvider);
+      final result = await repository.getDaySchedule(dayId);
 
-  return result.fold(
-    (failure) => throw Exception('Failed to load day schedule'),
-    (schedule) => schedule,
-  );
-});
+      return result.fold(
+        (failure) => throw Exception('Failed to load day schedule'),
+        (schedule) => schedule,
+      );
+    });
 
-class DayScheduleNotifier extends StateNotifier<AsyncValue<List<DayScheduleEntry>>> {
+class DayScheduleNotifier
+    extends StateNotifier<AsyncValue<List<DayScheduleEntry>>> {
   final String dayId;
   final String mosqueId;
   final Ref ref;
@@ -71,13 +70,10 @@ class DayScheduleNotifier extends StateNotifier<AsyncValue<List<DayScheduleEntry
         sortOrder: sortOrder,
       );
 
-      return result.fold(
-        (failure) => false,
-        (_) {
-          _loadSchedule();
-          return true;
-        },
-      );
+      return result.fold((failure) => false, (_) {
+        _loadSchedule();
+        return true;
+      });
     } catch (e) {
       return false;
     }
@@ -98,13 +94,10 @@ class DayScheduleNotifier extends StateNotifier<AsyncValue<List<DayScheduleEntry
         comments: comments,
       );
 
-      return result.fold(
-        (failure) => false,
-        (_) {
-          _loadSchedule();
-          return true;
-        },
-      );
+      return result.fold((failure) => false, (_) {
+        _loadSchedule();
+        return true;
+      });
     } catch (e) {
       return false;
     }
@@ -115,13 +108,10 @@ class DayScheduleNotifier extends StateNotifier<AsyncValue<List<DayScheduleEntry
       final repository = ref.read(mosqueRepositoryProvider);
       final result = await repository.deleteScheduleEntry(entryId);
 
-      return result.fold(
-        (failure) => false,
-        (_) {
-          _loadSchedule();
-          return true;
-        },
-      );
+      return result.fold((failure) => false, (_) {
+        _loadSchedule();
+        return true;
+      });
     } catch (e) {
       return false;
     }
@@ -129,13 +119,15 @@ class DayScheduleNotifier extends StateNotifier<AsyncValue<List<DayScheduleEntry
 }
 
 // Family provider to instantiate specific notifiers based on dayId/mosqueId
-final dayScheduleNotifierProvider = StateNotifierProvider.family<
-    DayScheduleNotifier,
-    AsyncValue<List<DayScheduleEntry>>,
-    ({String dayId, String mosqueId})>(
-  (ref, args) => DayScheduleNotifier(
-    dayId: args.dayId,
-    mosqueId: args.mosqueId,
-    ref: ref,
-  ),
-);
+final dayScheduleNotifierProvider =
+    StateNotifierProvider.family<
+      DayScheduleNotifier,
+      AsyncValue<List<DayScheduleEntry>>,
+      ({String dayId, String mosqueId})
+    >(
+      (ref, args) => DayScheduleNotifier(
+        dayId: args.dayId,
+        mosqueId: args.mosqueId,
+        ref: ref,
+      ),
+    );

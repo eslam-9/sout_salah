@@ -28,10 +28,7 @@ class DailyVideoPage extends ConsumerWidget {
         ),
         title: const Text(
           'فيديوهات اليوم',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -112,10 +109,7 @@ class DailyVideoPage extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(
-                          LucideIcons.chevronLeft,
-                          color: Colors.grey,
-                        ),
+                        const Icon(LucideIcons.chevronLeft, color: Colors.grey),
                       ],
                     ),
                   ),

@@ -59,7 +59,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 }
               },
               onSignUp: () => NavigationService.navigateTo(AppRoutes.signup),
-              onGuest: () => ref.read(authProvider.notifier).signInAnonymously(),
+              onGuest: () =>
+                  ref.read(authProvider.notifier).signInAnonymously(),
             ),
           ],
         ),

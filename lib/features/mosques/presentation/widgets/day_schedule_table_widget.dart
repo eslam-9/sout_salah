@@ -58,7 +58,10 @@ class DayScheduleTableWidget extends ConsumerWidget {
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data == true) {
                     return IconButton(
-                      icon: const Icon(LucideIcons.plusCircle, color: AppColors.primary),
+                      icon: const Icon(
+                        LucideIcons.plusCircle,
+                        color: AppColors.primary,
+                      ),
                       onPressed: () => _showAddOrEditSheet(context, ref, null),
                       tooltip: 'إضافة صف جديد',
                     );
@@ -110,13 +113,19 @@ class DayScheduleTableWidget extends ConsumerWidget {
         headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
         columns: const [
           DataColumn(
-            label: Text('الصلاة', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: Text(
+              'الصلاة',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           DataColumn(
             label: Text('الشيخ', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           DataColumn(
-            label: Text('ملاحظات', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: Text(
+              'ملاحظات',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           DataColumn(label: Text('')), // Actions column
         ],
@@ -126,7 +135,10 @@ class DayScheduleTableWidget extends ConsumerWidget {
               DataCell(
                 Text(
                   entry.salah,
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
               DataCell(Text(entry.shikh)),
@@ -137,12 +149,22 @@ class DayScheduleTableWidget extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(LucideIcons.edit2, size: 18, color: Colors.blue),
-                            onPressed: () => _showAddOrEditSheet(context, ref, entry),
+                            icon: const Icon(
+                              LucideIcons.edit2,
+                              size: 18,
+                              color: Colors.blue,
+                            ),
+                            onPressed: () =>
+                                _showAddOrEditSheet(context, ref, entry),
                           ),
                           IconButton(
-                            icon: const Icon(LucideIcons.trash2, size: 18, color: Colors.red),
-                            onPressed: () => _confirmDelete(context, ref, entry),
+                            icon: const Icon(
+                              LucideIcons.trash2,
+                              size: 18,
+                              color: Colors.red,
+                            ),
+                            onPressed: () =>
+                                _confirmDelete(context, ref, entry),
                           ),
                         ],
                       )
@@ -155,7 +177,11 @@ class DayScheduleTableWidget extends ConsumerWidget {
     );
   }
 
-  void _showAddOrEditSheet(BuildContext context, WidgetRef ref, DayScheduleEntry? entry) {
+  void _showAddOrEditSheet(
+    BuildContext context,
+    WidgetRef ref,
+    DayScheduleEntry? entry,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -177,12 +203,19 @@ class DayScheduleTableWidget extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, WidgetRef ref, DayScheduleEntry entry) {
+  void _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    DayScheduleEntry entry,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('حذف الصف', textAlign: TextAlign.right),
-        content: const Text('هل أنت متأكد من حذف هذا الصف من الجدول؟', textAlign: TextAlign.right),
+        content: const Text(
+          'هل أنت متأكد من حذف هذا الصف من الجدول؟',
+          textAlign: TextAlign.right,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -192,7 +225,10 @@ class DayScheduleTableWidget extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(context);
               final notifier = ref.read(
-                dayScheduleNotifierProvider((dayId: dayId, mosqueId: mosqueId)).notifier,
+                dayScheduleNotifierProvider((
+                  dayId: dayId,
+                  mosqueId: mosqueId,
+                )).notifier,
               );
               final success = await notifier.deleteEntry(entry.id);
               if (success) {
@@ -219,10 +255,12 @@ class _AddOrEditScheduleRowSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<_AddOrEditScheduleRowSheet> createState() => _AddOrEditScheduleRowSheetState();
+  ConsumerState<_AddOrEditScheduleRowSheet> createState() =>
+      _AddOrEditScheduleRowSheetState();
 }
 
-class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRowSheet> {
+class _AddOrEditScheduleRowSheetState
+    extends ConsumerState<_AddOrEditScheduleRowSheet> {
   late TextEditingController _salahController;
   late TextEditingController _shikhController;
   late TextEditingController _commentsController;
@@ -233,7 +271,9 @@ class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRo
     super.initState();
     _salahController = TextEditingController(text: widget.entry?.salah ?? '');
     _shikhController = TextEditingController(text: widget.entry?.shikh ?? '');
-    _commentsController = TextEditingController(text: widget.entry?.comments ?? '');
+    _commentsController = TextEditingController(
+      text: widget.entry?.comments ?? '',
+    );
   }
 
   @override
@@ -247,7 +287,7 @@ class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRo
   Future<void> _save() async {
     final salah = _salahController.text.trim();
     final shikh = _shikhController.text.trim();
-    
+
     if (salah.isEmpty || shikh.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('الرجاء إدخال الصلاة واسم الشيخ')),
@@ -258,7 +298,10 @@ class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRo
     setState(() => _isLoading = true);
 
     final notifier = ref.read(
-      dayScheduleNotifierProvider((dayId: widget.dayId, mosqueId: widget.mosqueId)).notifier,
+      dayScheduleNotifierProvider((
+        dayId: widget.dayId,
+        mosqueId: widget.mosqueId,
+      )).notifier,
     );
 
     bool success;
@@ -283,9 +326,9 @@ class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRo
         ref.invalidate(dayScheduleProvider(widget.dayId));
         Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('حدث خطأ أثناء الحفظ')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('حدث خطأ أثناء الحفظ')));
       }
     }
   }
@@ -343,7 +386,10 @@ class _AddOrEditScheduleRowSheetState extends ConsumerState<_AddOrEditScheduleRo
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Text('حفظ', style: TextStyle(fontSize: 16)),
           ),

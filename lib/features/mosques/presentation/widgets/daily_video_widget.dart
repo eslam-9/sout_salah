@@ -96,7 +96,11 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
                         subtitle: option.subtitle != null
                             ? Text(option.subtitle!)
                             : null,
-                        trailing: const Icon(LucideIcons.chevronLeft, size: 16, color: AppColors.primary),
+                        trailing: const Icon(
+                          LucideIcons.chevronLeft,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
                         onTap: () {
                           Navigator.pop(context);
                           option.onTap(context);
@@ -111,14 +115,12 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
           );
         },
         deviceOrientationsAfterFullScreen: const [
-           // Return to portrait after full screen
+          // Return to portrait after full screen
           DeviceOrientation.portraitUp,
         ],
         placeholder: Container(
           color: Colors.black,
-          child: const Center(
-             child: CircularProgressIndicator(),
-          ),
+          child: const Center(child: CircularProgressIndicator()),
         ),
         materialProgressColors: ChewieProgressColors(
           playedColor: AppColors.primary,
@@ -179,11 +181,15 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: AspectRatio(
-              aspectRatio: _videoPlayerController.value.isInitialized 
-                 ? _videoPlayerController.value.aspectRatio 
-                 : 16 / 9,
-              child: _chewieController != null &&
-                      _chewieController!.videoPlayerController.value.isInitialized
+              aspectRatio: _videoPlayerController.value.isInitialized
+                  ? _videoPlayerController.value.aspectRatio
+                  : 16 / 9,
+              child:
+                  _chewieController != null &&
+                      _chewieController!
+                          .videoPlayerController
+                          .value
+                          .isInitialized
                   ? Chewie(controller: _chewieController!)
                   : Container(
                       color: Colors.black12,
@@ -191,21 +197,23 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
                     ),
             ),
           ),
-          
+
           // Title and Description Area
           if ((widget.video.title != null && widget.video.title!.isNotEmpty) ||
-              (widget.video.description != null && widget.video.description!.isNotEmpty))
+              (widget.video.description != null &&
+                  widget.video.description!.isNotEmpty))
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.video.title != null && widget.video.title!.isNotEmpty) ...[
+                  if (widget.video.title != null &&
+                      widget.video.title!.isNotEmpty) ...[
                     Text(
                       widget.video.title!,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -214,9 +222,9 @@ class _DailyVideoWidgetState extends State<DailyVideoWidget> {
                     Text(
                       widget.video.description!,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            height: 1.5,
-                            color: Colors.black87,
-                          ),
+                        height: 1.5,
+                        color: Colors.black87,
+                      ),
                     ),
                 ],
               ),

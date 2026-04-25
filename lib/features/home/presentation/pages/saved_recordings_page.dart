@@ -49,18 +49,12 @@ class SavedRecordingsPage extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     'لا توجد تلاوات محفوظة',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'اضغط على ❤️ لحفظ التلاوات المفضلة',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -137,10 +131,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: Text(
-                        'إزالة',
-                        style: TextStyle(color: Colors.red),
-                      ),
+                      child: Text('إزالة', style: TextStyle(color: Colors.red)),
                     ),
                   ],
                 ),
@@ -170,10 +161,7 @@ class SavedRecordingsPage extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'فشل إزالة التلاوة',
-                          style: TextStyle(),
-                        ),
+                        content: Text('فشل إزالة التلاوة', style: TextStyle()),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -205,19 +193,13 @@ class SavedRecordingsPage extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   favorite.sheikhName,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 if (favorite.fileSize != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     _formatFileSize(favorite.fileSize!),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ],

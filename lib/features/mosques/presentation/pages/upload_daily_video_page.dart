@@ -51,7 +51,10 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
 
       if (result != null && result.files.isNotEmpty) {
         setState(() {
-          _selectedFiles = result.paths.where((p) => p != null).map((p) => File(p!)).toList();
+          _selectedFiles = result.paths
+              .where((p) => p != null)
+              .map((p) => File(p!))
+              .toList();
         });
       }
     } catch (e) {
@@ -144,10 +147,7 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
         ),
         title: const Text(
           'إضافة فيديوهات اليوم',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -165,7 +165,9 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                   child: Container(
                     height: 180,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: Colors.transparent),
                     ),
@@ -173,7 +175,11 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(LucideIcons.uploadCloud, size: 64, color: AppColors.primary),
+                          Icon(
+                            LucideIcons.uploadCloud,
+                            size: 64,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'اضغط هنا لاختيار فيديو (أو أكثر)',
@@ -200,7 +206,8 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                   child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: _selectedFiles.length + (_isUploading ? 0 : 1),
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       // Add more videos button at the end
                       if (index == _selectedFiles.length) {
@@ -208,7 +215,10 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: OutlinedButton.icon(
                             onPressed: _pickVideos,
-                            icon: const Icon(LucideIcons.plus, color: AppColors.primary),
+                            icon: const Icon(
+                              LucideIcons.plus,
+                              color: AppColors.primary,
+                            ),
                             label: const Text(
                               'إضافة المزيد من الفيديوهات',
                               style: TextStyle(color: AppColors.primary),
@@ -218,26 +228,35 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                       }
 
                       final file = _selectedFiles[index];
-                      final isCurrentUpload = _isUploading && index == _currentUploadIndex;
-                      final isFinishedUpload = _isUploading && index < _currentUploadIndex;
-                      
+                      final isCurrentUpload =
+                          _isUploading && index == _currentUploadIndex;
+                      final isFinishedUpload =
+                          _isUploading && index < _currentUploadIndex;
+
                       return Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(LucideIcons.fileVideo2, color: AppColors.primary),
+                            const Icon(
+                              LucideIcons.fileVideo2,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 file.path.split('/').last.split('\\').last,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                             if (_isUploading) ...[
@@ -251,30 +270,40 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                                   ),
                                 )
                               else if (isFinishedUpload)
-                                const Icon(LucideIcons.checkCircle2, color: Colors.green)
+                                const Icon(
+                                  LucideIcons.checkCircle2,
+                                  color: Colors.green,
+                                )
                               else
-                                const Icon(LucideIcons.clock, color: Colors.grey)
+                                const Icon(
+                                  LucideIcons.clock,
+                                  color: Colors.grey,
+                                ),
                             ] else
                               IconButton(
-                                icon: const Icon(LucideIcons.trash2, color: Colors.red, size: 20),
+                                icon: const Icon(
+                                  LucideIcons.trash2,
+                                  color: Colors.red,
+                                  size: 20,
+                                ),
                                 onPressed: () => _removeFile(index),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                              )
+                              ),
                           ],
                         ),
                       );
                     },
                   ),
                 ),
-                
+
               const SizedBox(height: 32),
 
               Text(
                 'معلومات إضافية (اختياري)',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
 
@@ -328,7 +357,10 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
                 Text(
                   'جاري رفع الملف ${_currentUploadIndex + 1} من ${_selectedFiles.length}... ${(_uploadProgress * 100).toStringAsFixed(1)}%',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ] else ...[
                 ElevatedButton(
