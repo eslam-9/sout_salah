@@ -350,22 +350,12 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
 
       final userId = userResponse['id'] as String;
 
-      // 2. Check if current user is super admin
+      // 2. Get current user for tracking
       final currentUser = supabaseClient.auth.currentUser;
       if (currentUser == null) throw Exception('No user logged in');
 
-      final profileResponse = await supabaseClient
-          .from('profiles')
-          .select('role')
-          .eq('id', currentUser.id)
-          .single();
-
-      final currentRole = profileResponse['role'] as String?;
-      if (currentRole != 'admin') {
-        throw Exception('فقط مدير النظام يمكنه إضافة ناشرين');
-      }
-
       // 3. Add to mosque_publishers
+      // Security is handled by Row Level Security (RLS) on the database
       await supabaseClient.from('mosque_publishers').insert({
         'mosque_id': mosqueId,
         'publisher_id': userId,

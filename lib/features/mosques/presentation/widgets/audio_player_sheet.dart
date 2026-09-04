@@ -4,7 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/recording.dart';
 import '../../../home/presentation/providers/favorites_provider.dart';
 import '../../../home/presentation/providers/downloads_provider.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/base_audio_sheet.dart';
 

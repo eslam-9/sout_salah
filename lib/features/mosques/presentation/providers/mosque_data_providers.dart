@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 import '../../data/datasources/mosque_remote_data_source.dart';
 import '../../data/repositories/mosque_repository_impl.dart';
 import '../../domain/repositories/mosque_repository.dart';

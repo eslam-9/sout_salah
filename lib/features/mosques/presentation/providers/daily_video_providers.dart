@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 import '../../data/models/daily_video_model.dart';
 import '../../data/repositories/video_repository.dart';
 

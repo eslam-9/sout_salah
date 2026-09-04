@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/favorite_recording.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 
 /// Provider for favorites stream
 final favoritesProvider = StreamProvider<List<FavoriteRecording>>((ref) {

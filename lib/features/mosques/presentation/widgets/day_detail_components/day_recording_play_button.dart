@@ -7,7 +7,7 @@ import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
 import '../../../domain/entities/prayer.dart';
 import '../../../domain/entities/recording.dart';
-import '../../../../../core/di/providers.dart';
+import '../../../../../core/di/riverpod_providers.dart';
 
 class DayRecordingPlayButton extends ConsumerWidget {
   final Recording recording;

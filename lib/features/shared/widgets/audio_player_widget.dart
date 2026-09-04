@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../core/di/providers.dart';
+import '../../../core/di/riverpod_providers.dart';
 import '../../mosques/domain/entities/recording.dart';
 
 /// Audio player widget for a recording

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/models/downloaded_recording.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 
 /// Provider for checking if a recording is downloaded
 final isDownloadedProvider = Provider.family<AsyncValue<bool>, String>((

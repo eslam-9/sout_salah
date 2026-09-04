@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../di/riverpod_providers.dart';
 import 'mosque_permissions.dart';
 
 /// Provider for MosquePermissions utility
@@ -12,8 +12,9 @@ final mosquePermissionsProvider = Provider<MosquePermissions>((ref) {
 /// Permission checker for UI components
 class PermissionChecker {
   final MosquePermissions _permissions;
+  final SharedPreferences _prefs;
 
-  PermissionChecker(this._permissions);
+  PermissionChecker(this._permissions, this._prefs);
 
   /// Check if user can see upload button
   Future<bool> canShowUploadButton(String mosqueId) async {
@@ -37,7 +38,7 @@ class PermissionChecker {
 
   /// Check if user can add a new mosque (Available for all authenticated users, but not guests)
   Future<bool> canAddMosque() async {
-    final isGuest = GetIt.I<SharedPreferences>().getBool('is_guest_mode') ?? false;
+    final isGuest = _prefs.getBool('is_guest_mode') ?? false;
     return !isGuest;
   }
 
@@ -50,5 +51,6 @@ class PermissionChecker {
 /// Provider for PermissionChecker
 final permissionCheckerProvider = Provider<PermissionChecker>((ref) {
   final permissions = ref.watch(mosquePermissionsProvider);
-  return PermissionChecker(permissions);
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return PermissionChecker(permissions, prefs);
 });

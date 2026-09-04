@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:get_it/get_it.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/di/riverpod_providers.dart';
 import '../../../../core/utils/app_logger.dart';
 
 import '../../data/models/daily_video_model.dart';
 import '../../../../core/theme/app_theme.dart';
 
-class DailyVideoWidget extends StatefulWidget {
+class DailyVideoWidget extends ConsumerStatefulWidget {
   final DailyVideoModel video;
 
   const DailyVideoWidget({super.key, required this.video});
 
   @override
-  State<DailyVideoWidget> createState() => _DailyVideoWidgetState();
+  ConsumerState<DailyVideoWidget> createState() => _DailyVideoWidgetState();
 }
 
-class _DailyVideoWidgetState extends State<DailyVideoWidget> {
+class _DailyVideoWidgetState extends ConsumerState<DailyVideoWidget> {
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
   bool _hasError = false;
-  final AppLogger _logger = GetIt.I<AppLogger>();
+  late final AppLogger _logger = ref.read(appLoggerProvider);
 
   @override
   void initState() {

@@ -7,7 +7,7 @@ import 'mosque_data_providers.dart';
 import 'month_year.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/retry_executor.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 
 // State for Ramadan Days
 abstract class RamadanDaysState {

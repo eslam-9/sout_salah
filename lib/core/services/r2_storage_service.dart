@@ -12,10 +12,12 @@ class R2StorageService {
   late final String _secretKey;
   late final String _bucket;
   late final String _cdnUrl;
-  final AppLogger _logger = AppLogger();
-  final Dio _dio = Dio();
+  final AppLogger _logger;
+  final Dio _dio;
 
-  R2StorageService() {
+  R2StorageService({required Dio dio, required AppLogger logger})
+      : _dio = dio,
+        _logger = logger {
     _endpoint = AppConfig.r2Endpoint;
     _accessKey = AppConfig.r2AccessKey;
     _secretKey = AppConfig.r2SecretKey;

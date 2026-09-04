@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/app_theme.dart';
-import '../../../../../core/di/providers.dart';
+import '../../../../../core/di/riverpod_providers.dart';
 
 class AudioPlayerSlider extends ConsumerWidget {
   const AudioPlayerSlider({super.key});

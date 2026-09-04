@@ -4,7 +4,7 @@ import '../../domain/usecases/mosque_request_usecases.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/retry_executor.dart';
-import '../../../../core/di/providers.dart';
+import '../../../../core/di/riverpod_providers.dart';
 import 'mosque_data_providers.dart';
 
 // --- UseCase Providers ---
