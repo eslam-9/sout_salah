@@ -41,9 +41,7 @@ class RecordingModel extends Recording {
       'mosque_id': mosqueId,
       'day_id': dayId,
       'publisher_id': publisherId,
-      'prayer_name': prayer == Prayer.other
-          ? customPrayerName
-          : prayer.englishName,
+      'prayer_name': prayer.resolvedName(customPrayerName),
       'sheikh_name': sheikhName,
       'audio_url': audioUrl,
       'file_size': fileSize,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/recording.dart';
-import '../../../domain/entities/prayer.dart';
 import 'day_recording_download_button.dart';
 import 'day_recording_favorite_button.dart';
 import 'day_recording_delete_button.dart';
@@ -30,9 +29,7 @@ class DayRecordingContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                recording.prayer == Prayer.other
-                    ? (recording.customPrayerName ?? 'أخرى')
-                    : recording.prayer.arabicName,
+                recording.prayer.resolvedArabicName(recording.customPrayerName),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

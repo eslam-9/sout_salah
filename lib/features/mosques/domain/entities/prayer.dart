@@ -19,6 +19,20 @@ enum Prayer {
 
   const Prayer(this.englishName, this.arabicName);
 
+  /// Returns the custom name if the prayer is 'other', otherwise returns the english name
+  String resolvedName(String? customName) {
+    return (this == Prayer.other && customName != null && customName.isNotEmpty)
+        ? customName
+        : englishName;
+  }
+
+  /// Returns the custom name if the prayer is 'other', otherwise returns the arabic name
+  String resolvedArabicName(String? customName) {
+    return (this == Prayer.other && customName != null && customName.isNotEmpty)
+        ? customName
+        : arabicName;
+  }
+
   /// Get Prayer from database value
   static Prayer fromString(String value) {
     switch (value) {

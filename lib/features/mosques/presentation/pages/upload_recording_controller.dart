@@ -59,8 +59,7 @@ class UploadRecordingController {
         mosqueId: mosqueId,
         dayId: dayId,
         prayer: selectedPrayer!,
-        customPrayerName:
-            selectedPrayer == Prayer.other ? customPrayerName : null,
+        customPrayerName: selectedPrayer.resolvedName(customPrayerName) == selectedPrayer.englishName ? null : customPrayerName,
         sheikhName: sheikhName,
         filePath: selectedFile.path,
         fileSize: fileSize,
@@ -91,9 +90,7 @@ class UploadRecordingController {
             NotificationService.sendNotification(
               type: 'new_recording',
               data: {
-                'salah': selectedPrayer == Prayer.other
-                    ? customPrayerName
-                    : selectedPrayer.arabicName,
+                'salah': selectedPrayer.resolvedArabicName(customPrayerName),
                 'shikh': sheikhName,
                 'dayId': dayId,
                 'mosqueId': mosqueId,

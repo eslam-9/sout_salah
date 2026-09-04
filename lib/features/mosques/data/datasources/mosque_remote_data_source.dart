@@ -8,6 +8,7 @@ import '../models/recording_model.dart';
 import '../models/day_schedule_entry_model.dart';
 import '../models/mosque_request_model.dart';
 import '../../domain/entities/prayer.dart';
+import '../../domain/factories/ramadan_month_factory.dart';
 import 'dart:io';
 
 abstract class MosqueRemoteDataSource {
@@ -172,17 +173,11 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   }) async {
     logger.i('Adding new month: $month/$year for mosque $mosqueId');
     try {
-      final List<Map<String, dynamic>> daysToInsert = [];
-      for (int i = 1; i <= 30; i++) {
-        daysToInsert.add({
-          'mosque_id': mosqueId,
-          'day_number': i,
-          'month': month,
-          'year': year,
-          'status': 'red',
-          'active': true,
-        });
-      }
+      final daysToInsert = RamadanMonthFactory.createDays(
+        mosqueId: mosqueId,
+        month: month,
+        year: year,
+      );
 
       await supabaseClient.from('ramadan_days').insert(daysToInsert);
 
@@ -259,10 +254,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     int? duration,
     void Function(double)? onProgress,
   }) async {
-    final effectivePrayerName =
-        prayer == Prayer.other && customPrayerName != null
-        ? customPrayerName
-        : prayer.englishName;
+    final effectivePrayerName = prayer.resolvedName(customPrayerName);
     logger.i('Uploading recording for prayer: $effectivePrayerName');
     try {
       final file = File(filePath);

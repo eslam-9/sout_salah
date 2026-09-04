@@ -7,7 +7,6 @@ import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
 import '../../../../../core/utils/permission_checker.dart';
 import '../../providers/mosque_data_providers.dart';
-import '../../../domain/entities/prayer.dart';
 import '../../../domain/entities/recording.dart';
 import '../../../domain/usecases/delete_recording_usecase.dart';
 
@@ -36,9 +35,7 @@ class DayPendingRecordingContent extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                recording.prayer == Prayer.other
-                    ? (recording.customPrayerName ?? 'أخرى')
-                    : recording.prayer.arabicName,
+                recording.prayer.resolvedArabicName(recording.customPrayerName),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

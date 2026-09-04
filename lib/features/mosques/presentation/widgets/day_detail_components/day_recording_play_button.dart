@@ -5,7 +5,6 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/routes/app_routes.dart';
 import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
-import '../../../domain/entities/prayer.dart';
 import '../../../domain/entities/recording.dart';
 import '../../../../../core/di/riverpod_providers.dart';
 
@@ -37,9 +36,7 @@ class DayRecordingPlayButton extends ConsumerWidget {
                   recording.id;
               audioService.play(
                 recording.audioUrl,
-                title: recording.prayer == Prayer.other
-                    ? (recording.customPrayerName ?? 'أخرى')
-                    : recording.prayer.arabicName,
+                title: recording.prayer.resolvedArabicName(recording.customPrayerName),
                 artist: recording.sheikhName,
               );
               if (context.mounted) {

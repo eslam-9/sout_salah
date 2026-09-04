@@ -1,4 +1,5 @@
 import '../../domain/entities/ramadan_day.dart';
+import '../../domain/services/ramadan_status_service.dart';
 
 class RamadanDayModel extends RamadanDay {
   const RamadanDayModel({
@@ -20,13 +21,9 @@ class RamadanDayModel extends RamadanDay {
       }
     }
 
-    String calculatedStatus = 'red';
-    if (count >= 4) {
-      calculatedStatus = 'green';
-    } else if (count > 0) {
-      calculatedStatus = 'yellow';
-    } else {
-      calculatedStatus = json['status'] ?? 'red';
+    String calculatedStatus = json['status'] ?? 'red';
+    if (json.containsKey('recordings') && count > 0) {
+      calculatedStatus = RamadanStatusService.computeStatus(count);
     }
 
     return RamadanDayModel(
