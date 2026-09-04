@@ -9,19 +9,19 @@ import 'mosque_data_providers.dart';
 
 // --- UseCase Providers ---
 final createMosqueRequestUseCaseProvider = Provider(
-  (ref) => CreateMosqueRequestUseCase(ref.watch(mosqueRepositoryProvider)),
+  (ref) => CreateMosqueRequestUseCase(ref.watch(mosqueRequestsRepositoryProvider)),
 );
 
 final getPendingRequestsUseCaseProvider = Provider(
-  (ref) => GetPendingRequestsUseCase(ref.watch(mosqueRepositoryProvider)),
+  (ref) => GetPendingRequestsUseCase(ref.watch(mosqueRequestsRepositoryProvider)),
 );
 
 final acceptMosqueRequestUseCaseProvider = Provider(
-  (ref) => AcceptMosqueRequestUseCase(ref.watch(mosqueRepositoryProvider)),
+  (ref) => AcceptMosqueRequestUseCase(ref.watch(mosqueRequestsRepositoryProvider)),
 );
 
 final declineMosqueRequestUseCaseProvider = Provider(
-  (ref) => DeclineMosqueRequestUseCase(ref.watch(mosqueRepositoryProvider)),
+  (ref) => DeclineMosqueRequestUseCase(ref.watch(mosqueRequestsRepositoryProvider)),
 );
 
 // --- State ---

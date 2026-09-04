@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/mosque_repository.dart';
+import '../repositories/mosque_requests_repository.dart';
 import '../entities/mosque_request.dart';
 import 'package:equatable/equatable.dart';
 
@@ -21,7 +21,7 @@ class CreateMosqueRequestParams extends Equatable {
 }
 
 class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestParams> {
-  final MosqueRepository repository;
+  final MosqueRequestsRepository repository;
 
   CreateMosqueRequestUseCase(this.repository);
 
@@ -36,7 +36,7 @@ class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestPar
 }
 
 class GetPendingRequestsUseCase implements UseCase<List<MosqueRequest>, NoParams> {
-  final MosqueRepository repository;
+  final MosqueRequestsRepository repository;
 
   GetPendingRequestsUseCase(this.repository);
 
@@ -47,7 +47,7 @@ class GetPendingRequestsUseCase implements UseCase<List<MosqueRequest>, NoParams
 }
 
 class AcceptMosqueRequestUseCase implements UseCase<void, String> {
-  final MosqueRepository repository;
+  final MosqueRequestsRepository repository;
 
   AcceptMosqueRequestUseCase(this.repository);
 
@@ -58,7 +58,7 @@ class AcceptMosqueRequestUseCase implements UseCase<void, String> {
 }
 
 class DeclineMosqueRequestUseCase implements UseCase<void, String> {
-  final MosqueRepository repository;
+  final MosqueRequestsRepository repository;
 
   DeclineMosqueRequestUseCase(this.repository);
 

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/mosque_repository.dart';
+import '../repositories/ramadan_days_repository.dart';
 
 class AddMonthParams {
   final String mosqueId;
@@ -16,7 +16,7 @@ class AddMonthParams {
 }
 
 class AddMonthUseCase implements UseCase<void, AddMonthParams> {
-  final MosqueRepository repository;
+  final RamadanDaysRepository repository;
 
   AddMonthUseCase(this.repository);
 

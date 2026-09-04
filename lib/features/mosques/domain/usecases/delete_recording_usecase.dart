@@ -2,10 +2,10 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../repositories/mosque_repository.dart';
+import '../repositories/recordings_repository.dart';
 
 class DeleteRecordingUseCase implements UseCase<void, DeleteRecordingParams> {
-  final MosqueRepository repository;
+  final RecordingsRepository repository;
 
   DeleteRecordingUseCase(this.repository);
 

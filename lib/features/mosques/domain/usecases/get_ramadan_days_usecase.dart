@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/ramadan_day.dart';
-import '../repositories/mosque_repository.dart';
+import '../repositories/ramadan_days_repository.dart';
 
 class GetRamadanDaysParams {
   final String mosqueId;
@@ -14,7 +14,7 @@ class GetRamadanDaysParams {
 
 class GetRamadanDaysUseCase
     implements UseCase<List<RamadanDay>, GetRamadanDaysParams> {
-  final MosqueRepository repository;
+  final RamadanDaysRepository repository;
 
   GetRamadanDaysUseCase(this.repository);
 

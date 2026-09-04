@@ -1,93 +1,23 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/app_logger.dart';
-import '../../../../core/services/r2_storage_service.dart';
 import '../models/mosque_model.dart';
-import '../models/ramadan_day_model.dart';
-import '../models/recording_model.dart';
-import '../models/day_schedule_entry_model.dart';
-import '../models/mosque_request_model.dart';
-import '../../domain/entities/prayer.dart';
-import '../../domain/factories/ramadan_month_factory.dart';
-import 'dart:io';
 
 abstract class MosqueRemoteDataSource {
   Future<List<MosqueModel>> getMosques();
-  Future<List<RamadanDayModel>> getRamadanDays(
-    String mosqueId, {
-    int? month,
-    int? year,
-  });
-  Future<void> addMonth({
-    required String mosqueId,
-    required int month,
-    required int year,
-  });
-  Future<List<Map<String, int>>> getAvailableMonths(String mosqueId);
-  Future<List<RecordingModel>> getDayRecordings(String dayId);
   Future<MosqueModel> addMosque({
     required String name,
     required String location,
     String? description,
   });
-  Future<RecordingModel> uploadRecording({
-    required String mosqueId,
-    required String dayId,
-    required Prayer prayer,
-    String? customPrayerName,
-    required String sheikhName,
-    required String filePath,
-    required int fileSize,
-    int? duration,
-    void Function(double)? onProgress,
-  });
-  Future<void> deleteRecording(String recordingId);
   Future<void> addPublisher(String mosqueId, String email);
-  Future<RecordingModel> createPendingRecording({
-    required String mosqueId,
-    required String dayId,
-    required String prayerName,
-  });
-
-  Future<MosqueRequestModel> createMosqueRequest({
-    required String name,
-    required String location,
-    String? description,
-  });
-  Future<List<MosqueRequestModel>> getPendingRequests();
-  Future<void> acceptMosqueRequest(String requestId);
-  Future<void> declineMosqueRequest(String requestId);
-
-
-  // Day Schedule Methods
-  Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId);
-  Future<DayScheduleEntryModel> addScheduleEntry({
-    required String dayId,
-    required String mosqueId,
-    required String salah,
-    required String shikh,
-    String? comments,
-    int sortOrder = 0,
-  });
-  Future<DayScheduleEntryModel> updateScheduleEntry({
-    required String entryId,
-    required String salah,
-    required String shikh,
-    String? comments,
-  });
-  Future<void> deleteScheduleEntry(String entryId);
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   final SupabaseClient supabaseClient;
-  final R2StorageService r2StorageService;
   final AppLogger logger;
 
-  MosqueRemoteDataSourceImpl(
-    this.supabaseClient,
-    this.r2StorageService,
-    this.logger,
-  );
+  MosqueRemoteDataSourceImpl(this.supabaseClient, this.logger);
 
   @override
   Future<List<MosqueModel>> getMosques() async {
@@ -101,39 +31,6 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       return data.map((json) => MosqueModel.fromJson(json)).toList();
     } catch (e) {
       logger.e('Error fetching mosques', e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<List<RamadanDayModel>> getRamadanDays(
-    String mosqueId, {
-    int? month,
-    int? year,
-  }) async {
-    logger.i(
-      'Fetching Ramadan days for mosque: $mosqueId, month: $month, year: $year',
-    );
-    try {
-      var query = supabaseClient
-          .from('ramadan_days')
-          .select('*, recordings(count)')
-          .eq('mosque_id', mosqueId);
-
-      if (month != null) {
-        query = query.eq('month', month);
-      }
-      if (year != null) {
-        query = query.eq('year', year);
-      }
-
-      final response = await query.order('day_number', ascending: true);
-
-      final data = response as List<dynamic>;
-      logger.i('Fetched ${data.length} days');
-      return data.map((json) => RamadanDayModel.fromJson(json)).toList();
-    } catch (e) {
-      logger.e('Error fetching Ramadan days', e);
       throw ServerException();
     }
   }
@@ -160,166 +57,6 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       return MosqueModel.fromJson(response);
     } catch (e, stackTrace) {
       logger.e('Error adding mosque', e, stackTrace);
-      logger.e('Error details: ${e.toString()}');
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> addMonth({
-    required String mosqueId,
-    required int month,
-    required int year,
-  }) async {
-    logger.i('Adding new month: $month/$year for mosque $mosqueId');
-    try {
-      final daysToInsert = RamadanMonthFactory.createDays(
-        mosqueId: mosqueId,
-        month: month,
-        year: year,
-      );
-
-      await supabaseClient.from('ramadan_days').insert(daysToInsert);
-
-      logger.i('Successfully added 30 days for month $month/$year');
-    } catch (e, stackTrace) {
-      logger.e('Error adding month', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<List<Map<String, int>>> getAvailableMonths(String mosqueId) async {
-    logger.i('Fetching available months for mosque: $mosqueId');
-    try {
-      final response = await supabaseClient
-          .from('ramadan_days')
-          .select('month, year')
-          .eq('mosque_id', mosqueId);
-
-      final data = response as List<dynamic>;
-      final uniqueMonths = <String, Map<String, int>>{};
-
-      for (var row in data) {
-        final m = row['month'] as int?;
-        final y = row['year'] as int?;
-        if (m != null && y != null) {
-          uniqueMonths['$y-$m'] = {'month': m, 'year': y};
-        }
-      }
-
-      final result = uniqueMonths.values.toList();
-      // Sort ascending by year then month
-      result.sort((a, b) {
-        final yearCmp = a['year']!.compareTo(b['year']!);
-        if (yearCmp != 0) return yearCmp;
-        return a['month']!.compareTo(b['month']!);
-      });
-
-      return result;
-    } catch (e, stackTrace) {
-      logger.e('Error fetching available months', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<List<RecordingModel>> getDayRecordings(String dayId) async {
-    logger.i('Fetching recordings for day: $dayId');
-    try {
-      final response = await supabaseClient
-          .from('recordings')
-          .select()
-          .eq('day_id', dayId)
-          .order('prayer_name', ascending: true);
-
-      final data = response as List<dynamic>;
-      logger.i('Fetched ${data.length} recordings');
-      return data.map((json) => RecordingModel.fromJson(json)).toList();
-    } catch (e, stackTrace) {
-      logger.e('Error fetching recordings', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<RecordingModel> uploadRecording({
-    required String mosqueId,
-    required String dayId,
-    required Prayer prayer,
-    String? customPrayerName,
-    required String sheikhName,
-    required String filePath,
-    required int fileSize,
-    int? duration,
-    void Function(double)? onProgress,
-  }) async {
-    final effectivePrayerName = prayer.resolvedName(customPrayerName);
-    logger.i('Uploading recording for prayer: $effectivePrayerName');
-    try {
-      final file = File(filePath);
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_$effectivePrayerName.mp3';
-      final storageKey = 'recordings/$mosqueId/$dayId/$fileName';
-
-      // Upload file to R2 and get CDN URL
-      final audioUrl = await r2StorageService.uploadFile(
-        storageKey,
-        file,
-        onProgress: onProgress,
-      );
-
-      // Save metadata to database
-      final response = await supabaseClient
-          .from('recordings')
-          .insert({
-            'mosque_id': mosqueId,
-            'day_id': dayId,
-            'prayer_name': effectivePrayerName,
-            'sheikh_name': sheikhName,
-            'audio_url': audioUrl,
-            'file_size': fileSize,
-            'duration': duration,
-          })
-          .select()
-          .single();
-
-      logger.i('Recording uploaded successfully');
-      return RecordingModel.fromJson(response);
-    } catch (e) {
-      logger.e('Error uploading recording', e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> deleteRecording(String recordingId) async {
-    logger.i('Deleting recording: $recordingId');
-    try {
-      // Get recording to find audio URL
-      final recording = await supabaseClient
-          .from('recordings')
-          .select('audio_url')
-          .eq('id', recordingId)
-          .single();
-
-      final audioUrl = recording['audio_url'] as String;
-
-      // Extract storage key from CDN URL
-      final uri = Uri.parse(audioUrl);
-      final storageKey = uri.path.startsWith('/')
-          ? uri.path.substring(1)
-          : uri.path;
-
-      // Delete from R2
-      await r2StorageService.deleteFile(storageKey);
-
-      // Delete from database
-      await supabaseClient.from('recordings').delete().eq('id', recordingId);
-
-      logger.i('Recording deleted successfully');
-    } catch (e) {
-      logger.e('Error deleting recording', e);
       throw ServerException();
     }
   }
@@ -328,7 +65,6 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   Future<void> addPublisher(String mosqueId, String email) async {
     logger.i('Adding publisher with email $email to mosque $mosqueId');
     try {
-      // 1. Find user by email
       final userResponse = await supabaseClient
           .from('profiles')
           .select('id')
@@ -342,12 +78,9 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
 
       final userId = userResponse['id'] as String;
 
-      // 2. Get current user for tracking
       final currentUser = supabaseClient.auth.currentUser;
       if (currentUser == null) throw Exception('No user logged in');
 
-      // 3. Add to mosque_publishers
-      // Security is handled by Row Level Security (RLS) on the database
       await supabaseClient.from('mosque_publishers').insert({
         'mosque_id': mosqueId,
         'publisher_id': userId,
@@ -364,229 +97,6 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       if (e.toString().contains('Only Super Admin')) {
         throw Exception('فقط مدير النظام يمكنه إضافة ناشرين');
       }
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<RecordingModel> createPendingRecording({
-    required String mosqueId,
-    required String dayId,
-    required String prayerName,
-  }) async {
-    logger.i('Creating pending recording for: $prayerName');
-    try {
-      final response = await supabaseClient
-          .from('recordings')
-          .insert({
-            'mosque_id': mosqueId,
-            'day_id': dayId,
-            'prayer_name': prayerName,
-            'sheikh_name': 'Pending',
-            'audio_url': 'pending',
-            'file_size': 0,
-            'duration': 0,
-          })
-          .select()
-          .single();
-
-      logger.i('Pending recording created successfully');
-      return RecordingModel.fromJson(response);
-    } catch (e) {
-      logger.e('Error creating pending recording', e);
-      throw ServerException();
-    }
-  }
-
-  // --- Mosque Request Methods ---
-
-  @override
-  Future<MosqueRequestModel> createMosqueRequest({
-    required String name,
-    required String location,
-    String? description,
-  }) async {
-    logger.i('Creating mosque request for: $name');
-    try {
-      final currentUser = supabaseClient.auth.currentUser;
-      if (currentUser == null) throw Exception('No user logged in');
-
-      final response = await supabaseClient
-          .from('mosque_requests')
-          .insert({
-            'name': name,
-            'location': location,
-            ...?description != null ? {'description': description} : null,
-            'requested_by': currentUser.id,
-            'status': 'pending',
-          })
-          .select()
-          .single();
-
-      logger.i('Mosque request created successfully');
-      return MosqueRequestModel.fromJson(response);
-    } catch (e) {
-      logger.e('Error creating mosque request', e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<List<MosqueRequestModel>> getPendingRequests() async {
-    logger.i('Fetching pending mosque requests');
-    try {
-      final response = await supabaseClient
-          .from('mosque_requests')
-          .select()
-          .eq('status', 'pending')
-          .order('created_at', ascending: false);
-
-      final data = response as List<dynamic>;
-      return data.map((json) => MosqueRequestModel.fromJson(json)).toList();
-    } catch (e) {
-      logger.e('Error fetching pending requests', e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> acceptMosqueRequest(String requestId) async {
-    logger.i('Accepting mosque request: $requestId');
-    try {
-      // 1. Get the request
-      final requestData = await supabaseClient
-          .from('mosque_requests')
-          .select()
-          .eq('id', requestId)
-          .single();
-
-      // 2. Create the mosque with requested_by as admin
-      await supabaseClient
-          .from('mosques')
-          .insert({
-            'name': requestData['name'],
-            'location': requestData['location'],
-            'description': requestData['description'],
-            'admin_id': requestData['requested_by'],
-          })
-          .select()
-          .single();
-
-      // 3. Update request status
-      await supabaseClient
-          .from('mosque_requests')
-          .update({'status': 'accepted'})
-          .eq('id', requestId);
-
-      logger.i('Mosque request accepted and mosque created');
-    } catch (e) {
-      logger.e('Error accepting mosque request', e);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> declineMosqueRequest(String requestId) async {
-    logger.i('Declining mosque request: $requestId');
-    try {
-      await supabaseClient
-          .from('mosque_requests')
-          .update({'status': 'declined'})
-          .eq('id', requestId);
-
-      logger.i('Mosque request declined');
-    } catch (e) {
-      logger.e('Error declining mosque request', e);
-      throw ServerException();
-    }
-  }
-
-  // --- Day Schedule Methods ---
-
-  @override
-  Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId) async {
-    logger.i('Fetching schedule for day: $dayId');
-    try {
-      final response = await supabaseClient
-          .from('day_schedule')
-          .select()
-          .eq('day_id', dayId)
-          .order('sort_order', ascending: true)
-          .order('created_at', ascending: true);
-
-      final data = response as List<dynamic>;
-      logger.i('Fetched ${data.length} schedule entries');
-      return data.map((json) => DayScheduleEntryModel.fromJson(json)).toList();
-    } catch (e, stackTrace) {
-      logger.e('Error fetching day schedule', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<DayScheduleEntryModel> addScheduleEntry({
-    required String dayId,
-    required String mosqueId,
-    required String salah,
-    required String shikh,
-    String? comments,
-    int sortOrder = 0,
-  }) async {
-    logger.i('Adding schedule entry for $salah by $shikh');
-    try {
-      final response = await supabaseClient
-          .from('day_schedule')
-          .insert({
-            'day_id': dayId,
-            'mosque_id': mosqueId,
-            'salah': salah,
-            'shikh': shikh,
-            ...?comments != null ? {'comments': comments} : null,
-            'sort_order': sortOrder,
-          })
-          .select()
-          .single();
-
-      logger.i('Schedule entry added successfully');
-      return DayScheduleEntryModel.fromJson(response);
-    } catch (e, stackTrace) {
-      logger.e('Error adding schedule entry', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<DayScheduleEntryModel> updateScheduleEntry({
-    required String entryId,
-    required String salah,
-    required String shikh,
-    String? comments,
-  }) async {
-    logger.i('Updating schedule entry: $entryId');
-    try {
-      final response = await supabaseClient
-          .from('day_schedule')
-          .update({'salah': salah, 'shikh': shikh, 'comments': comments})
-          .eq('id', entryId)
-          .select()
-          .single();
-
-      logger.i('Schedule entry updated successfully');
-      return DayScheduleEntryModel.fromJson(response);
-    } catch (e, stackTrace) {
-      logger.e('Error updating schedule entry', e, stackTrace);
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> deleteScheduleEntry(String entryId) async {
-    logger.i('Deleting schedule entry: $entryId');
-    try {
-      await supabaseClient.from('day_schedule').delete().eq('id', entryId);
-      logger.i('Schedule entry deleted successfully');
-    } catch (e, stackTrace) {
-      logger.e('Error deleting schedule entry', e, stackTrace);
       throw ServerException();
     }
   }

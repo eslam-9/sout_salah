@@ -4,7 +4,7 @@ import 'mosque_data_providers.dart';
 
 final dayScheduleProvider =
     FutureProvider.family<List<DayScheduleEntry>, String>((ref, dayId) async {
-      final repository = ref.watch(mosqueRepositoryProvider);
+      final repository = ref.watch(dayScheduleRepositoryProvider);
       final result = await repository.getDaySchedule(dayId);
 
       return result.fold(
@@ -30,7 +30,7 @@ class DayScheduleNotifier
   Future<void> _loadSchedule() async {
     state = const AsyncValue.loading();
     try {
-      final repository = ref.read(mosqueRepositoryProvider);
+      final repository = ref.read(dayScheduleRepositoryProvider);
       final result = await repository.getDaySchedule(dayId);
 
       result.fold(
@@ -60,7 +60,7 @@ class DayScheduleNotifier
     int sortOrder = 0,
   }) async {
     try {
-      final repository = ref.read(mosqueRepositoryProvider);
+      final repository = ref.read(dayScheduleRepositoryProvider);
       final result = await repository.addScheduleEntry(
         dayId: dayId,
         mosqueId: mosqueId,
@@ -86,7 +86,7 @@ class DayScheduleNotifier
     String? comments,
   }) async {
     try {
-      final repository = ref.read(mosqueRepositoryProvider);
+      final repository = ref.read(dayScheduleRepositoryProvider);
       final result = await repository.updateScheduleEntry(
         entryId: entryId,
         salah: salah,
@@ -105,7 +105,7 @@ class DayScheduleNotifier
 
   Future<bool> deleteEntry(String entryId) async {
     try {
-      final repository = ref.read(mosqueRepositoryProvider);
+      final repository = ref.read(dayScheduleRepositoryProvider);
       final result = await repository.deleteScheduleEntry(entryId);
 
       return result.fold((failure) => false, (_) {

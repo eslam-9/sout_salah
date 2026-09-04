@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/recording.dart';
-import '../repositories/mosque_repository.dart';
+import '../repositories/recordings_repository.dart';
 
 class GetDayRecordingsParams {
   final String dayId;
@@ -12,7 +12,7 @@ class GetDayRecordingsParams {
 
 class GetDayRecordingsUseCase
     implements UseCase<List<Recording>, GetDayRecordingsParams> {
-  final MosqueRepository repository;
+  final RecordingsRepository repository;
 
   GetDayRecordingsUseCase(this.repository);
 

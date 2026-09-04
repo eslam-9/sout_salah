@@ -31,7 +31,7 @@ class RamadanDaysError extends RamadanDaysState {
 
 // Provider for GetRamadanDaysUseCase
 final getRamadanDaysUseCaseProvider = Provider(
-  (ref) => GetRamadanDaysUseCase(ref.watch(mosqueRepositoryProvider)),
+  (ref) => GetRamadanDaysUseCase(ref.watch(ramadanDaysRepositoryProvider)),
 );
 
 // StateNotifier for Ramadan Days
@@ -91,7 +91,7 @@ final availableMonthsProvider = FutureProvider.family<List<MonthYear>, String>((
   ref,
   mosqueId,
 ) async {
-  final repo = ref.watch(mosqueRepositoryProvider);
+  final repo = ref.watch(ramadanDaysRepositoryProvider);
   final result = await repo.getAvailableMonths(mosqueId);
   return result.fold(
     (failure) => [],
