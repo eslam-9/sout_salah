@@ -6,7 +6,7 @@ import '../../../../core/utils/permission_checker.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
-import '../../../mosques/presentation/bloc/mosque_state_event.dart';
+import '../../../mosques/presentation/providers/mosque_state.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
 import '../widgets/home_widgets.dart';
 

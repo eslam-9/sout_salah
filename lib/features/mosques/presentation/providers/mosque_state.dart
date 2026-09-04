@@ -4,14 +4,6 @@ import '../../domain/entities/mosque.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../../domain/entities/recording.dart';
 
-abstract class MosqueEvent extends Equatable {
-  const MosqueEvent();
-  @override
-  List<Object> get props => [];
-}
-
-class GetMosquesEvent extends MosqueEvent {}
-
 abstract class MosqueState extends Equatable {
   const MosqueState();
   @override

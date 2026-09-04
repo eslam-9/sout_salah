@@ -7,7 +7,7 @@ import '../../../../core/usecases/usecase.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/retry_executor.dart';
 import '../../../../core/di/providers.dart';
-import '../bloc/mosque_state_event.dart';
+import 'mosque_state.dart';
 
 final getMosquesUseCaseProvider = Provider(
   (ref) => GetMosquesUseCase(ref.watch(mosqueRepositoryProvider)),

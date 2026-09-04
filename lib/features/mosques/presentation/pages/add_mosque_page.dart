@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/mosque_controller.dart';
 import '../providers/mosque_requests_provider.dart';
-import '../bloc/mosque_state_event.dart';
+import '../providers/mosque_state.dart';
 import '../../../../core/utils/permission_checker.dart';
 
 import '../widgets/add_mosque_components/add_mosque_form.dart';
