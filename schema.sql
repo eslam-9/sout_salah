@@ -88,6 +88,29 @@ create table public.fcm_tokens (
   unique(user_id, token)
 );
 
+-- MOSQUE REQUESTS TABLE
+create table public.mosque_requests (
+  id uuid default uuid_generate_v4() not null primary key,
+  name text not null,
+  location text not null,
+  description text,
+  requested_by uuid references public.profiles(id) on delete cascade not null,
+  status text default 'pending'::text not null, -- 'pending', 'accepted', 'declined'
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- DAILY VIDEOS TABLE
+create table public.daily_videos (
+  id uuid default uuid_generate_v4() not null primary key,
+  mosque_id uuid references public.mosques(id) on delete cascade not null,
+  day_id uuid references public.ramadan_days(id) on delete cascade not null,
+  publisher_id uuid references public.profiles(id) on delete set null,
+  title text,
+  video_url text not null,
+  description text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- STORAGE BUCKETS SETUP (Row Level Security for Storage)
 -- Assuming 'recordings' bucket exists in Supabase Storage
 
@@ -101,6 +124,8 @@ alter table public.recordings enable row level security;
 alter table public.mosque_publishers enable row level security;
 alter table public.day_schedule enable row level security;
 alter table public.fcm_tokens enable row level security;
+alter table public.mosque_requests enable row level security;
+alter table public.daily_videos enable row level security;
 
 -- PROFILES POLICIES
 create policy "Public profiles are viewable by everyone."
@@ -219,6 +244,48 @@ create policy "Mosque admins can remove publishers"
 create policy "Users can manage own tokens"
   on public.fcm_tokens for all
   using ( auth.uid() = user_id );
+
+-- MOSQUE REQUESTS POLICIES
+create policy "Users can view their own requests and admins can view all"
+  on public.mosque_requests for select
+  using ( requested_by = auth.uid() or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin') );
+
+create policy "Users can insert their own requests"
+  on public.mosque_requests for insert
+  with check ( requested_by = auth.uid() );
+
+create policy "Admins can update requests"
+  on public.mosque_requests for update
+  using ( exists (select 1 from public.profiles where id = auth.uid() and role = 'admin') );
+
+-- DAILY VIDEOS POLICIES
+create policy "Daily videos are viewable by everyone."
+  on public.daily_videos for select
+  using ( true );
+
+create policy "Mosque admins/publishers can upload daily videos."
+  on public.daily_videos for insert
+  with check (
+    exists (
+      select 1 from public.mosques 
+      where id = mosque_id 
+      and (
+        admin_id = auth.uid() 
+        or exists (select 1 from public.mosque_publishers where mosque_id = mosques.id and publisher_id = auth.uid())
+      )
+    )
+  );
+
+create policy "Deployers can update/delete their own videos or admins can"
+  on public.daily_videos for all
+  using (
+    publisher_id = auth.uid()
+    or exists (
+      select 1 from public.mosques
+      where id = mosque_id
+      and admin_id = auth.uid()
+    )
+  );
 
 -- FUNCTIONS & TRIGGERS
 
