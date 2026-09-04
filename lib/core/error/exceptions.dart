@@ -4,3 +4,28 @@ class ServerException implements Exception {
 }
 
 class CacheException implements Exception {}
+
+class NetworkException implements Exception {
+  final String? message;
+  NetworkException([this.message]);
+}
+
+class AppAuthException implements Exception {
+  final String? message;
+  AppAuthException([this.message]);
+}
+
+class NotFoundException implements Exception {
+  final String? message;
+  NotFoundException([this.message]);
+}
+
+class ValidationException implements Exception {
+  final String? message;
+  ValidationException([this.message]);
+}
+
+class StorageException implements Exception {
+  final String? message;
+  StorageException([this.message]);
+}

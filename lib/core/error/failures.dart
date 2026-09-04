@@ -23,3 +23,19 @@ class CacheFailure extends Failure {}
 class NetworkFailure extends Failure {
   const NetworkFailure({super.message = 'لا يوجد اتصال بالإنترنت'});
 }
+
+class AuthFailure extends Failure {
+  const AuthFailure({super.message = 'خطأ في المصادقة'});
+}
+
+class NotFoundFailure extends Failure {
+  const NotFoundFailure({super.message = 'العنصر غير موجود'});
+}
+
+class ValidationFailure extends Failure {
+  const ValidationFailure({super.message = 'بيانات غير صالحة'});
+}
+
+class StorageFailure extends Failure {
+  const StorageFailure({super.message = 'خطأ في التخزين السحابي'});
+}

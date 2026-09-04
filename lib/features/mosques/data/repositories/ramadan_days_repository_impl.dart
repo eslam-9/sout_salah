@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/error/repository_error_handler.dart';
 import '../../domain/entities/ramadan_day.dart';
 import '../../domain/repositories/ramadan_days_repository.dart';
 import '../datasources/ramadan_days_remote_data_source.dart';
@@ -16,16 +16,11 @@ class RamadanDaysRepositoryImpl implements RamadanDaysRepository {
     int? month,
     int? year,
   }) async {
-    try {
-      final remoteDays = await remoteDataSource.getRamadanDays(
-        mosqueId,
-        month: month,
-        year: year,
-      );
-      return Right(remoteDays);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.getRamadanDays(
+      mosqueId,
+      month: month,
+      year: year,
+    ));
   }
 
   @override
@@ -34,27 +29,17 @@ class RamadanDaysRepositoryImpl implements RamadanDaysRepository {
     required int month,
     required int year,
   }) async {
-    try {
-      await remoteDataSource.addMonth(
-        mosqueId: mosqueId,
-        month: month,
-        year: year,
-      );
-      return const Right(null);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.addMonth(
+      mosqueId: mosqueId,
+      month: month,
+      year: year,
+    ));
   }
 
   @override
   Future<Either<Failure, List<Map<String, int>>>> getAvailableMonths(
     String mosqueId,
   ) async {
-    try {
-      final months = await remoteDataSource.getAvailableMonths(mosqueId);
-      return Right(months);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.getAvailableMonths(mosqueId));
   }
 }

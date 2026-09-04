@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/error/repository_error_handler.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/entities/prayer.dart';
 import '../../domain/repositories/recordings_repository.dart';
@@ -13,12 +13,7 @@ class RecordingsRepositoryImpl implements RecordingsRepository {
 
   @override
   Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId) async {
-    try {
-      final recordings = await remoteDataSource.getDayRecordings(dayId);
-      return Right(recordings);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.getDayRecordings(dayId));
   }
 
   @override
@@ -33,32 +28,22 @@ class RecordingsRepositoryImpl implements RecordingsRepository {
     int? duration,
     void Function(double)? onProgress,
   }) async {
-    try {
-      final recording = await remoteDataSource.uploadRecording(
-        mosqueId: mosqueId,
-        dayId: dayId,
-        prayer: prayer,
-        customPrayerName: customPrayerName,
-        sheikhName: sheikhName,
-        filePath: filePath,
-        fileSize: fileSize,
-        duration: duration,
-        onProgress: onProgress,
-      );
-      return Right(recording);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.uploadRecording(
+      mosqueId: mosqueId,
+      dayId: dayId,
+      prayer: prayer,
+      customPrayerName: customPrayerName,
+      sheikhName: sheikhName,
+      filePath: filePath,
+      fileSize: fileSize,
+      duration: duration,
+      onProgress: onProgress,
+    ));
   }
 
   @override
   Future<Either<Failure, void>> deleteRecording(String recordingId) async {
-    try {
-      await remoteDataSource.deleteRecording(recordingId);
-      return const Right(null);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.deleteRecording(recordingId));
   }
 
   @override
@@ -67,15 +52,10 @@ class RecordingsRepositoryImpl implements RecordingsRepository {
     required String dayId,
     required String prayerName,
   }) async {
-    try {
-      final recording = await remoteDataSource.createPendingRecording(
-        mosqueId: mosqueId,
-        dayId: dayId,
-        prayerName: prayerName,
-      );
-      return Right(recording);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
+    return executeWithCatch(() => remoteDataSource.createPendingRecording(
+      mosqueId: mosqueId,
+      dayId: dayId,
+      prayerName: prayerName,
+    ));
   }
 }
