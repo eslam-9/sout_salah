@@ -12,7 +12,6 @@ class UploadRecordingParams extends Equatable {
   final int fileSize;
   final int? duration;
   final String? pendingRecordingId;
-  final void Function(double)? onProgress;
 
   const UploadRecordingParams({
     required this.mosqueId,
@@ -24,7 +23,6 @@ class UploadRecordingParams extends Equatable {
     required this.fileSize,
     this.duration,
     this.pendingRecordingId,
-    this.onProgress,
   });
 
   UploadRecordingParams copyWith({
@@ -37,7 +35,6 @@ class UploadRecordingParams extends Equatable {
     int? fileSize,
     int? duration,
     String? pendingRecordingId,
-    void Function(double)? onProgress,
   }) {
     return UploadRecordingParams(
       mosqueId: mosqueId ?? this.mosqueId,
@@ -49,7 +46,6 @@ class UploadRecordingParams extends Equatable {
       fileSize: fileSize ?? this.fileSize,
       duration: duration ?? this.duration,
       pendingRecordingId: pendingRecordingId ?? this.pendingRecordingId,
-      onProgress: onProgress ?? this.onProgress,
     );
   }
 
@@ -64,6 +60,5 @@ class UploadRecordingParams extends Equatable {
     fileSize,
     duration,
     pendingRecordingId,
-    onProgress,
   ];
 }
