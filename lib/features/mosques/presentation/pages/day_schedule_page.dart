@@ -5,11 +5,12 @@ import 'package:sout_salah/features/mosques/presentation/providers/daily_video_p
 import '../widgets/day_schedule_table_widget.dart';
 import '../widgets/daily_video_card.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/utils/permission_checker.dart';
-import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/route_args.dart';
+
+import '../widgets/day_schedule_components/day_schedule_upload_button.dart';
+import '../widgets/day_schedule_components/day_schedule_notification_button.dart';
 
 class DaySchedulePage extends ConsumerWidget {
   final String dayId;
@@ -92,55 +93,16 @@ class DaySchedulePage extends ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: videoAsync.when(
                 data: (videos) {
-                  // Render both the card (if videos exist) and the upload button (if admin)
                   return Column(
                     children: [
                       if (videos.isNotEmpty) ...[
                         DailyVideoCard(dayId: dayId),
                         const SizedBox(height: 16),
                       ],
-                      FutureBuilder<bool>(
-                        future: ref.read(
-                          permissionCheckerProvider.select(
-                            (checker) => checker.canShowUploadButton(mosqueId),
-                          ),
-                        ),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData && snapshot.data == true) {
-                            return SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton.icon(
-                                onPressed: () =>
-                                    _showUploadVideoSheet(context, ref),
-                                icon: const Icon(
-                                  LucideIcons.video,
-                                  color: AppColors.primary,
-                                ),
-                                label: const Text(
-                                  'إضافة فيديوهات اليوم',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  side: const BorderSide(
-                                    color: AppColors.primary,
-                                    width: 2,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
+                      DayScheduleUploadButton(
+                        mosqueId: mosqueId,
+                        onUploadPressed: () =>
+                            _showUploadVideoSheet(context, ref),
                       ),
                     ],
                   );
@@ -160,64 +122,11 @@ class DaySchedulePage extends ConsumerWidget {
             ),
 
             // Notification Button
-            FutureBuilder<bool>(
-              future: ref.read(
-                permissionCheckerProvider.select(
-                  (checker) => checker.canShowUploadButton(mosqueId),
-                ),
-              ),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data == true) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          await NotificationService.sendNotification(
-                            type: 'day_schedule',
-                            data: {
-                              'dayId': dayId,
-                              'mosqueId': mosqueId,
-                              'dayNumber': dayNumber,
-                              'month': month,
-                            },
-                          );
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'تم إرسال الإشعار بنجاح',
-                                  style: TextStyle(),
-                                ),
-                                backgroundColor: AppColors.primary,
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(LucideIcons.send, color: Colors.white),
-                        label: const Text(
-                          'إرسال إشعار بالجدول',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+            DayScheduleNotificationButton(
+              mosqueId: mosqueId,
+              dayId: dayId,
+              dayNumber: dayNumber,
+              month: month,
             ),
             const SizedBox(height: 32),
           ],
