@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_controller.dart';
 import '../bloc/auth_state.dart';
 import '../../../mosques/presentation/pages/mosque_requests_page.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 import '../widgets/profile_components/profile_item.dart';
 import '../widgets/profile_components/edit_profile_dialog.dart';
@@ -144,7 +145,7 @@ class ProfilePage extends ConsumerWidget {
               ),
             );
           } else if (state is AuthLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingIndicator();
           } else {
             return const Center(child: Text('الرجاء تسجيل الدخول مرة أخرى'));
           }
