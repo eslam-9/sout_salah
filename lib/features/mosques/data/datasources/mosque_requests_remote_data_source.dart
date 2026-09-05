@@ -7,6 +7,8 @@ abstract class MosqueRequestsRemoteDataSource {
   Future<MosqueRequestModel> createMosqueRequest({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   });
   Future<List<MosqueRequestModel>> getPendingRequests();
@@ -25,6 +27,8 @@ class MosqueRequestsRemoteDataSourceImpl
   Future<MosqueRequestModel> createMosqueRequest({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
     logger.i('Creating mosque request for: $name');
@@ -32,16 +36,20 @@ class MosqueRequestsRemoteDataSourceImpl
       final currentUser = supabaseClient.auth.currentUser;
       if (currentUser == null) throw Exception('No user logged in');
 
+      final insertData = <String, dynamic>{
+        'name': name,
+        'location': location,
+        'description': description,
+        'requested_by': currentUser.id,
+        'status': 'pending',
+      };
+      if (latitude != null) insertData['latitude'] = latitude;
+      if (longitude != null) insertData['longitude'] = longitude;
+
       final response = await supabaseClient
           .from('mosque_requests')
-          .insert({
-            'name': name,
-            'location': location,
-            ...?description != null ? {'description': description} : null,
-            'requested_by': currentUser.id,
-            'status': 'pending',
-          })
-          .select('id, name, location, description, requested_by, status, created_at')
+          .insert(insertData)
+          .select('id, name, location, latitude, longitude, description, requested_by, status, created_at')
           .single();
 
       logger.i('Mosque request created successfully');
@@ -58,7 +66,7 @@ class MosqueRequestsRemoteDataSourceImpl
     try {
       final response = await supabaseClient
           .from('mosque_requests')
-          .select('id, name, location, description, requested_by, status, created_at')
+          .select('id, name, location, latitude, longitude, description, requested_by, status, created_at')
           .eq('status', 'pending')
           .order('created_at', ascending: false);
 
@@ -76,18 +84,22 @@ class MosqueRequestsRemoteDataSourceImpl
     try {
       final requestData = await supabaseClient
           .from('mosque_requests')
-          .select('id, name, location, description, requested_by, status, created_at')
+          .select('id, name, location, latitude, longitude, description, requested_by, status, created_at')
           .eq('id', requestId)
           .single();
 
+      final insertData = <String, dynamic>{
+        'name': requestData['name'],
+        'location': requestData['location'],
+        'description': requestData['description'],
+        'admin_id': requestData['requested_by'],
+      };
+      if (requestData['latitude'] != null) insertData['latitude'] = requestData['latitude'];
+      if (requestData['longitude'] != null) insertData['longitude'] = requestData['longitude'];
+
       await supabaseClient
           .from('mosques')
-          .insert({
-            'name': requestData['name'],
-            'location': requestData['location'],
-            'description': requestData['description'],
-            'admin_id': requestData['requested_by'],
-          })
+          .insert(insertData)
           .select('id, name, location, description, created_at, admin_id')
           .single();
 

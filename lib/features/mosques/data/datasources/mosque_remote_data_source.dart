@@ -8,6 +8,8 @@ abstract class MosqueRemoteDataSource {
   Future<MosqueModel> addMosque({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   });
   Future<void> addPublisher(String mosqueId, String email);
@@ -25,7 +27,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
     try {
       dynamic query = supabaseClient
           .from('mosques')
-          .select('id, name, location, description, created_at, admin_id, recordings(count)');
+          .select('id, name, location, latitude, longitude, description, created_at, admin_id, recordings(count)');
       
       if (limit != null) {
         query = query.limit(limit);
@@ -52,19 +54,32 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   Future<MosqueModel> addMosque({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
     logger.i('Adding new mosque: $name');
     try {
+      final insertData = <String, dynamic>{
+        'name': name,
+        'location': location,
+        'description': description,
+      };
+      if (latitude != null) insertData['latitude'] = latitude;
+      if (longitude != null) insertData['longitude'] = longitude;
+
       final response = await supabaseClient
           .from('mosques')
-          .insert({
-            'name': name,
-            'location': location,
-            ...?description != null ? {'description': description} : null,
-          })
-          .select('id, name, location, description, created_at, admin_id')
-          .single();
+          .insert(insertData)
+          .select('''
+            id,
+            name,
+            description,
+            location,
+            latitude,
+            longitude,
+            admin_id
+          ''').single();
 
       logger.i('Mosque added successfully: ${response['id']}');
       return MosqueModel.fromJson(response);
