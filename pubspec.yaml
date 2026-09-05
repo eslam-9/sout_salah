@@ -34,6 +34,10 @@ dependencies:
   video_player: ^2.11.1
   chewie: ^1.8.5
   connectivity_plus: ^6.1.5
+  geolocator: ^13.0.0
+  geocoding: ^3.0.0
+  flutter_map: ^7.0.1
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
