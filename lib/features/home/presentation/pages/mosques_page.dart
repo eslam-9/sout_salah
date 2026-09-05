@@ -8,6 +8,9 @@ import '../../../../core/services/navigation_service.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
 import '../widgets/home_widgets.dart';
+import '../../../../core/presentation/widgets/app_empty_state.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 class MosquesPage extends ConsumerStatefulWidget {
   const MosquesPage({super.key});
@@ -81,14 +84,12 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
                               SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.6,
-                                child: Center(
-                                  child: Text(
-                                    _searchQuery.isEmpty
-                                        ? 'لا توجد مساجد متاحة حاليا'
-                                        : 'لا نتائج لهذا البحث',
-                                  ),
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                child: AppEmptyState(
+                                  title: _searchQuery.isEmpty
+                                      ? 'لا توجد مساجد متاحة حاليا'
+                                      : 'لا نتائج لهذا البحث',
+                                  icon: LucideIcons.search,
                                 ),
                               ),
                             ],
@@ -109,7 +110,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16.0),
                                 child: Center(
-                                  child: CircularProgressIndicator(),
+                                  child: AppLoadingIndicator(),
                                 ),
                               );
                             }
@@ -129,7 +130,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.7,
                             child: const Center(
-                              child: CircularProgressIndicator(),
+                              child: AppLoadingIndicator(),
                             ),
                           ),
                         ],
@@ -139,56 +140,10 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                         children: [
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.6,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    LucideIcons.wifiOff,
-                                    size: 64,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Text(
-                                    'فشل تحميل المساجد',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'تأكد من اتصالك بالإنترنت',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton.icon(
-                                    onPressed: _refreshMosques,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
-                                        vertical: 12,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    icon: const Icon(LucideIcons.refreshCw),
-                                    label: const Text(
-                                      'إعادة المحاولة',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: AppErrorView(
+                              title: 'فشل تحميل المساجد',
+                              message: 'تأكد من اتصالك بالإنترنت',
+                              onRetry: _refreshMosques,
                             ),
                           ),
                         ],

@@ -5,6 +5,8 @@ import '../providers/downloads_provider.dart';
 import '../widgets/downloads_components/downloads_header.dart';
 import '../widgets/downloads_components/downloads_empty_state.dart';
 import '../widgets/downloads_components/download_card.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 class DownloadsPage extends ConsumerWidget {
   const DownloadsPage({super.key});
@@ -38,12 +40,11 @@ class DownloadsPage extends ConsumerWidget {
                     },
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => const Center(
-                  child: Text(
-                    'حدث خطأ في تحميل التنزيلات',
-                    style: TextStyle(color: Colors.red),
-                  ),
+                loading: () => const AppLoadingIndicator(),
+                error: (error, stack) => AppErrorView(
+                  title: 'حدث خطأ',
+                  message: 'حدث خطأ في تحميل التنزيلات',
+                  onRetry: () => ref.invalidate(allDownloadsProvider),
                 ),
               ),
             ),

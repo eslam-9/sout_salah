@@ -4,6 +4,8 @@ import '../providers/favorites_provider.dart';
 
 import '../widgets/saved_recordings_components/saved_recordings_empty_state.dart';
 import '../widgets/saved_recordings_components/saved_recording_card.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 class SavedRecordingsPage extends ConsumerWidget {
   const SavedRecordingsPage({super.key});
@@ -41,12 +43,11 @@ class SavedRecordingsPage extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => const Center(
-          child: Text(
-            'حدث خطأ في تحميل المحفوظات',
-            style: TextStyle(color: Colors.red),
-          ),
+        loading: () => const AppLoadingIndicator(),
+        error: (error, stack) => AppErrorView(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ في تحميل المحفوظات',
+          onRetry: () => ref.invalidate(allFavoritesProvider),
         ),
       ),
     );
