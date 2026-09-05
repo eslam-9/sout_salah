@@ -14,11 +14,15 @@ class MosqueRequestsRepositoryImpl implements MosqueRequestsRepository {
   Future<Either<Failure, void>> createMosqueRequest({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
     return executeWithCatch(() => remoteDataSource.createMosqueRequest(
       name: name,
       location: location,
+      latitude: latitude,
+      longitude: longitude,
       description: description,
     ));
   }

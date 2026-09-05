@@ -19,13 +19,20 @@ class MosqueRepositoryImpl implements MosqueRepository {
   Future<Either<Failure, Mosque>> addMosque({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
-    return executeWithCatch(() => remoteDataSource.addMosque(
-      name: name,
-      location: location,
-      description: description,
-    ));
+    return executeWithCatch(() async {
+      final mosqueModel = await remoteDataSource.addMosque(
+        name: name,
+        location: location,
+        latitude: latitude,
+        longitude: longitude,
+        description: description,
+      );
+      return mosqueModel;
+    });
   }
 
   @override

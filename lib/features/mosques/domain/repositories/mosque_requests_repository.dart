@@ -6,6 +6,8 @@ abstract class MosqueRequestsRepository {
   Future<Either<Failure, void>> createMosqueRequest({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   });
   Future<Either<Failure, List<MosqueRequest>>> getPendingRequests();

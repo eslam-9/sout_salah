@@ -7,6 +7,8 @@ abstract class MosqueRepository {
   Future<Either<Failure, Mosque>> addMosque({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   });
   Future<Either<Failure, void>> addPublisher(String mosqueId, String email);

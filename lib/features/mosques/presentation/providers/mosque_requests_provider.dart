@@ -67,6 +67,8 @@ class MosqueRequestsNotifier extends AsyncNotifier<List<MosqueRequest>>
   Future<void> createRequest({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
     final createMosqueRequestUseCase = ref.read(
@@ -81,6 +83,8 @@ class MosqueRequestsNotifier extends AsyncNotifier<List<MosqueRequest>>
         CreateMosqueRequestParams(
           name: name,
           location: location,
+          latitude: latitude,
+          longitude: longitude,
           description: description,
         ),
       ),

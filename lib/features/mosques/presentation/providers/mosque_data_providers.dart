@@ -15,6 +15,7 @@ import '../../domain/repositories/ramadan_days_repository.dart';
 import '../../domain/repositories/recordings_repository.dart';
 import '../../domain/repositories/mosque_requests_repository.dart';
 import '../../domain/repositories/day_schedule_repository.dart';
+import '../../domain/repositories/location_repository.dart';
 import '../../domain/entities/recording.dart';
 import '../../domain/usecases/upload_recording_usecase.dart';
 import '../../domain/usecases/delete_recording_usecase.dart';
@@ -22,6 +23,20 @@ import '../../domain/usecases/add_publisher_usecase.dart';
 import '../../domain/usecases/add_mosque_usecase.dart';
 import '../../domain/usecases/add_month_usecase.dart';
 import '../../domain/usecases/create_pending_recording_usecase.dart';
+import '../../domain/usecases/get_current_location_usecase.dart';
+import '../../domain/usecases/open_mosque_in_maps_usecase.dart';
+import '../../data/services/location_service.dart';
+import '../../data/services/maps_navigation_service.dart';
+import '../../data/repositories/location_repository_impl.dart';
+
+// --- Services ---
+final locationServiceProvider = Provider<LocationService>((ref) {
+  return LocationService(ref.watch(appLoggerProvider));
+});
+
+final mapsNavigationServiceProvider = Provider<MapsNavigationService>((ref) {
+  return MapsNavigationService(ref.watch(appLoggerProvider));
+});
 
 // --- Data Sources ---
 final mosqueRemoteDataSourceProvider = Provider<MosqueRemoteDataSource>((ref) {
@@ -92,6 +107,13 @@ final dayScheduleRepositoryProvider = Provider<DayScheduleRepository>((ref) {
   );
 });
 
+final locationRepositoryProvider = Provider<LocationRepository>((ref) {
+  return LocationRepositoryImpl(
+    ref.watch(locationServiceProvider),
+    ref.watch(mapsNavigationServiceProvider),
+  );
+});
+
 // --- Use Cases & Providers ---
 final dayRecordingsProvider = FutureProvider.autoDispose.family<List<Recording>, String>((
   ref,
@@ -130,3 +152,11 @@ final createPendingRecordingUseCaseProvider =
     Provider<CreatePendingRecordingUseCase>((ref) {
       return CreatePendingRecordingUseCase(ref.watch(recordingsRepositoryProvider));
     });
+
+final getCurrentLocationUseCaseProvider = Provider<GetCurrentLocationUseCase>((ref) {
+  return GetCurrentLocationUseCase(ref.watch(locationRepositoryProvider));
+});
+
+final openMosqueInMapsUseCaseProvider = Provider<OpenMosqueInMapsUseCase>((ref) {
+  return OpenMosqueInMapsUseCase(ref.watch(locationRepositoryProvider));
+});

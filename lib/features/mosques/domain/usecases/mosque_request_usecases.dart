@@ -8,16 +8,20 @@ import 'package:equatable/equatable.dart';
 class CreateMosqueRequestParams extends Equatable {
   final String name;
   final String location;
+  final double? latitude;
+  final double? longitude;
   final String? description;
 
   const CreateMosqueRequestParams({
     required this.name,
     required this.location,
+    this.latitude,
+    this.longitude,
     this.description,
   });
 
   @override
-  List<Object?> get props => [name, location, description];
+  List<Object?> get props => [name, location, latitude, longitude, description];
 }
 
 class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestParams> {
@@ -30,6 +34,8 @@ class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestPar
     return repository.createMosqueRequest(
       name: params.name,
       location: params.location,
+      latitude: params.latitude,
+      longitude: params.longitude,
       description: params.description,
     );
   }

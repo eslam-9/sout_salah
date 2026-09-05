@@ -95,6 +95,8 @@ class MosqueNotifier extends AsyncNotifier<List<Mosque>>
   Future<void> addMosque({
     required String name,
     required String location,
+    double? latitude,
+    double? longitude,
     String? description,
   }) async {
     state = const AsyncValue.loading();
@@ -107,6 +109,8 @@ class MosqueNotifier extends AsyncNotifier<List<Mosque>>
         AddMosqueParams(
           name: name,
           location: location,
+          latitude: latitude,
+          longitude: longitude,
           description: description,
         ),
       ),
