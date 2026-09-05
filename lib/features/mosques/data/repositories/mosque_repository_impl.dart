@@ -11,8 +11,8 @@ class MosqueRepositoryImpl implements MosqueRepository {
   MosqueRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<Mosque>>> getMosques() async {
-    return executeWithCatch(() => remoteDataSource.getMosques());
+  Future<Either<Failure, List<Mosque>>> getMosques({int? limit, int? offset}) async {
+    return executeWithCatch(() => remoteDataSource.getMosques(limit: limit, offset: offset));
   }
 
   @override

@@ -4,7 +4,7 @@ import '../entities/recording.dart';
 import '../entities/prayer.dart';
 
 abstract class RecordingsRepository {
-  Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId);
+  Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId, {int? limit, int? offset});
   Future<Either<Failure, Recording>> uploadRecording({
     required String mosqueId,
     required String dayId,

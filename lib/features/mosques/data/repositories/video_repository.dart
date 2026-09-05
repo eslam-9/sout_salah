@@ -22,7 +22,7 @@ class VideoRepository {
     try {
       final response = await supabaseClient
           .from('daily_videos')
-          .select()
+          .select('id, mosque_id, day_id, publisher_id, video_url, title, description, created_at')
           .eq('day_id', dayId)
           .order('created_at', ascending: true);
 
@@ -68,7 +68,7 @@ class VideoRepository {
             'title': title,
             'description': description,
           })
-          .select()
+          .select('id, mosque_id, day_id, publisher_id, video_url, title, description, created_at')
           .single();
 
       return DailyVideoModel.fromJson(response);

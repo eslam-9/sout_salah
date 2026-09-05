@@ -4,13 +4,20 @@ import '../../../../core/usecases/usecase.dart';
 import '../entities/mosque.dart';
 import '../repositories/mosque_repository.dart';
 
-class GetMosquesUseCase implements UseCase<List<Mosque>, NoParams> {
+class GetMosquesParams {
+  final int? limit;
+  final int? offset;
+
+  GetMosquesParams({this.limit, this.offset});
+}
+
+class GetMosquesUseCase implements UseCase<List<Mosque>, GetMosquesParams> {
   final MosqueRepository repository;
 
   GetMosquesUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Mosque>>> call(NoParams params) async {
-    return await repository.getMosques();
+  Future<Either<Failure, List<Mosque>>> call(GetMosquesParams params) async {
+    return await repository.getMosques(limit: params.limit, offset: params.offset);
   }
 }

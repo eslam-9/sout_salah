@@ -6,8 +6,10 @@ import '../repositories/recordings_repository.dart';
 
 class GetDayRecordingsParams {
   final String dayId;
+  final int? limit;
+  final int? offset;
 
-  const GetDayRecordingsParams({required this.dayId});
+  const GetDayRecordingsParams({required this.dayId, this.limit, this.offset});
 }
 
 class GetDayRecordingsUseCase
@@ -20,6 +22,6 @@ class GetDayRecordingsUseCase
   Future<Either<Failure, List<Recording>>> call(
     GetDayRecordingsParams params,
   ) async {
-    return await repository.getDayRecordings(params.dayId);
+    return await repository.getDayRecordings(params.dayId, limit: params.limit, offset: params.offset);
   }
 }

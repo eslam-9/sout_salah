@@ -12,8 +12,8 @@ class RecordingsRepositoryImpl implements RecordingsRepository {
   RecordingsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId) async {
-    return executeWithCatch(() => remoteDataSource.getDayRecordings(dayId));
+  Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId, {int? limit, int? offset}) async {
+    return executeWithCatch(() => remoteDataSource.getDayRecordings(dayId, limit: limit, offset: offset));
   }
 
   @override
