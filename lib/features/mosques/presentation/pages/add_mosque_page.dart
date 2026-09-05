@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/mosque_controller.dart';
 import '../providers/mosque_requests_provider.dart';
-import '../providers/mosque_state.dart';
 import '../../../../core/utils/permission_checker.dart';
 
 import '../widgets/add_mosque_components/add_mosque_form.dart';
@@ -50,8 +49,9 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
       return;
     }
 
-    final isSuperAdmin =
-        await ref.read(permissionCheckerProvider).isSuperAdmin();
+    final isSuperAdmin = await ref
+        .read(permissionCheckerProvider)
+        .isSuperAdmin();
     if (mounted) {
       setState(() {
         _isSuperAdmin = isSuperAdmin;
@@ -59,32 +59,60 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
     }
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      if (_isSuperAdmin) {
-        ref.read(mosqueProvider.notifier).addMosque(
-              name: _nameController.text.trim(),
-              location: _locationController.text.trim(),
-              description: _descriptionController.text.trim().isEmpty
-                  ? null
-                  : _descriptionController.text.trim(),
+      try {
+        if (_isSuperAdmin) {
+          await ref
+              .read(mosqueProvider.notifier)
+              .addMosque(
+                name: _nameController.text.trim(),
+                location: _locationController.text.trim(),
+                description: _descriptionController.text.trim().isEmpty
+                    ? null
+                    : _descriptionController.text.trim(),
+              );
+        } else {
+          await ref
+              .read(mosqueRequestsProvider.notifier)
+              .createRequest(
+                name: _nameController.text.trim(),
+                location: _locationController.text.trim(),
+                description: _descriptionController.text.trim().isEmpty
+                    ? null
+                    : _descriptionController.text.trim(),
+              );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  "تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.",
+                ),
+                backgroundColor: Colors.green,
+              ),
             );
-      } else {
-        ref.read(mosqueRequestsProvider.notifier).createRequest(
-              name: _nameController.text.trim(),
-              location: _locationController.text.trim(),
-              description: _descriptionController.text.trim().isEmpty
-                  ? null
-                  : _descriptionController.text.trim(),
-            );
+            Navigator.of(context).pop();
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('فشل في إرسال الطلب: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<MosqueState>(mosqueProvider, (previous, next) {
-      if (next is MosqueLoaded) {
+    ref.listen(mosqueProvider, (previous, next) {
+      if (next is AsyncData && previous is AsyncLoading) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('تم إضافة المسجد بنجاح'),
@@ -92,34 +120,12 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
           ),
         );
         Navigator.of(context).pop();
-      } else if (next is MosqueError) {
+      } else if (next is AsyncError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'فشل في إضافة المسجد: ${next.message}\n'
+              'فشل في إضافة المسجد: ${next.error}\n'
               'تأكد من أن لديك الصلاحيات المطلوبة',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      }
-    });
-
-    ref.listen<MosqueRequestsState>(mosqueRequestsProvider, (previous, next) {
-      if (next is MosqueRequestSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.message),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pop();
-      } else if (next is MosqueRequestsError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'فشل في إرسال الطلب: ${next.message}',
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
@@ -130,8 +136,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
 
     final state = ref.watch(mosqueProvider);
     final requestState = ref.watch(mosqueRequestsProvider);
-    final isLoading =
-        state is MosqueLoading || requestState is MosqueRequestsLoading;
+    final isLoading = state is AsyncLoading || requestState is AsyncLoading;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),

@@ -42,7 +42,9 @@ class MosqueDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       actions: [
-        if (authState is AuthAuthenticated && authState.user.role == 'admin')
+        if (authState is AuthAuthenticated &&
+            (authState.user.role == 'admin' ||
+                authState.user.id == mosque.adminId))
           IconButton(
             icon: const Icon(LucideIcons.userPlus, color: Colors.black),
             onPressed: () => Navigator.push(

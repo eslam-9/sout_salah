@@ -78,7 +78,9 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: MosqueDetailAppBar(mosque: widget.mosque),
       floatingActionButton: (authState is AuthAuthenticated &&
-              authState.user.role == 'admin')
+              (authState.user.role == 'admin' ||
+               authState.user.role == 'super_admin' ||
+               authState.user.id == widget.mosque.adminId))
           ? FloatingActionButton(
               onPressed: () => _showAddMonthDialog(context),
               backgroundColor: AppColors.primary,
