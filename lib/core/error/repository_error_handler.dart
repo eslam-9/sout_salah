@@ -18,6 +18,16 @@ Future<Either<Failure, T>> executeWithCatch<T>(Future<T> Function() action) asyn
     return Left(StorageFailure(message: e.message ?? 'خطأ في التخزين السحابي'));
   } on ServerException catch (e) {
     return Left(ServerFailure(message: e.message ?? 'خطأ في الخادم'));
+  } on LocationPermissionDeniedException {
+    return const Left(LocationPermissionDeniedFailure());
+  } on LocationPermissionPermanentlyDeniedException {
+    return const Left(LocationPermissionPermanentlyDeniedFailure());
+  } on LocationServiceDisabledException {
+    return const Left(LocationServiceDisabledFailure());
+  } on LocationUnavailableException {
+    return const Left(LocationUnavailableFailure());
+  } on MapLaunchException {
+    return const Left(MapLaunchFailure());
   } catch (e) {
     final message = e.toString().replaceAll('Exception: ', '');
     return Left(ServerFailure(message: message));

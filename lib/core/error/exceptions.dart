@@ -29,3 +29,10 @@ class StorageException implements Exception {
   final String? message;
   StorageException([this.message]);
 }
+
+class LocationPermissionDeniedException implements Exception {}
+class LocationPermissionPermanentlyDeniedException implements Exception {}
+class LocationServiceDisabledException implements Exception {}
+class LocationUnavailableException implements Exception {}
+class MapLaunchException implements Exception {}
+
