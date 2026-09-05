@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../../core/theme/app_theme.dart';
+
+import '../widgets/device_audio_selection_components/device_audio_permission_view.dart';
+import '../widgets/device_audio_selection_components/device_audio_list.dart';
 
 class DeviceAudioSelectionPage extends ConsumerStatefulWidget {
   const DeviceAudioSelectionPage({super.key});
@@ -37,15 +39,9 @@ class _DeviceAudioSelectionPageState
     super.dispose();
   }
 
-  // ... _checkPermission and _formatDuration remain the same ...
-
   Future<void> _checkPermission() async {
     // For Android 13+ (SDK 33+), we need READ_MEDIA_AUDIO
     // For older versions, we need READ_EXTERNAL_STORAGE
-
-    // We can't easily check SDK version in pure Dart without a plugin,
-    // but permission_handler handles this logic internally if we use the right permissions.
-    // Ideally, we check the platform version or try both relevant permissions.
 
     // Attempt to request audio permission first (Android 13+)
     var audioStatus = await Permission.audio.status;
@@ -61,12 +57,7 @@ class _DeviceAudioSelectionPageState
       return;
     }
 
-    // If neither is granted, we need to request them.
-    // Note: On Android 13+, requesting storage will be denied automatically/silently.
-    // So we should try to determine which one to request or request both/smartly.
-
-    // Strategy: Request audio first. If it's valid for this OS, system shows dialog.
-    // If invalid (OS < 13), it might be denied or unrestricted.
+    // Strategy: Request audio first.
     Map<Permission, PermissionStatus> statuses = await [
       Permission.audio,
       Permission.storage,
@@ -76,18 +67,12 @@ class _DeviceAudioSelectionPageState
         statuses[Permission.storage]!.isGranted) {
       setState(() => _hasPermission = true);
     } else {
-      // If execution reaches here, permissions are denied.
-      // Check if permanently denied to show open settings option
       if (statuses[Permission.audio]!.isPermanentlyDenied ||
           statuses[Permission.storage]!.isPermanentlyDenied) {
-        // Show dialog or snackbar to open settings
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                'يجب تفعيل الصلاحيات من الإعدادات',
-                style: TextStyle(),
-              ),
+              content: const Text('يجب تفعيل الصلاحيات من الإعدادات'),
               action: SnackBarAction(
                 label: 'الإعدادات',
                 onPressed: () => openAppSettings(),
@@ -100,21 +85,12 @@ class _DeviceAudioSelectionPageState
     }
   }
 
-  String _formatDuration(int? duration) {
-    if (duration == null) return '--:--';
-    final d = Duration(milliseconds: duration);
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(d.inMinutes.remainder(60));
-    final seconds = twoDigits(d.inSeconds.remainder(60));
-    return '$minutes:$seconds';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'اختر التلاوة',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
@@ -133,7 +109,6 @@ class _DeviceAudioSelectionPageState
               textDirection: TextDirection.ltr,
               controller: _searchController,
               textAlign: TextAlign.right,
-              style: TextStyle(),
               decoration: InputDecoration(
                 hintText: 'بحث عن تلاوة...',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -154,161 +129,12 @@ class _DeviceAudioSelectionPageState
         ),
       ),
       body: !_hasPermission
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(LucideIcons.lock, size: 48, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text(
-                    'الرجاء منح صلاحية الوصول للملفات',
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _checkPermission,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      'منح الصلاحية',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
+          ? DeviceAudioPermissionView(
+              onRequestPermission: _checkPermission,
             )
-          : FutureBuilder<List<SongModel>>(
-              future: _audioQuery.querySongs(
-                sortType: null,
-                orderType: OrderType.ASC_OR_SMALLER,
-                uriType: UriType.EXTERNAL,
-                ignoreCase: true,
-              ),
-              builder: (context, item) {
-                if (item.hasError) {
-                  return Center(
-                    child: Text('حدث خطأ في تحميل الملفات', style: TextStyle()),
-                  );
-                }
-
-                if (item.data == null) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  );
-                }
-
-                if (item.data!.isEmpty) {
-                  return Center(
-                    child: Text('لا توجد ملفات صوتية', style: TextStyle()),
-                  );
-                }
-
-                // Filter out very short audios (e.g. < 5 seconds)
-                // And filter by search query
-                final songs = item.data!.where((song) {
-                  final isLongEnough = (song.duration ?? 0) > 5000;
-                  if (!isLongEnough) return false;
-
-                  if (_searchQuery.isEmpty) return true;
-                  return song.displayNameWOExt.toLowerCase().contains(
-                    _searchQuery,
-                  );
-                }).toList();
-
-                if (songs.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'لا توجد تلاوات تطابق بحثك',
-                      style: TextStyle(),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: songs.length,
-                  itemBuilder: (context, index) {
-                    final song = songs[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.pop(context, {
-                            'path': song.data,
-                            'name': song.displayNameWOExt,
-                            'size': song.size,
-                            'duration': song.duration,
-                          });
-                        },
-                        leading: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primaryLight,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            LucideIcons.music,
-                            color: AppColors.primary,
-                            size: 24,
-                          ),
-                        ),
-                        title: Text(
-                          song.displayNameWOExt,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              _formatDuration(song.duration),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '•',
-                              style: TextStyle(color: Colors.grey.shade400),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '${(song.size / (1024 * 1024)).toStringAsFixed(2)} MB',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: const Icon(
-                          LucideIcons.chevronRight,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+          : DeviceAudioList(
+              audioQuery: _audioQuery,
+              searchQuery: _searchQuery,
             ),
     );
   }

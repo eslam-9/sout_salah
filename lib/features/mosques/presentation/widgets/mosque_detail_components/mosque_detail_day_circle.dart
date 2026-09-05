@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/routes/app_routes.dart';
+import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
 import '../../../domain/entities/ramadan_day.dart';
 
@@ -41,8 +42,10 @@ class MosqueDetailDayCircle extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () =>
-          NavigationService.navigateTo(AppRoutes.dayDetail, arguments: day),
+      onTap: () => NavigationService.navigateTo(
+        AppRoutes.dayDetail,
+        arguments: DayDetailArgs(day: day),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: bg,

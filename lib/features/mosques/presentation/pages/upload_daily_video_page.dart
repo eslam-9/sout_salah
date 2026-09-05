@@ -8,6 +8,9 @@ import 'package:sout_salah/core/di/providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../providers/daily_video_providers.dart';
+import '../widgets/upload_daily_video_components/upload_video_empty_state.dart';
+import '../widgets/upload_daily_video_components/upload_video_file_list.dart';
+import '../widgets/upload_daily_video_components/upload_video_details_form.dart';
 
 class UploadDailyVideoPage extends ConsumerStatefulWidget {
   final String mosqueId;
@@ -159,186 +162,25 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
             children: [
               // File Picker Area
               if (_selectedFiles.isEmpty)
-                InkWell(
-                  onTap: _isUploading ? null : _pickVideos,
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    height: 180,
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.transparent),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LucideIcons.uploadCloud,
-                            size: 64,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'اضغط هنا لاختيار فيديو (أو أكثر)',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[800],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'يمكنك اختيار أكثر من فيديو للرفع دفعة واحدة',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                UploadVideoEmptyState(
+                  isUploading: _isUploading,
+                  onPickVideos: _pickVideos,
                 )
               else
-                // Selected Files List
-                Container(
-                  constraints: const BoxConstraints(maxHeight: 250),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _selectedFiles.length + (_isUploading ? 0 : 1),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      // Add more videos button at the end
-                      if (index == _selectedFiles.length) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: OutlinedButton.icon(
-                            onPressed: _pickVideos,
-                            icon: const Icon(
-                              LucideIcons.plus,
-                              color: AppColors.primary,
-                            ),
-                            label: const Text(
-                              'إضافة المزيد من الفيديوهات',
-                              style: TextStyle(color: AppColors.primary),
-                            ),
-                          ),
-                        );
-                      }
-
-                      final file = _selectedFiles[index];
-                      final isCurrentUpload =
-                          _isUploading && index == _currentUploadIndex;
-                      final isFinishedUpload =
-                          _isUploading && index < _currentUploadIndex;
-
-                      return Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              LucideIcons.fileVideo2,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                file.path.split('/').last.split('\\').last,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            if (_isUploading) ...[
-                              if (isCurrentUpload)
-                                SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    value: _uploadProgress,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              else if (isFinishedUpload)
-                                const Icon(
-                                  LucideIcons.checkCircle2,
-                                  color: Colors.green,
-                                )
-                              else
-                                const Icon(
-                                  LucideIcons.clock,
-                                  color: Colors.grey,
-                                ),
-                            ] else
-                              IconButton(
-                                icon: const Icon(
-                                  LucideIcons.trash2,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                                onPressed: () => _removeFile(index),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                UploadVideoFileList(
+                  selectedFiles: _selectedFiles,
+                  isUploading: _isUploading,
+                  currentUploadIndex: _currentUploadIndex,
+                  uploadProgress: _uploadProgress,
+                  onPickVideos: _pickVideos,
+                  onRemoveFile: _removeFile,
                 ),
 
               const SizedBox(height: 32),
-
-              Text(
-                'معلومات إضافية (اختياري)',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-
-              // Title Input
-              TextField(
-                controller: _titleController,
-                enabled: !_isUploading,
-                decoration: InputDecoration(
-                  hintText: 'عنوان الفيديو',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Description Input
-              TextField(
-                controller: _descriptionController,
-                enabled: !_isUploading,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: 'وصف إضافي للفيديو',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                ),
+              UploadVideoDetailsForm(
+                titleController: _titleController,
+                descriptionController: _descriptionController,
+                isUploading: _isUploading,
               ),
               const SizedBox(height: 32),
 
