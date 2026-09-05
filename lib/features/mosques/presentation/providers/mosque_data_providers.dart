@@ -93,7 +93,7 @@ final dayScheduleRepositoryProvider = Provider<DayScheduleRepository>((ref) {
 });
 
 // --- Use Cases & Providers ---
-final dayRecordingsProvider = FutureProvider.family<List<Recording>, String>((
+final dayRecordingsProvider = FutureProvider.autoDispose.family<List<Recording>, String>((
   ref,
   dayId,
 ) async {

@@ -14,7 +14,7 @@ final videoRepositoryProvider = Provider<VideoRepository>((ref) {
 
 /// Fetches ALL videos for a given day (supports multiple videos per day).
 final dailyVideoListProvider =
-    FutureProvider.family<List<DailyVideoModel>, String>((ref, dayId) async {
+    FutureProvider.autoDispose.family<List<DailyVideoModel>, String>((ref, dayId) async {
       final repository = ref.watch(videoRepositoryProvider);
       return repository.getVideosForDay(dayId);
     });

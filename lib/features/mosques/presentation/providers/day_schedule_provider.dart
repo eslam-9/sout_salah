@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/day_schedule_entry.dart';
 import 'mosque_data_providers.dart';
 
 final dayScheduleProvider =
-    FutureProvider.family<List<DayScheduleEntry>, String>((ref, dayId) async {
+    FutureProvider.autoDispose.family<List<DayScheduleEntry>, String>((ref, dayId) async {
       final repository = ref.watch(dayScheduleRepositoryProvider);
       final result = await repository.getDaySchedule(dayId);
 
@@ -14,43 +15,29 @@ final dayScheduleProvider =
     });
 
 class DayScheduleNotifier
-    extends StateNotifier<AsyncValue<List<DayScheduleEntry>>> {
-  final String dayId;
-  final String mosqueId;
-  final Ref ref;
+    extends AutoDisposeFamilyAsyncNotifier<List<DayScheduleEntry>, ({String dayId, String mosqueId})> {
+  
+  String get dayId => arg.dayId;
+  String get mosqueId => arg.mosqueId;
 
-  DayScheduleNotifier({
-    required this.dayId,
-    required this.mosqueId,
-    required this.ref,
-  }) : super(const AsyncValue.loading()) {
-    _loadSchedule();
+  @override
+  FutureOr<List<DayScheduleEntry>> build(({String dayId, String mosqueId}) arg) {
+    return _fetchSchedule();
   }
 
-  Future<void> _loadSchedule() async {
-    state = const AsyncValue.loading();
-    try {
-      final repository = ref.read(dayScheduleRepositoryProvider);
-      final result = await repository.getDaySchedule(dayId);
+  Future<List<DayScheduleEntry>> _fetchSchedule() async {
+    final repository = ref.read(dayScheduleRepositoryProvider);
+    final result = await repository.getDaySchedule(dayId);
 
-      result.fold(
-        (failure) {
-          state = AsyncValue.error(
-            Exception('فشل تحميل جدول اليوم'),
-            StackTrace.current,
-          );
-        },
-        (schedule) {
-          state = AsyncValue.data(schedule);
-        },
-      );
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
+    return result.fold(
+      (failure) => throw Exception('فشل تحميل جدول اليوم'),
+      (schedule) => schedule,
+    );
   }
 
   Future<void> refresh() async {
-    await _loadSchedule();
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _fetchSchedule());
   }
 
   Future<bool> addEntry({
@@ -71,7 +58,7 @@ class DayScheduleNotifier
       );
 
       return result.fold((failure) => false, (_) {
-        _loadSchedule();
+        refresh();
         return true;
       });
     } catch (e) {
@@ -95,7 +82,7 @@ class DayScheduleNotifier
       );
 
       return result.fold((failure) => false, (_) {
-        _loadSchedule();
+        refresh();
         return true;
       });
     } catch (e) {
@@ -109,7 +96,7 @@ class DayScheduleNotifier
       final result = await repository.deleteScheduleEntry(entryId);
 
       return result.fold((failure) => false, (_) {
-        _loadSchedule();
+        refresh();
         return true;
       });
     } catch (e) {
@@ -120,14 +107,11 @@ class DayScheduleNotifier
 
 // Family provider to instantiate specific notifiers based on dayId/mosqueId
 final dayScheduleNotifierProvider =
-    StateNotifierProvider.family<
+    AsyncNotifierProvider.autoDispose.family<
       DayScheduleNotifier,
-      AsyncValue<List<DayScheduleEntry>>,
+      List<DayScheduleEntry>,
       ({String dayId, String mosqueId})
     >(
-      (ref, args) => DayScheduleNotifier(
-        dayId: args.dayId,
-        mosqueId: args.mosqueId,
-        ref: ref,
-      ),
+      () => DayScheduleNotifier(),
     );
+
