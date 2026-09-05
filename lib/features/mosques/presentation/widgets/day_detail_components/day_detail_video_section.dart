@@ -44,7 +44,7 @@ class DayDetailVideoSection extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: videoAsync.when(
+      child: videoAsync.maybeWhen(
         data: (videos) {
           return Column(
             children: [
@@ -95,11 +95,7 @@ class DayDetailVideoSection extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => const Text(
-          'فشل تحميل الفيديو',
-          style: TextStyle(color: Colors.red),
-        ),
+        orElse: () => const SizedBox.shrink(),
       ),
     );
   }

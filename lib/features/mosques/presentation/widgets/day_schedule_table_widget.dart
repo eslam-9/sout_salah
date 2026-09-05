@@ -7,6 +7,8 @@ import '../../domain/entities/day_schedule_entry.dart';
 import '../providers/day_schedule_provider.dart';
 
 import 'day_schedule_components/day_schedule_add_edit_sheet.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 class DayScheduleTableWidget extends ConsumerWidget {
   final String dayId;
@@ -95,8 +97,15 @@ class DayScheduleTableWidget extends ConsumerWidget {
                 },
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(child: Text('خطأ: $error')),
+            loading: () => const Padding(
+              padding: EdgeInsets.all(24.0),
+              child: AppLoadingIndicator(),
+            ),
+            error: (error, stack) => AppErrorView(
+              title: 'فشل تحميل الجدول',
+              message: 'يرجى التحقق من اتصالك بالإنترنت',
+              onRetry: () => ref.invalidate(dayScheduleProvider(dayId)),
+            ),
           ),
         ],
       ),
