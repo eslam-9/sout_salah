@@ -4,6 +4,8 @@ class MosqueRequest extends Equatable {
   final String id;
   final String name;
   final String location;
+  final double? latitude;
+  final double? longitude;
   final String? description;
   final String requestedBy;
   final String status;
@@ -13,6 +15,8 @@ class MosqueRequest extends Equatable {
     required this.id,
     required this.name,
     required this.location,
+    this.latitude,
+    this.longitude,
     this.description,
     required this.requestedBy,
     required this.status,
@@ -24,6 +28,8 @@ class MosqueRequest extends Equatable {
         id,
         name,
         location,
+        latitude,
+        longitude,
         description,
         requestedBy,
         status,

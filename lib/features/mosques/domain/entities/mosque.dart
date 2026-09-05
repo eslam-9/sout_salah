@@ -5,6 +5,8 @@ class Mosque extends Equatable {
   final String name;
   final String? description;
   final String? location;
+  final double? latitude;
+  final double? longitude;
   final String? adminId;
   final int recordingCount;
 
@@ -13,6 +15,8 @@ class Mosque extends Equatable {
     required this.name,
     this.description,
     this.location,
+    this.latitude,
+    this.longitude,
     this.adminId,
     this.recordingCount = 0,
   });
@@ -23,6 +27,8 @@ class Mosque extends Equatable {
     name,
     description,
     location,
+    latitude,
+    longitude,
     adminId,
     recordingCount,
   ];

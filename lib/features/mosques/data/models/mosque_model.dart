@@ -4,6 +4,8 @@ class MosqueModel extends Mosque {
   const MosqueModel({
     required super.id,
     required super.name,
+    super.latitude,
+    super.longitude,
     super.description,
     super.location,
     super.adminId,
@@ -11,15 +13,20 @@ class MosqueModel extends Mosque {
   });
 
   factory MosqueModel.fromJson(Map<String, dynamic> json) {
-    // Extract count from Supabase response which might look like:
-    // "recordings": [{"count": 123}] or just a number if using a view/function
-    // When using .select('*, recordings(count)'), it returns a list with one object
-    int count = 0;
-    if (json['recordings'] != null && json['recordings'] is List) {
-      final list = json['recordings'] as List;
-      if (list.isNotEmpty && list.first is Map) {
-        count = list.first['count'] ?? 0;
+    int rCount = 0;
+    if (json['recordings'] != null) {
+      if (json['recordings'] is List && (json['recordings'] as List).isNotEmpty) {
+        final countItem = (json['recordings'] as List).first;
+        if (countItem is Map) {
+          rCount = countItem['count'] ?? 0;
+        }
+      } else if (json['recordings'] is Map) {
+        rCount = json['recordings']['count'] ?? 0;
+      } else if (json['recordings'] is num) {
+        rCount = (json['recordings'] as num).toInt();
       }
+    } else if (json['recording_count'] != null) {
+      rCount = (json['recording_count'] as num).toInt();
     }
 
     return MosqueModel(
@@ -27,19 +34,23 @@ class MosqueModel extends Mosque {
       name: json['name'],
       description: json['description'],
       location: json['location'],
+      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
       adminId: json['admin_id'],
-      recordingCount: count,
+      recordingCount: rCount,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final map = <String, dynamic>{
       'id': id,
       'name': name,
       'description': description,
       'location': location,
       'admin_id': adminId,
-      // We generally don't send recordingCount back to server this way
     };
+    if (latitude != null) map['latitude'] = latitude;
+    if (longitude != null) map['longitude'] = longitude;
+    return map;
   }
 }
