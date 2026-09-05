@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/di/riverpod_providers.dart';
 
 import '../../domain/usecases/auth_usecases.dart';
@@ -34,42 +33,20 @@ final updateProfileUseCaseProvider = Provider(
 // Provider to track if initial auth check has been completed
 final initialCheckDoneProvider = StateProvider<bool>((ref) => false);
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(
-    signInUseCase: ref.watch(signInUseCaseProvider),
-    signUpUseCase: ref.watch(signUpUseCaseProvider),
-    signInAnonymouslyUseCase: ref.watch(signInAnonymouslyUseCaseProvider),
-    signOutUseCase: ref.watch(signOutUseCaseProvider),
-    getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
-    updateProfileUseCase: ref.watch(updateProfileUseCaseProvider),
-    sharedPreferences: ref.watch(sharedPreferencesProvider),
-  );
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
+  return AuthNotifier();
 });
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final SignInUseCase signInUseCase;
-  final SignUpUseCase signUpUseCase;
-  final SignInAnonymouslyUseCase signInAnonymouslyUseCase;
-  final SignOutUseCase signOutUseCase;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
-  final UpdateProfileUseCase updateProfileUseCase;
-
-  final SharedPreferences sharedPreferences;
-
-  AuthNotifier({
-    required this.signInUseCase,
-    required this.signUpUseCase,
-    required this.signInAnonymouslyUseCase,
-    required this.signOutUseCase,
-    required this.getCurrentUserUseCase,
-    required this.updateProfileUseCase,
-    required this.sharedPreferences,
-  }) : super(AuthInitial());
+class AuthNotifier extends Notifier<AuthState> {
+  @override
+  AuthState build() {
+    return AuthInitial();
+  }
 
   Future<void> checkAuthStatus() async {
     state = AuthLoading();
+    final result = await ref.read(getCurrentUserUseCaseProvider)(NoParams());
 
-    final result = await getCurrentUserUseCase(NoParams());
     result.fold((failure) => state = AuthUnauthenticated(), (user) {
       NotificationService.registerToken(user.id);
       state = AuthAuthenticated(user: user);
@@ -82,13 +59,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> signIn(String email, String password) async {
     state = AuthLoading();
-    final result = await signInUseCase(
+    final result = await ref.read(signInUseCaseProvider)(
       SignInParams(email: email, password: password),
     );
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
-        sharedPreferences.setBool('is_guest_mode', false);
+        ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
@@ -101,13 +78,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? username,
   }) async {
     state = AuthLoading();
-    final result = await signUpUseCase(
+    final result = await ref.read(signUpUseCaseProvider)(
       SignUpParams(email: email, password: password, username: username),
     );
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
-        sharedPreferences.setBool('is_guest_mode', false);
+        ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
@@ -116,11 +93,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> signInAnonymously() async {
     state = AuthLoading();
-    final result = await signInAnonymouslyUseCase(NoParams());
+    final result = await ref.read(signInAnonymouslyUseCaseProvider)(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (user) {
-        sharedPreferences.setBool('is_guest_mode', true);
+        ref.read(sharedPreferencesProvider).setBool('is_guest_mode', true);
         NotificationService.registerToken(user.id);
         state = AuthAuthenticated(user: user);
       },
@@ -134,11 +111,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       NotificationService.removeToken(userId);
     }
 
-    final result = await signOutUseCase(NoParams());
+    final result = await ref.read(signOutUseCaseProvider)(NoParams());
     result.fold(
       (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
       (_) {
-        sharedPreferences.setBool('is_guest_mode', false);
+        ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         state = AuthUnauthenticated();
       },
     );
@@ -146,9 +123,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   String _mapFailureToMessage(Failure failure) {
     if (failure is ServerFailure) {
-      return 'Server Failure';
+      return failure.message;
     } else if (failure is CacheFailure) {
       return 'Cache Failure';
+    } else if (failure is NetworkFailure) {
+      return failure.message;
+    } else if (failure is AuthFailure) {
+      return failure.message;
     } else {
       return 'Unexpected Error';
     }
@@ -158,7 +139,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (state is! AuthAuthenticated) return false;
     final userId = (state as AuthAuthenticated).user.id;
 
-    final result = await updateProfileUseCase(
+    final result = await ref.read(updateProfileUseCaseProvider)(
       UpdateProfileParams(userId: userId, username: username),
     );
     return result.fold(
