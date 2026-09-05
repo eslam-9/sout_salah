@@ -9,7 +9,7 @@ final favoritesProvider = StreamProvider<List<FavoriteRecording>>((ref) {
 });
 
 /// Provider to check if a recording is favorite
-final isFavoriteProvider = Provider.family<AsyncValue<bool>, String>((
+final isFavoriteProvider = Provider.autoDispose.family<AsyncValue<bool>, String>((
   ref,
   recordingId,
 ) {

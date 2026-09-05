@@ -6,7 +6,6 @@ import '../../../../core/utils/permission_checker.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../mosques/presentation/providers/mosque_controller.dart';
-import '../../../mosques/presentation/providers/mosque_state.dart';
 import '../../../mosques/presentation/widgets/mosque_card.dart';
 import '../widgets/home_widgets.dart';
 
@@ -20,11 +19,26 @@ class MosquesPage extends ConsumerStatefulWidget {
 class _MosquesPageState extends ConsumerState<MosquesPage> {
   String _searchQuery = '';
   bool _canAddMosque = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _checkPermissions();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(mosqueProvider.notifier).loadMore();
+    }
   }
 
   Future<void> _checkPermissions() async {
@@ -56,9 +70,60 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                 color: AppColors.primary,
                 child: Builder(
                   builder: (context) {
-                    // Loading — always wrap in ListView so RefreshIndicator resolves
-                    if (state is MosqueLoading) {
-                      return ListView(
+                    return state.when(
+                      data: (mosquesList) {
+                        final mosques = mosquesList
+                            .where((m) => m.name.contains(_searchQuery))
+                            .toList();
+
+                        if (mosques.isEmpty) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.6,
+                                child: Center(
+                                  child: Text(
+                                    _searchQuery.isEmpty
+                                        ? 'لا توجد مساجد متاحة حاليا'
+                                        : 'لا نتائج لهذا البحث',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return ListView.builder(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(16),
+                          itemCount:
+                              mosques.length +
+                              (ref.read(mosqueProvider.notifier).hasMore
+                                  ? 1
+                                  : 0),
+                          itemBuilder: (context, index) {
+                            if (index == mosques.length) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16.0),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+                            return MosqueCard(
+                              mosque: mosques[index],
+                              onTap: () => NavigationService.navigateTo(
+                                AppRoutes.mosqueDetail,
+                                arguments: mosques[index],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      loading: () => ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
                           SizedBox(
@@ -68,12 +133,8 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                             ),
                           ),
                         ],
-                      );
-                    }
-
-                    // Error — wrap in ListView so pull-to-retry works
-                    if (state is MosqueError) {
-                      return ListView(
+                      ),
+                      error: (error, stack) => ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
                           SizedBox(
@@ -131,48 +192,8 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                             ),
                           ),
                         ],
-                      );
-                    }
-
-                    // Loaded
-                    if (state is MosqueLoaded) {
-                      final mosques = state.mosques
-                          .where((m) => m.name.contains(_searchQuery))
-                          .toList();
-
-                      if (mosques.isEmpty) {
-                        return ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.6,
-                              child: Center(
-                                child: Text(
-                                  _searchQuery.isEmpty
-                                      ? 'لا توجد مساجد متاحة حاليا'
-                                      : 'لا نتائج لهذا البحث',
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-
-                      return ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        itemCount: mosques.length,
-                        itemBuilder: (context, index) => MosqueCard(
-                          mosque: mosques[index],
-                          onTap: () => NavigationService.navigateTo(
-                            AppRoutes.mosqueDetail,
-                            arguments: mosques[index],
-                          ),
-                        ),
-                      );
-                    }
-
-                    return const SizedBox.shrink();
+                      ),
+                    );
                   },
                 ),
               ),
