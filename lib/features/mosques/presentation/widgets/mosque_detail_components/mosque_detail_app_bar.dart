@@ -6,6 +6,7 @@ import '../../../domain/entities/mosque.dart';
 import '../../../../auth/presentation/providers/auth_controller.dart';
 import '../../../../auth/presentation/bloc/auth_state.dart';
 import '../../pages/add_publisher_page.dart';
+import '../../pages/mosque_info_page.dart';
 
 class MosqueDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Mosque mosque;
@@ -54,6 +55,17 @@ class MosqueDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             ),
           ),
+        IconButton(
+          icon: const Icon(LucideIcons.info, color: Colors.black),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MosqueInfoPage(mosque: mosque),
+              ),
+            );
+          },
+        ),
       ],
     );
   }
