@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/theme/app_theme.dart';
+import '../../../domain/entities/mosque_location.dart';
+import 'mosque_location_section.dart';
+import 'add_mosque_text_fields.dart';
+import 'add_mosque_submit_button.dart';
 
 class AddMosqueForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -9,6 +12,7 @@ class AddMosqueForm extends StatelessWidget {
   final TextEditingController descriptionController;
   final bool isLoading;
   final bool isSuperAdmin;
+  final ValueChanged<MosqueLocation?> onLocationChanged;
   final VoidCallback onSubmit;
 
   const AddMosqueForm({
@@ -19,46 +23,9 @@ class AddMosqueForm extends StatelessWidget {
     required this.descriptionController,
     required this.isLoading,
     required this.isSuperAdmin,
+    required this.onLocationChanged,
     required this.onSubmit,
   });
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    String? Function(String?)? validator,
-    int maxLines = 1,
-  }) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      maxLines: maxLines,
-      textDirection: TextDirection.rtl,
-      textAlign: TextAlign.right,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.primary),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +34,7 @@ class AddMosqueForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildTextField(
+          AddMosqueTextField(
             controller: nameController,
             label: 'اسم المسجد',
             icon: LucideIcons.landmark,
@@ -79,51 +46,33 @@ class AddMosqueForm extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
-          _buildTextField(
+          MosqueLocationSection(
+            onLocationChanged: onLocationChanged,
+          ),
+          const SizedBox(height: 16),
+          AddMosqueTextField(
             controller: locationController,
-            label: 'الموقع',
+            label: 'عنوان المسجد (اختياري / يُضاف تلقائياً)',
             icon: LucideIcons.mapPin,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'الرجاء إدخال الموقع';
+                return 'الرجاء إدخال الموقع أو استخدامه من الخريطة';
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
-          _buildTextField(
+          AddMosqueTextField(
             controller: descriptionController,
             label: 'الوصف (اختياري)',
             icon: LucideIcons.fileText,
             maxLines: 3,
           ),
           const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: isLoading ? null : onSubmit,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Text(
-                    isSuperAdmin ? 'إضافة المسجد' : 'إرسال طلب إضافة',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+          AddMosqueSubmitButton(
+            isLoading: isLoading,
+            isSuperAdmin: isSuperAdmin,
+            onSubmit: onSubmit,
           ),
         ],
       ),

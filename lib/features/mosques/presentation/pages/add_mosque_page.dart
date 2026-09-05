@@ -5,8 +5,12 @@ import '../providers/mosque_controller.dart';
 import '../providers/mosque_requests_provider.dart';
 import '../../../../core/utils/permission_checker.dart';
 import '../../../../core/utils/app_snackbar.dart';
+import '../../../../core/services/navigation_service.dart';
+import '../../../../core/utils/app_logger.dart';
+import 'package:get_it/get_it.dart';
 
 import '../widgets/add_mosque_components/add_mosque_form.dart';
+import '../../domain/entities/mosque_location.dart';
 
 class AddMosquePage extends ConsumerStatefulWidget {
   const AddMosquePage({super.key});
@@ -22,10 +26,12 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
   final _descriptionController = TextEditingController();
 
   bool _isSuperAdmin = false;
+  MosqueLocation? _selectedLocation;
 
   @override
   void initState() {
     super.initState();
+    GetIt.I<AppLogger>().i('Opened AddMosquePage');
     _checkPermission();
   }
 
@@ -41,7 +47,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
     final canAdd = await ref.read(permissionCheckerProvider).canAddMosque();
     if (!canAdd && mounted) {
       AppSnackBar.showError(context, 'عذراً، يجب تسجيل الدخول لإنشاء مسجد');
-      Navigator.of(context).pop();
+      NavigationService.goBack();
       return;
     }
 
@@ -57,6 +63,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      GetIt.I<AppLogger>().i('Submitting add mosque form');
       try {
         if (_isSuperAdmin) {
           await ref
@@ -64,6 +71,8 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
               .addMosque(
                 name: _nameController.text.trim(),
                 location: _locationController.text.trim(),
+                latitude: _selectedLocation?.latitude,
+                longitude: _selectedLocation?.longitude,
                 description: _descriptionController.text.trim().isEmpty
                     ? null
                     : _descriptionController.text.trim(),
@@ -74,6 +83,8 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
               .createRequest(
                 name: _nameController.text.trim(),
                 location: _locationController.text.trim(),
+                latitude: _selectedLocation?.latitude,
+                longitude: _selectedLocation?.longitude,
                 description: _descriptionController.text.trim().isEmpty
                     ? null
                     : _descriptionController.text.trim(),
@@ -84,10 +95,11 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
               context,
               "تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.",
             );
-            Navigator.of(context).pop();
+            NavigationService.goBack();
           }
         }
-      } catch (e) {
+      } catch (e, stackTrace) {
+        GetIt.I<AppLogger>().e('Failed to submit add mosque form', e, stackTrace);
         if (mounted) {
           AppSnackBar.showError(context, 'فشل في إرسال الطلب: $e');
         }
@@ -100,7 +112,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
     ref.listen(mosqueProvider, (previous, next) {
       if (next is AsyncData && previous is AsyncLoading) {
         AppSnackBar.showSuccess(context, 'تم إضافة المسجد بنجاح');
-        Navigator.of(context).pop();
+        NavigationService.goBack();
       } else if (next is AsyncError) {
         AppSnackBar.showError(
           context,
@@ -125,7 +137,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(LucideIcons.arrowRight, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => NavigationService.goBack(),
         ),
       ),
       body: SingleChildScrollView(
@@ -137,6 +149,14 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
           descriptionController: _descriptionController,
           isLoading: isLoading,
           isSuperAdmin: _isSuperAdmin,
+          onLocationChanged: (MosqueLocation? location) {
+            setState(() {
+              _selectedLocation = location;
+            });
+            if (location?.locationName != null && _locationController.text.isEmpty) {
+              _locationController.text = location!.locationName!;
+            }
+          },
           onSubmit: _submitForm,
         ),
       ),
