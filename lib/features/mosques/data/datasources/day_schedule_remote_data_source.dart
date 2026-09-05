@@ -34,7 +34,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
     try {
       final response = await supabaseClient
           .from('day_schedule')
-          .select()
+          .select('id, day_id, mosque_id, salah, shikh, comments, sort_order, created_at')
           .eq('day_id', dayId)
           .order('sort_order', ascending: true)
           .order('created_at', ascending: true);
@@ -69,7 +69,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
             ...?comments != null ? {'comments': comments} : null,
             'sort_order': sortOrder,
           })
-          .select()
+          .select('id, day_id, mosque_id, salah, shikh, comments, sort_order, created_at')
           .single();
 
       logger.i('Schedule entry added successfully');
@@ -93,7 +93,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
           .from('day_schedule')
           .update({'salah': salah, 'shikh': shikh, 'comments': comments})
           .eq('id', entryId)
-          .select()
+          .select('id, day_id, mosque_id, salah, shikh, comments, sort_order, created_at')
           .single();
 
       logger.i('Schedule entry updated successfully');

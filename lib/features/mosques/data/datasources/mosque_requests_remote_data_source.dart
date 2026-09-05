@@ -41,7 +41,7 @@ class MosqueRequestsRemoteDataSourceImpl
             'requested_by': currentUser.id,
             'status': 'pending',
           })
-          .select()
+          .select('id, name, location, description, requested_by, status, created_at')
           .single();
 
       logger.i('Mosque request created successfully');
@@ -58,7 +58,7 @@ class MosqueRequestsRemoteDataSourceImpl
     try {
       final response = await supabaseClient
           .from('mosque_requests')
-          .select()
+          .select('id, name, location, description, requested_by, status, created_at')
           .eq('status', 'pending')
           .order('created_at', ascending: false);
 
@@ -76,7 +76,7 @@ class MosqueRequestsRemoteDataSourceImpl
     try {
       final requestData = await supabaseClient
           .from('mosque_requests')
-          .select()
+          .select('id, name, location, description, requested_by, status, created_at')
           .eq('id', requestId)
           .single();
 
@@ -88,7 +88,7 @@ class MosqueRequestsRemoteDataSourceImpl
             'description': requestData['description'],
             'admin_id': requestData['requested_by'],
           })
-          .select()
+          .select('id, name, location, description, created_at, admin_id')
           .single();
 
       await supabaseClient

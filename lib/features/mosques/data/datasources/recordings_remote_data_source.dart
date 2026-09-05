@@ -7,7 +7,7 @@ import '../../domain/entities/prayer.dart';
 import 'dart:io';
 
 abstract class RecordingsRemoteDataSource {
-  Future<List<RecordingModel>> getDayRecordings(String dayId);
+  Future<List<RecordingModel>> getDayRecordings(String dayId, {int? limit, int? offset});
   Future<RecordingModel> uploadRecording({
     required String mosqueId,
     required String dayId,
@@ -39,14 +39,26 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
   );
 
   @override
-  Future<List<RecordingModel>> getDayRecordings(String dayId) async {
-    logger.i('Fetching recordings for day: $dayId');
+  Future<List<RecordingModel>> getDayRecordings(String dayId, {int? limit, int? offset}) async {
+    logger.i('Fetching recordings for day: $dayId (limit: $limit, offset: $offset)');
     try {
-      final response = await supabaseClient
+      dynamic query = supabaseClient
           .from('recordings')
-          .select()
+          .select('id, mosque_id, day_id, publisher_id, prayer_name, sheikh_name, audio_url, file_size, duration, created_at')
           .eq('day_id', dayId)
           .order('prayer_name', ascending: true);
+
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+      if (offset != null) {
+        final to = limit != null ? offset + limit - 1 : null;
+        if (to != null) {
+          query = query.range(offset, to);
+        }
+      }
+
+      final response = await query;
 
       final data = response as List<dynamic>;
       logger.i('Fetched ${data.length} recordings');
@@ -94,7 +106,7 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
             'file_size': fileSize,
             'duration': duration,
           })
-          .select()
+          .select('id, mosque_id, day_id, publisher_id, prayer_name, sheikh_name, audio_url, file_size, duration, created_at')
           .single();
 
       logger.i('Recording uploaded successfully');
@@ -152,7 +164,7 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
             'file_size': 0,
             'duration': 0,
           })
-          .select()
+          .select('id, mosque_id, day_id, publisher_id, prayer_name, sheikh_name, audio_url, file_size, duration, created_at')
           .single();
 
       logger.i('Pending recording created successfully');

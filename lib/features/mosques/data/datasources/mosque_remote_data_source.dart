@@ -4,7 +4,7 @@ import '../../../../core/utils/app_logger.dart';
 import '../models/mosque_model.dart';
 
 abstract class MosqueRemoteDataSource {
-  Future<List<MosqueModel>> getMosques();
+  Future<List<MosqueModel>> getMosques({int? limit, int? offset});
   Future<MosqueModel> addMosque({
     required String name,
     required String location,
@@ -20,12 +20,25 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
   MosqueRemoteDataSourceImpl(this.supabaseClient, this.logger);
 
   @override
-  Future<List<MosqueModel>> getMosques() async {
-    logger.i('Fetching list of mosques');
+  Future<List<MosqueModel>> getMosques({int? limit, int? offset}) async {
+    logger.i('Fetching list of mosques (limit: $limit, offset: $offset)');
     try {
-      final response = await supabaseClient
+      dynamic query = supabaseClient
           .from('mosques')
-          .select('*, recordings(count)');
+          .select('id, name, location, description, created_at, admin_id, recordings(count)');
+      
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+      if (offset != null) {
+        // range is inclusive, so range(0, 9) gets 10 items
+        final to = limit != null ? offset + limit - 1 : null;
+        if (to != null) {
+          query = query.range(offset, to);
+        }
+      }
+
+      final response = await query;
       final data = response as List<dynamic>;
       logger.i('Fetched ${data.length} mosques');
       return data.map((json) => MosqueModel.fromJson(json)).toList();
@@ -50,7 +63,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
             'location': location,
             ...?description != null ? {'description': description} : null,
           })
-          .select()
+          .select('id, name, location, description, created_at, admin_id')
           .single();
 
       logger.i('Mosque added successfully: ${response['id']}');

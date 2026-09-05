@@ -36,7 +36,7 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
     try {
       var query = supabaseClient
           .from('ramadan_days')
-          .select('*, recordings(count)')
+          .select('id, mosque_id, month, year, day_number, active, status, created_at, recordings(count)')
           .eq('mosque_id', mosqueId);
 
       if (month != null) {
@@ -82,25 +82,19 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
 
   @override
   Future<List<Map<String, int>>> getAvailableMonths(String mosqueId) async {
-    logger.i('Fetching available months for mosque: $mosqueId');
+    logger.i('Fetching available months for mosque: $mosqueId (using Dart distinct)');
     try {
       final response = await supabaseClient
-          .from('ramadan_days')
-          .select('month, year')
-          .eq('mosque_id', mosqueId);
+          .rpc('get_available_months', params: {'p_mosque_id': mosqueId});
 
       final data = response as List<dynamic>;
-      final uniqueMonths = <String, Map<String, int>>{};
+      final result = data.map((row) {
+        return {
+          'month': row['month'] as int,
+          'year': row['year'] as int,
+        };
+      }).toList();
 
-      for (var row in data) {
-        final m = row['month'] as int?;
-        final y = row['year'] as int?;
-        if (m != null && y != null) {
-          uniqueMonths['$y-$m'] = {'month': m, 'year': y};
-        }
-      }
-
-      final result = uniqueMonths.values.toList();
       result.sort((a, b) {
         final yearCmp = a['year']!.compareTo(b['year']!);
         if (yearCmp != 0) return yearCmp;
