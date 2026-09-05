@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:sout_salah/features/mosques/presentation/providers/day_schedule_provider.dart';
 import 'package:sout_salah/features/mosques/presentation/providers/daily_video_providers.dart';
 import '../widgets/day_schedule_table_widget.dart';
 import '../widgets/daily_video_card.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_snackbar.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/route_args.dart';
@@ -52,12 +56,7 @@ class DaySchedulePage extends ConsumerWidget {
     if (uploaded == true) {
       ref.invalidate(dailyVideoListProvider(dayId));
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم رفع الفيديو بنجاح'),
-            backgroundColor: AppColors.primary,
-          ),
-        );
+        AppSnackBar.showSuccess(context, 'تم رفع الفيديو بنجاح');
       }
     }
   }
@@ -65,33 +64,41 @@ class DaySchedulePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final videoAsync = ref.watch(dailyVideoListProvider(dayId));
+    final scheduleAsync = ref.watch(dayScheduleProvider(dayId));
+
+    if (videoAsync.hasError || scheduleAsync.hasError) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        appBar: _buildAppBar(context),
+        body: AppErrorView(
+          title: 'فشل تحميل الصفحة',
+          message: 'حدث خطأ أثناء تحميل البيانات. تأكد من اتصالك بالإنترنت.',
+          onRetry: () {
+            ref.invalidate(dailyVideoListProvider(dayId));
+            ref.invalidate(dayScheduleProvider(dayId));
+          },
+        ),
+      );
+    }
+
+    if (videoAsync.isLoading || scheduleAsync.isLoading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        appBar: _buildAppBar(context),
+        body: const AppLoadingIndicator(),
+      );
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.arrowRight, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'جدول شيوخ اليوم ${_toArabicNumerals(dayNumber)}',
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: _buildAppBar(context),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Daily Video Section
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: videoAsync.when(
+              child: videoAsync.maybeWhen(
                 data: (videos) {
                   return Column(
                     children: [
@@ -107,11 +114,7 @@ class DaySchedulePage extends ConsumerWidget {
                     ],
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => const Text(
-                  'فشل تحميل الفيديو',
-                  style: TextStyle(color: Colors.red),
-                ),
+                orElse: () => const SizedBox.shrink(),
               ),
             ),
 
@@ -132,6 +135,26 @@ class DaySchedulePage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(LucideIcons.arrowRight, color: Colors.black87),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text(
+        'جدول شيوخ اليوم ${_toArabicNumerals(dayNumber)}',
+        style: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      centerTitle: true,
     );
   }
 }

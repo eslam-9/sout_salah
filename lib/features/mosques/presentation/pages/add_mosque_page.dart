@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/mosque_controller.dart';
 import '../providers/mosque_requests_provider.dart';
 import '../../../../core/utils/permission_checker.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 import '../widgets/add_mosque_components/add_mosque_form.dart';
 
@@ -39,12 +40,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
   Future<void> _checkPermission() async {
     final canAdd = await ref.read(permissionCheckerProvider).canAddMosque();
     if (!canAdd && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('عذراً، يجب تسجيل الدخول لإنشاء مسجد'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.showError(context, 'عذراً، يجب تسجيل الدخول لإنشاء مسجد');
       Navigator.of(context).pop();
       return;
     }
@@ -84,26 +80,16 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
               );
 
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  "تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.",
-                ),
-                backgroundColor: Colors.green,
-              ),
+            AppSnackBar.showSuccess(
+              context,
+              "تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.",
             );
             Navigator.of(context).pop();
           }
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('فشل في إرسال الطلب: $e'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          AppSnackBar.showError(context, 'فشل في إرسال الطلب: $e');
         }
       }
     }
@@ -113,23 +99,12 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
   Widget build(BuildContext context) {
     ref.listen(mosqueProvider, (previous, next) {
       if (next is AsyncData && previous is AsyncLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم إضافة المسجد بنجاح'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        AppSnackBar.showSuccess(context, 'تم إضافة المسجد بنجاح');
         Navigator.of(context).pop();
       } else if (next is AsyncError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'فشل في إضافة المسجد: ${next.error}\n'
-              'تأكد من أن لديك الصلاحيات المطلوبة',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
+        AppSnackBar.showError(
+          context,
+          'فشل في إضافة المسجد: ${next.error}\nتأكد من أن لديك الصلاحيات المطلوبة',
         );
       }
     });

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/app_snackbar.dart';
+import '../../../../core/presentation/widgets/app_empty_state.dart';
+import '../../../../core/presentation/widgets/app_error_view.dart';
+import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 import '../providers/mosque_requests_provider.dart';
 import '../../domain/entities/mosque_request.dart';
 
@@ -27,15 +31,7 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
 
     ref.listen(mosqueRequestsProvider, (previous, next) {
       if (next is AsyncError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'حدث خطأ: ${next.error}',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        AppSnackBar.showError(context, 'حدث خطأ: ${next.error}');
       }
     });
 
@@ -62,26 +58,9 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
     return state.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  LucideIcons.inbox,
-                  size: 64,
-                  color: Colors.grey.shade400,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'لا توجد طلبات معلقة',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
+          return const AppEmptyState(
+            title: 'لا توجد طلبات معلقة',
+            icon: LucideIcons.inbox,
           );
         }
 
@@ -172,12 +151,7 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
                                       .read(mosqueRequestsProvider.notifier)
                                       .declineRequest(request.id);
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('تم رفض الطلب.'),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
+                                    AppSnackBar.showSuccess(context, 'تم رفض الطلب.');
                                   }
                                 } catch (e) {
                                   // Handled by ref.listen AsyncError
@@ -202,12 +176,7 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
                                       .read(mosqueRequestsProvider.notifier)
                                       .acceptRequest(request.id);
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('تم قبول الطلب وإنشاء المسجد بنجاح.'),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
+                                    AppSnackBar.showSuccess(context, 'تم قبول الطلب وإنشاء المسجد بنجاح.');
                                   }
                                 } catch (e) {
                                   // Handled by ref.listen AsyncError
@@ -233,10 +202,12 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
           ),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      loading: () => const AppLoadingIndicator(),
+      error: (error, stack) => AppErrorView(
+        title: 'حدث خطأ',
+        message: 'حدث خطأ في تحميل الطلبات',
+        onRetry: () => ref.read(mosqueRequestsProvider.notifier).fetchPendingRequests(),
       ),
-      error: (error, stack) => const Center(child: Text('حدث خطأ في تحميل الطلبات')),
     );
   }
 }
