@@ -50,12 +50,18 @@ app.*.map.json
 android/key.properties
 android/app/*.jks
 
-# Environment variables
+# Environment variables & secrets (CRITICAL for public repo)
 secrets.json
+env.json
+*.env
+*.env.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
 
-
-# Ai files
-docs/
+# AI / internal files (allow docs/screenshots)
+docs/*
+!docs/screenshots/
 opencode/
 ai/
 supabase/
