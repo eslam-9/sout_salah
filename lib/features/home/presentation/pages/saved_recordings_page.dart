@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../providers/favorites_provider.dart';
 
 import '../widgets/saved_recordings_components/saved_recordings_empty_state.dart';
@@ -15,7 +16,7 @@ class SavedRecordingsPage extends ConsumerWidget {
     final favoritesAsync = ref.watch(allFavoritesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

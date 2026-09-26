@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -13,12 +15,12 @@ import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
 
 class DownloadCard extends ConsumerWidget {
-  final DownloadedRecording download;
 
   const DownloadCard({
     super.key,
     required this.download,
   });
+  final DownloadedRecording download;
 
   // Helper to convert DownloadedRecording to Recording for the player page
   Recording _convertToRecording(DownloadedRecording download) {
@@ -199,28 +201,34 @@ class DownloadCard extends ConsumerWidget {
                 onTap: () async {
                   if (isCurrentlyPlaying) {
                     // Navigate to player page
-                    NavigationService.navigateTo(
-                      AppRoutes.audioPlayer,
-                      arguments: AudioPlayerArgs(
-                        recording: _convertToRecording(download),
+                    unawaited(
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(
+                          recording: _convertToRecording(download),
+                        ),
                       ),
                     );
                   } else {
                     ref.read(currentPlayingRecordingProvider.notifier).state =
                         download.recordingId;
                     // Play from local file (don't await to avoid UI delay)
-                    audioService.play(
-                      download.localAudioPath,
-                      title: download.prayerName,
-                      artist: download.sheikhName,
+                    unawaited(
+                      audioService.play(
+                        download.localAudioPath,
+                        title: download.prayerName,
+                        artist: download.sheikhName,
+                      ),
                     );
 
                     // Navigate immediately
                     if (context.mounted) {
-                      NavigationService.navigateTo(
-                        AppRoutes.audioPlayer,
-                        arguments: AudioPlayerArgs(
-                          recording: _convertToRecording(download),
+                      unawaited(
+                        NavigationService.navigateTo(
+                          AppRoutes.audioPlayer,
+                          arguments: AudioPlayerArgs(
+                            recording: _convertToRecording(download),
+                          ),
                         ),
                       );
                     }

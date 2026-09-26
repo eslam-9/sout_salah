@@ -3,9 +3,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class HomeAppBar extends StatelessWidget {
-  final ValueChanged<String>? onSearchChanged;
 
   const HomeAppBar({super.key, this.onSearchChanged});
+  final ValueChanged<String>? onSearchChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class HomeAppBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -32,11 +32,11 @@ class HomeAppBar extends StatelessWidget {
             textDirection: TextDirection.ltr,
             textAlign: TextAlign.right,
             onChanged: onSearchChanged,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: '...ابحث عن مسجد',
-              hintStyle: TextStyle(color: Colors.grey[400]),
+              hintStyle: TextStyle(color: AppColors.grey),
               border: InputBorder.none,
-              suffixIcon: const Icon(
+              suffixIcon: Icon(
                 LucideIcons.search,
                 color: AppColors.primary,
               ),

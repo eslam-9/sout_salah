@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -13,12 +15,12 @@ import '../../../../../core/routes/route_args.dart';
 import '../../../../../core/services/navigation_service.dart';
 
 class SavedRecordingCard extends ConsumerWidget {
-  final FavoriteRecording favorite;
 
   const SavedRecordingCard({
     super.key,
     required this.favorite,
   });
+  final FavoriteRecording favorite;
 
   String _formatFileSize(int bytes) {
     if (bytes < 1024) {
@@ -187,10 +189,12 @@ class SavedRecordingCard extends ConsumerWidget {
                 onTap: () async {
                   if (isCurrentlyPlaying) {
                     // Navigate to player page
-                    NavigationService.navigateTo(
-                      AppRoutes.audioPlayer,
-                      arguments: AudioPlayerArgs(
-                        recording: _convertToRecording(favorite),
+                    unawaited(
+                      NavigationService.navigateTo(
+                        AppRoutes.audioPlayer,
+                        arguments: AudioPlayerArgs(
+                          recording: _convertToRecording(favorite),
+                        ),
                       ),
                     );
                   } else {
@@ -202,18 +206,22 @@ class SavedRecordingCard extends ConsumerWidget {
                         ? favorite.localAudioPath
                         : favorite.audioUrl;
 
-                    audioService.play(
-                      path,
-                      title: favorite.prayerName,
-                      artist: favorite.sheikhName,
+                    unawaited(
+                      audioService.play(
+                        path,
+                        title: favorite.prayerName,
+                        artist: favorite.sheikhName,
+                      ),
                     );
 
                     // Navigate immediately
                     if (context.mounted) {
-                      NavigationService.navigateTo(
-                        AppRoutes.audioPlayer,
-                        arguments: AudioPlayerArgs(
-                          recording: _convertToRecording(favorite),
+                      unawaited(
+                        NavigationService.navigateTo(
+                          AppRoutes.audioPlayer,
+                          arguments: AudioPlayerArgs(
+                            recording: _convertToRecording(favorite),
+                          ),
                         ),
                       );
                     }
