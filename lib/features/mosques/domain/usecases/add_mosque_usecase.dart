@@ -6,11 +6,6 @@ import '../entities/mosque.dart';
 import '../repositories/mosque_repository.dart';
 
 class AddMosqueParams extends Equatable {
-  final String name;
-  final String location;
-  final double? latitude;
-  final double? longitude;
-  final String? description;
 
   const AddMosqueParams({
     required this.name,
@@ -19,15 +14,20 @@ class AddMosqueParams extends Equatable {
     this.longitude,
     this.description,
   });
+  final String name;
+  final String location;
+  final double? latitude;
+  final double? longitude;
+  final String? description;
 
   @override
   List<Object?> get props => [name, location, latitude, longitude, description];
 }
 
 class AddMosqueUseCase implements UseCase<Mosque, AddMosqueParams> {
-  final MosqueRepository repository;
 
   AddMosqueUseCase(this.repository);
+  final MosqueRepository repository;
 
   @override
   Future<Either<Failure, Mosque>> call(AddMosqueParams params) async {

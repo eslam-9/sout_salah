@@ -7,9 +7,9 @@ import 'create_pending_recording_params.dart';
 
 class CreatePendingRecordingUseCase
     implements UseCase<Recording, CreatePendingRecordingParams> {
-  final RecordingsRepository repository;
 
   CreatePendingRecordingUseCase(this.repository);
+  final RecordingsRepository repository;
 
   @override
   Future<Either<Failure, Recording>> call(

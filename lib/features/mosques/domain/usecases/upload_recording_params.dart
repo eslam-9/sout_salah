@@ -3,15 +3,6 @@ import '../entities/prayer.dart';
 
 /// Parameters for uploading a recording
 class UploadRecordingParams extends Equatable {
-  final String mosqueId;
-  final String dayId;
-  final Prayer prayer;
-  final String? customPrayerName;
-  final String sheikhName;
-  final String filePath;
-  final int fileSize;
-  final int? duration;
-  final String? pendingRecordingId;
 
   const UploadRecordingParams({
     required this.mosqueId,
@@ -24,6 +15,15 @@ class UploadRecordingParams extends Equatable {
     this.duration,
     this.pendingRecordingId,
   });
+  final String mosqueId;
+  final String dayId;
+  final Prayer prayer;
+  final String? customPrayerName;
+  final String sheikhName;
+  final String filePath;
+  final int fileSize;
+  final int? duration;
+  final String? pendingRecordingId;
 
   UploadRecordingParams copyWith({
     String? mosqueId,

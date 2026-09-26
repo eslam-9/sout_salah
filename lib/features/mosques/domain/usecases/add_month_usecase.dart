@@ -4,21 +4,21 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/ramadan_days_repository.dart';
 
 class AddMonthParams {
-  final String mosqueId;
-  final int month;
-  final int year;
 
   const AddMonthParams({
     required this.mosqueId,
     required this.month,
     required this.year,
   });
+  final String mosqueId;
+  final int month;
+  final int year;
 }
 
 class AddMonthUseCase implements UseCase<void, AddMonthParams> {
-  final RamadanDaysRepository repository;
 
   AddMonthUseCase(this.repository);
+  final RamadanDaysRepository repository;
 
   @override
   Future<Either<Failure, void>> call(AddMonthParams params) async {

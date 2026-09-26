@@ -3,9 +3,9 @@ import '../../../../core/error/failures.dart';
 import '../repositories/mosque_repository.dart';
 
 class AddPublisherUseCase {
-  final MosqueRepository repository;
 
   AddPublisherUseCase(this.repository);
+  final MosqueRepository repository;
 
   Future<Either<Failure, void>> call({
     required String mosqueId,

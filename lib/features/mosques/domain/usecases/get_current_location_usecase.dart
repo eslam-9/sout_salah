@@ -5,9 +5,9 @@ import '../entities/mosque_location.dart';
 import '../repositories/location_repository.dart';
 
 class GetCurrentLocationUseCase implements UseCase<MosqueLocation, NoParams> {
-  final LocationRepository repository;
 
   GetCurrentLocationUseCase(this.repository);
+  final LocationRepository repository;
 
   @override
   Future<Either<Failure, MosqueLocation>> call(NoParams params) async {

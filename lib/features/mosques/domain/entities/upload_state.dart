@@ -10,16 +10,16 @@ class UploadInitial extends UploadState {
 }
 
 class UploadProgress extends UploadState {
-  final double progress;
   const UploadProgress(this.progress);
+  final double progress;
 }
 
 class UploadSuccess extends UploadState {
-  final Recording recording;
   const UploadSuccess(this.recording);
+  final Recording recording;
 }
 
 class UploadError extends UploadState {
-  final Failure failure;
   const UploadError(this.failure);
+  final Failure failure;
 }

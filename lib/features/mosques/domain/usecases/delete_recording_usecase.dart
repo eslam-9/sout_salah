@@ -5,9 +5,9 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/recordings_repository.dart';
 
 class DeleteRecordingUseCase implements UseCase<void, DeleteRecordingParams> {
-  final RecordingsRepository repository;
 
   DeleteRecordingUseCase(this.repository);
+  final RecordingsRepository repository;
 
   @override
   Future<Either<Failure, void>> call(DeleteRecordingParams params) async {
@@ -15,14 +15,14 @@ class DeleteRecordingUseCase implements UseCase<void, DeleteRecordingParams> {
   }
 }
 
-class DeleteRecordingParams extends Equatable {
-  final String recordingId;
-  final String mosqueId; // For permission checking if needed
+class DeleteRecordingParams extends Equatable { // For permission checking if needed
 
   const DeleteRecordingParams({
     required this.recordingId,
     required this.mosqueId,
   });
+  final String recordingId;
+  final String mosqueId;
 
   @override
   List<Object> get props => [recordingId, mosqueId];

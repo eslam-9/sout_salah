@@ -5,7 +5,6 @@ import 'package:sout_salah/core/error/exceptions.dart';
 import 'package:sout_salah/core/error/failures.dart';
 import 'package:sout_salah/features/mosques/data/datasources/mosque_remote_data_source.dart';
 import 'package:sout_salah/features/mosques/data/repositories/mosque_repository_impl.dart';
-import 'package:sout_salah/features/mosques/domain/entities/mosque.dart';
 import 'package:sout_salah/features/mosques/data/models/mosque_model.dart';
 
 class MockMosqueRemoteDataSource extends Mock implements MosqueRemoteDataSource {}

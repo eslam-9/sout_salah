@@ -5,18 +5,18 @@ import '../entities/ramadan_day.dart';
 import '../repositories/ramadan_days_repository.dart';
 
 class GetRamadanDaysParams {
+
+  const GetRamadanDaysParams({required this.mosqueId, this.month, this.year});
   final String mosqueId;
   final int? month;
   final int? year;
-
-  const GetRamadanDaysParams({required this.mosqueId, this.month, this.year});
 }
 
 class GetRamadanDaysUseCase
     implements UseCase<List<RamadanDay>, GetRamadanDaysParams> {
-  final RamadanDaysRepository repository;
 
   GetRamadanDaysUseCase(this.repository);
+  final RamadanDaysRepository repository;
 
   @override
   Future<Either<Failure, List<RamadanDay>>> call(

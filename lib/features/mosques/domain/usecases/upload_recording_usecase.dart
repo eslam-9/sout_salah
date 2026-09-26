@@ -7,16 +7,16 @@ import '../entities/upload_state.dart';
 
 /// Use case for uploading a recording, returning a stream of upload state
 class UploadRecordingUseCase {
-  final RecordingsRepository repository;
 
   UploadRecordingUseCase(this.repository);
+  final RecordingsRepository repository;
 
   Stream<UploadState> call(UploadRecordingParams params) {
     final controller = StreamController<UploadState>();
     
     controller.add(const UploadInitial());
 
-    repository.uploadRecording(
+    unawaited(repository.uploadRecording(
       mosqueId: params.mosqueId,
       dayId: params.dayId,
       prayer: params.prayer,
@@ -31,7 +31,7 @@ class UploadRecordingUseCase {
         }
       },
     ).then((result) async {
-      result.fold(
+      await result.fold(
         (failure) {
           if (!controller.isClosed) {
             controller.add(UploadError(failure));
@@ -48,7 +48,7 @@ class UploadRecordingUseCase {
           }
           if (!controller.isClosed) {
             controller.add(UploadSuccess(recording));
-            controller.close();
+            await controller.close();
           }
         },
       );
@@ -58,7 +58,7 @@ class UploadRecordingUseCase {
         controller.add(UploadError(ServerFailure(message: error.toString())));
         controller.close();
       }
-    });
+    }));
 
     return controller.stream;
   }
