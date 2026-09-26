@@ -24,12 +24,12 @@ class AuthHeader extends StatelessWidget {
           child: const Icon(Icons.mosque, size: 60, color: Color(0xFF2D6930)),
         ),
         const SizedBox(height: 16),
-        Text(
+        const Text(
           'أهلاً بك',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1B1B1B),
+            color: Color(0xFF1B1B1B),
           ),
         ),
         Padding(

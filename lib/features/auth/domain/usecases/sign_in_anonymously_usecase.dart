@@ -5,9 +5,9 @@ import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
 class SignInAnonymouslyUseCase implements UseCase<User, NoParams> {
-  final AuthRepository repository;
 
   SignInAnonymouslyUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, User>> call(NoParams params) async {

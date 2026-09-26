@@ -6,14 +6,10 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sout_salah/core/di/riverpod_providers.dart';
 import 'package:sout_salah/core/error/failures.dart';
-import 'package:sout_salah/core/usecases/usecase.dart';
 import 'package:sout_salah/core/utils/app_logger.dart';
 import 'package:sout_salah/features/auth/domain/entities/user.dart';
 import 'package:sout_salah/features/auth/domain/repositories/auth_repository.dart';
-import 'package:sout_salah/features/auth/domain/usecases/auth_usecases.dart';
-import 'package:sout_salah/features/auth/domain/usecases/sign_in_anonymously_usecase.dart';
-import 'package:sout_salah/features/auth/domain/usecases/sign_up_params.dart';
-import 'package:sout_salah/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sout_salah/features/auth/presentation/state/auth_state.dart';
 import 'package:sout_salah/features/auth/presentation/providers/auth_controller.dart';
 import 'package:sout_salah/features/auth/presentation/providers/auth_data_providers.dart';
 

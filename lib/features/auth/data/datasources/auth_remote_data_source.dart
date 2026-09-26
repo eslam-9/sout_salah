@@ -17,10 +17,10 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final AppLogger logger;
 
   AuthRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  final SupabaseClient supabaseClient;
+  final AppLogger logger;
 
   @override
   Future<UserModel> signInWithEmailAndPassword(
@@ -35,13 +35,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       if (response.user == null) {
         logger.e('Sign in failed: User is null');
-        throw ServerException();
+        throw ServerException('Sign in failed: user is null');
       }
       logger.i('Sign in successful: ${response.user!.id}');
       return _getUserWithProfile(response.user!);
     } catch (e) {
       logger.e('Sign in error', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -62,14 +62,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       if (response.user == null) {
         logger.e('Sign up failed: User is null');
-        throw ServerException();
+        throw ServerException('Sign up failed: user is null');
       }
       logger.i('Sign up successful: ${response.user!.id}');
       // Profile is created by trigger, fetch it
       return _getUserWithProfile(response.user!);
     } catch (e) {
       logger.e('Sign up error', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -80,7 +80,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await supabaseClient.auth.signInAnonymously();
       if (response.user == null) {
         logger.e('Anonymous sign in failed: User is null');
-        throw ServerException();
+        throw ServerException('Anonymous sign in failed: user is null');
       }
       logger.i('Anonymous sign in successful: ${response.user!.id}');
       return _getUserWithProfile(response.user!);
@@ -88,10 +88,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       logger.e(
         'Anonymous sign in AuthException: ${e.message}, StatusCode: ${e.statusCode}',
       );
-      throw ServerException();
+      throw ServerException(e.toString());
     } catch (e) {
       logger.e('Anonymous sign in error', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -100,7 +100,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await supabaseClient.auth.signOut();
     } catch (e) {
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -113,7 +113,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       return null;
     } catch (e) {
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -128,11 +128,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       logger.i('Profile updated successfully for user: $userId');
       final user = supabaseClient.auth.currentUser;
-      if (user == null) throw ServerException();
+      if (user == null) throw ServerException('No authenticated user found');
       return _getUserWithProfile(user);
     } catch (e) {
       logger.e('Error updating profile for user $userId', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 

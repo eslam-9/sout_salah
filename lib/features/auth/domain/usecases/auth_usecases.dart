@@ -7,19 +7,19 @@ import '../repositories/auth_repository.dart';
 import 'sign_up_params.dart';
 
 class UpdateProfileParams extends Equatable {
-  final String userId;
-  final String? username;
 
   const UpdateProfileParams({required this.userId, this.username});
+  final String userId;
+  final String? username;
 
   @override
   List<Object?> get props => [userId, username];
 }
 
 class UpdateProfileUseCase implements UseCase<User, UpdateProfileParams> {
-  final AuthRepository repository;
 
   UpdateProfileUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, User>> call(UpdateProfileParams params) async {
@@ -31,19 +31,19 @@ class UpdateProfileUseCase implements UseCase<User, UpdateProfileParams> {
 }
 
 class SignInParams extends Equatable {
-  final String email;
-  final String password;
 
   const SignInParams({required this.email, required this.password});
+  final String email;
+  final String password;
 
   @override
   List<Object> get props => [email, password];
 }
 
 class SignInUseCase implements UseCase<User, SignInParams> {
-  final AuthRepository repository;
 
   SignInUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, User>> call(SignInParams params) async {
@@ -55,9 +55,9 @@ class SignInUseCase implements UseCase<User, SignInParams> {
 }
 
 class SignUpUseCase implements UseCase<User, SignUpParams> {
-  final AuthRepository repository;
 
   SignUpUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, User>> call(SignUpParams params) async {
@@ -70,9 +70,9 @@ class SignUpUseCase implements UseCase<User, SignUpParams> {
 }
 
 class SignOutUseCase implements UseCase<void, NoParams> {
-  final AuthRepository repository;
 
   SignOutUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, void>> call(NoParams params) async {
@@ -81,9 +81,9 @@ class SignOutUseCase implements UseCase<void, NoParams> {
 }
 
 class GetCurrentUserUseCase implements UseCase<User, NoParams> {
-  final AuthRepository repository;
 
   GetCurrentUserUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<Failure, User>> call(NoParams params) async {

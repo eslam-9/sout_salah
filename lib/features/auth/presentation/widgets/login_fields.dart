@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'custom_text_field.dart';
 
 class LoginFields extends StatelessWidget {
-  final TextEditingController email, pass;
-  final bool vis;
-  final VoidCallback toggle;
-  final String? Function(String?)? emailValidator;
-  final String? Function(String?)? passwordValidator;
 
   const LoginFields({
     super.key,
@@ -17,6 +12,11 @@ class LoginFields extends StatelessWidget {
     this.emailValidator,
     this.passwordValidator,
   });
+  final TextEditingController email, pass;
+  final bool vis;
+  final VoidCallback toggle;
+  final String? Function(String?)? emailValidator;
+  final String? Function(String?)? passwordValidator;
 
   @override
   Widget build(BuildContext context) => Column(
