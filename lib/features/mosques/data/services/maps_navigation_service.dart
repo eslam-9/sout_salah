@@ -1,12 +1,11 @@
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/error/exceptions.dart';
-import 'package:logger/logger.dart';
 import '../../../../core/utils/app_logger.dart';
 
 class MapsNavigationService {
-  final AppLogger _logger;
 
   MapsNavigationService(this._logger);
+  final AppLogger _logger;
 
   Future<void> openGoogleMaps(double latitude, double longitude) async {
     final Uri googleMapsUrl = Uri.parse('google.navigation:q=$latitude,$longitude&mode=d');

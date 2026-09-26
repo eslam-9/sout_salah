@@ -21,7 +21,8 @@ class MosqueModel extends Mosque {
           rCount = countItem['count'] ?? 0;
         }
       } else if (json['recordings'] is Map) {
-        rCount = json['recordings']['count'] ?? 0;
+        final recordingsMap = json['recordings'] as Map;
+        rCount = recordingsMap['count'] ?? 0;
       } else if (json['recordings'] is num) {
         rCount = (json['recordings'] as num).toInt();
       }

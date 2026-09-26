@@ -1,14 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class DailyVideoModel extends Equatable {
-  final String id;
-  final String mosqueId;
-  final String dayId;
-  final String? publisherId;
-  final String videoUrl;
-  final String? title;
-  final String? description;
-  final DateTime createdAt;
 
   const DailyVideoModel({
     required this.id,
@@ -33,6 +25,14 @@ class DailyVideoModel extends Equatable {
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
     );
   }
+  final String id;
+  final String mosqueId;
+  final String dayId;
+  final String? publisherId;
+  final String videoUrl;
+  final String? title;
+  final String? description;
+  final DateTime createdAt;
 
   Map<String, dynamic> toJson() {
     return {

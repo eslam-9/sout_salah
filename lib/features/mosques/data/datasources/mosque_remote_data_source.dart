@@ -16,37 +16,37 @@ abstract class MosqueRemoteDataSource {
 }
 
 class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final AppLogger logger;
 
   MosqueRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  final SupabaseClient supabaseClient;
+  final AppLogger logger;
 
   @override
   Future<List<MosqueModel>> getMosques({int? limit, int? offset}) async {
     logger.i('Fetching list of mosques (limit: $limit, offset: $offset)');
     try {
-      dynamic query = supabaseClient
+      final baseQuery = supabaseClient
           .from('mosques')
           .select('id, name, location, latitude, longitude, description, created_at, admin_id, recordings(count)');
-      
-      if (limit != null) {
-        query = query.limit(limit);
-      }
-      if (offset != null) {
-        // range is inclusive, so range(0, 9) gets 10 items
-        final to = limit != null ? offset + limit - 1 : null;
-        if (to != null) {
-          query = query.range(offset, to);
-        }
-      }
 
-      final response = await query;
-      final data = response as List<dynamic>;
+      // range is inclusive, so range(0, 9) gets 10 items
+      final List<dynamic> data;
+      if (limit != null && offset != null) {
+        final response =
+            await baseQuery.limit(limit).range(offset, offset + limit - 1);
+        data = response as List<dynamic>;
+      } else if (limit != null) {
+        final response = await baseQuery.limit(limit);
+        data = response as List<dynamic>;
+      } else {
+        final response = await baseQuery;
+        data = response as List<dynamic>;
+      }
       logger.i('Fetched ${data.length} mosques');
       return data.map((json) => MosqueModel.fromJson(json)).toList();
     } catch (e) {
       logger.e('Error fetching mosques', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -85,7 +85,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       return MosqueModel.fromJson(response);
     } catch (e, stackTrace) {
       logger.e('Error adding mosque', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -101,7 +101,7 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
 
       if (userResponse == null) {
         logger.w('User with email $email not found');
-        throw Exception('User not found');
+        throw UserNotFoundException(email);
       }
 
       final userId = userResponse['id'] as String;
@@ -118,14 +118,13 @@ class MosqueRemoteDataSourceImpl implements MosqueRemoteDataSource {
       logger.i('Publisher added successfully');
     } catch (e) {
       logger.e('Error adding publisher', e);
-      if (e.toString().contains('User not found') ||
-          e.toString().contains('User with email')) {
-        throw Exception('المستخدم غير موجود');
+      if (e is UserNotFoundException) {
+        rethrow; // let repository_error_handler map it to NotFoundFailure
       }
       if (e.toString().contains('Only Super Admin')) {
-        throw Exception('فقط مدير النظام يمكنه إضافة ناشرين');
+        throw AppAuthException('فقط مدير النظام يمكنه إضافة ناشرين');
       }
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

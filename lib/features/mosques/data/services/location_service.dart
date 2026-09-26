@@ -5,9 +5,9 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/app_logger.dart';
 
 class LocationService {
-  final AppLogger _logger;
 
   LocationService(this._logger);
+  final AppLogger _logger;
 
   Future<Position> getCurrentPosition() async {
     bool serviceEnabled;

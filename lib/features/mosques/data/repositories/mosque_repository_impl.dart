@@ -6,9 +6,9 @@ import '../../domain/repositories/mosque_repository.dart';
 import '../datasources/mosque_remote_data_source.dart';
 
 class MosqueRepositoryImpl implements MosqueRepository {
-  final MosqueRemoteDataSource remoteDataSource;
 
   MosqueRepositoryImpl({required this.remoteDataSource});
+  final MosqueRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, List<Mosque>>> getMosques({int? limit, int? offset}) async {

@@ -18,10 +18,10 @@ abstract class MosqueRequestsRemoteDataSource {
 
 class MosqueRequestsRemoteDataSourceImpl
     implements MosqueRequestsRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final AppLogger logger;
 
   MosqueRequestsRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  final SupabaseClient supabaseClient;
+  final AppLogger logger;
 
   @override
   Future<MosqueRequestModel> createMosqueRequest({
@@ -56,7 +56,7 @@ class MosqueRequestsRemoteDataSourceImpl
       return MosqueRequestModel.fromJson(response);
     } catch (e) {
       logger.e('Error creating mosque request', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -74,7 +74,7 @@ class MosqueRequestsRemoteDataSourceImpl
       return data.map((json) => MosqueRequestModel.fromJson(json)).toList();
     } catch (e) {
       logger.e('Error fetching pending requests', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -111,7 +111,7 @@ class MosqueRequestsRemoteDataSourceImpl
       logger.i('Mosque request accepted and mosque created');
     } catch (e) {
       logger.e('Error accepting mosque request', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -127,7 +127,7 @@ class MosqueRequestsRemoteDataSourceImpl
       logger.i('Mosque request declined');
     } catch (e) {
       logger.e('Error declining mosque request', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

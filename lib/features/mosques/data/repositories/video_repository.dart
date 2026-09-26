@@ -7,15 +7,15 @@ import '../../../../core/utils/app_logger.dart';
 import '../models/daily_video_model.dart';
 
 class VideoRepository {
-  final SupabaseClient supabaseClient;
-  final R2StorageService r2StorageService;
-  final AppLogger _logger;
 
   VideoRepository({
     required this.supabaseClient,
     required this.r2StorageService,
     required AppLogger logger,
   }) : _logger = logger;
+  final SupabaseClient supabaseClient;
+  final R2StorageService r2StorageService;
+  final AppLogger _logger;
 
   /// Returns all videos for a given day (multiple videos supported).
   Future<List<DailyVideoModel>> getVideosForDay(String dayId) async {

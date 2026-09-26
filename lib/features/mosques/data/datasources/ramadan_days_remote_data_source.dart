@@ -19,10 +19,10 @@ abstract class RamadanDaysRemoteDataSource {
 }
 
 class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final AppLogger logger;
 
   RamadanDaysRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  final SupabaseClient supabaseClient;
+  final AppLogger logger;
 
   @override
   Future<List<RamadanDayModel>> getRamadanDays(
@@ -53,7 +53,7 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
       return data.map((json) => RamadanDayModel.fromJson(json)).toList();
     } catch (e) {
       logger.e('Error fetching Ramadan days', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -76,7 +76,7 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
       logger.i('Successfully added 30 days for month $month/$year');
     } catch (e, stackTrace) {
       logger.e('Error adding month', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -89,9 +89,10 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
 
       final data = response as List<dynamic>;
       final result = data.map((row) {
+        final map = row as Map<String, dynamic>;
         return {
-          'month': row['month'] as int,
-          'year': row['year'] as int,
+          'month': map['month'] as int,
+          'year': map['year'] as int,
         };
       }).toList();
 
@@ -104,7 +105,7 @@ class RamadanDaysRemoteDataSourceImpl implements RamadanDaysRemoteDataSource {
       return result;
     } catch (e, stackTrace) {
       logger.e('Error fetching available months', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

@@ -6,9 +6,9 @@ import '../../domain/repositories/mosque_requests_repository.dart';
 import '../datasources/mosque_requests_remote_data_source.dart';
 
 class MosqueRequestsRepositoryImpl implements MosqueRequestsRepository {
-  final MosqueRequestsRemoteDataSource remoteDataSource;
 
   MosqueRequestsRepositoryImpl({required this.remoteDataSource});
+  final MosqueRequestsRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, void>> createMosqueRequest({
