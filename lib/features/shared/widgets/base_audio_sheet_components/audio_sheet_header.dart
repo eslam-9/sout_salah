@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class AudioSheetHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final Widget? leadingAction;
-  final Widget? trailingAction;
-  final Widget? extraInfo;
 
   const AudioSheetHeader({
     super.key,
@@ -16,6 +11,11 @@ class AudioSheetHeader extends StatelessWidget {
     this.trailingAction,
     this.extraInfo,
   });
+  final String title;
+  final String subtitle;
+  final Widget? leadingAction;
+  final Widget? trailingAction;
+  final Widget? extraInfo;
 
   @override
   Widget build(BuildContext context) {

@@ -9,11 +9,6 @@ import 'base_audio_sheet_components/audio_sheet_controls.dart';
 /// Handles the UI for title, subtitle, sliders, and playback controls.
 /// Supports optional leading and trailing actions (e.g., download, favorite) and extra info.
 class BaseAudioSheet extends ConsumerWidget {
-  final String title;
-  final String subtitle;
-  final Widget? leadingAction;
-  final Widget? trailingAction;
-  final Widget? extraInfo;
 
   const BaseAudioSheet({
     super.key,
@@ -23,6 +18,11 @@ class BaseAudioSheet extends ConsumerWidget {
     this.trailingAction,
     this.extraInfo,
   });
+  final String title;
+  final String subtitle;
+  final Widget? leadingAction;
+  final Widget? trailingAction;
+  final Widget? extraInfo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

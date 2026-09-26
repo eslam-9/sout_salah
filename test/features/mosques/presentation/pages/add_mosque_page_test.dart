@@ -15,7 +15,6 @@ class MockAppLogger implements AppLogger {
   @override
   void e(String message, [dynamic error, StackTrace? stackTrace]) {}
 
-  @override
   void f(String message, [dynamic error, StackTrace? stackTrace]) {}
 
   @override
@@ -23,7 +22,6 @@ class MockAppLogger implements AppLogger {
     infoCalled = true;
   }
 
-  @override
   void t(String message, [dynamic error, StackTrace? stackTrace]) {}
 
   @override
@@ -37,10 +35,8 @@ class MockPermissionChecker implements PermissionChecker {
   @override
   Future<bool> isSuperAdmin() async => false;
   
-  @override
   Future<bool> canReviewRequests() async => false;
   
-  @override
   Future<bool> hasPermission(String permission) async => false;
   
   @override
