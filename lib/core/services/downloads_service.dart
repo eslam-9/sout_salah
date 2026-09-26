@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,15 @@ import '../constants/app_constants.dart';
 
 /// Service to manage downloaded recordings with reactive updates
 class DownloadsService {
+
+  DownloadsService(this._prefs, this._dio, this._logger) {
+    _downloadsController =
+        StreamController<List<DownloadedRecording>>.broadcast(
+          onListen: () {
+            _emitDownloads();
+          },
+        );
+  }
   static const String _downloadsKey = 'downloaded_recordings';
   final SharedPreferences _prefs;
   final Dio _dio;
@@ -25,14 +35,8 @@ class DownloadsService {
   // Cancel tokens for active downloads
   final Map<String, CancelToken> _cancelTokens = {};
 
-  DownloadsService(this._prefs, this._dio, this._logger) {
-    _downloadsController =
-        StreamController<List<DownloadedRecording>>.broadcast(
-          onListen: () {
-            _emitDownloads();
-          },
-        );
-  }
+  // In-memory cache — invalidated on every write to avoid stale reads
+  List<DownloadedRecording>? _cachedDownloads;
 
   /// Get stream of downloads for reactive updates
   Stream<List<DownloadedRecording>> get downloadsStream =>
@@ -166,8 +170,10 @@ class DownloadsService {
       }
     } finally {
       _cancelTokens.remove(recordingId);
-      _progressControllers[recordingId]?.close();
-      _progressControllers.remove(recordingId);
+      final progressController = _progressControllers.remove(recordingId);
+      if (progressController != null) {
+        unawaited(progressController.close());
+      }
     }
   }
 
@@ -222,21 +228,22 @@ class DownloadsService {
     return downloads.any((d) => d.recordingId == recordingId);
   }
 
-  /// Get all downloaded recordings
+  /// Get all downloaded recordings (uses in-memory cache)
   Future<List<DownloadedRecording>> getDownloads() async {
+    if (_cachedDownloads != null) return List.unmodifiable(_cachedDownloads!);
     try {
       final jsonString = _prefs.getString(_downloadsKey);
-      if (jsonString == null) return [];
-
+      if (jsonString == null) {
+        _cachedDownloads = [];
+        return [];
+      }
       final List<dynamic> jsonList = json.decode(jsonString);
-      return jsonList
-          .map(
-            (json) =>
-                DownloadedRecording.fromJson(json as Map<String, dynamic>),
-          )
+      _cachedDownloads = jsonList
+          .map((json) => DownloadedRecording.fromJson(json as Map<String, dynamic>))
           .toList();
+      return List.unmodifiable(_cachedDownloads!);
     } catch (e) {
-      _logger.e('❌ Error loading downloads: $e');
+      _logger.e('Error loading downloads: $e');
       return [];
     }
   }
@@ -244,11 +251,7 @@ class DownloadsService {
   /// Get a specific download by recording ID
   Future<DownloadedRecording?> getDownload(String recordingId) async {
     final downloads = await getDownloads();
-    try {
-      return downloads.firstWhere((d) => d.recordingId == recordingId);
-    } catch (e) {
-      return null;
-    }
+    return downloads.firstWhereOrNull((d) => d.recordingId == recordingId);
   }
 
   /// Save a single download
@@ -260,6 +263,7 @@ class DownloadsService {
 
   /// Save all downloads
   Future<void> _saveAllDownloads(List<DownloadedRecording> downloads) async {
+    _cachedDownloads = List.of(downloads); // update cache
     final jsonList = downloads.map((d) => d.toJson()).toList();
     final jsonString = json.encode(jsonList);
     await _prefs.setString(_downloadsKey, jsonString);

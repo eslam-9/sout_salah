@@ -1,3 +1,7 @@
+// NOTE: GetIt is used ONLY as a bootstrap bridge.
+// AppLogger and NavigationService are registered here so that main.dart's
+// global error handlers can access them before ProviderScope is initialized.
+// All feature code must use Riverpod providers, not GetIt.
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

@@ -2,10 +2,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Utility class for checking mosque-specific permissions
 class MosquePermissions {
-  final SupabaseClient _supabase;
-  
-  // Cache to store permission results to avoid redundant DB calls
-  final Map<String, bool> _cache = {};
 
   MosquePermissions(this._supabase) {
     // Clear cache when auth state changes
@@ -15,6 +11,10 @@ class MosquePermissions {
       }
     });
   }
+  final SupabaseClient _supabase;
+  
+  // Cache to store permission results to avoid redundant DB calls
+  final Map<String, bool> _cache = {};
 
   /// Check if current user is a super admin (global admin)
   Future<bool> isSuperAdmin() async {

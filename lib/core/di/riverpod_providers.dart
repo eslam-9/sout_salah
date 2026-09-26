@@ -13,6 +13,8 @@ import '../services/downloads_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
 
+import '../services/navigation_service.dart';
+
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) => GetIt.I<SharedPreferences>());
 
 final dioProvider = Provider<Dio>((ref) {
@@ -36,21 +38,32 @@ final r2StorageServiceProvider = Provider<R2StorageService>((ref) {
   );
 });
 
+// DownloadsService holds StreamControllers — keep alive and dispose properly
 final downloadsServiceProvider = Provider<DownloadsService>((ref) {
-  return DownloadsService(
+  final service = DownloadsService(
     ref.watch(sharedPreferencesProvider),
     ref.watch(dioProvider),
     ref.watch(appLoggerProvider),
   );
+  ref.onDispose(service.dispose);
+  return service;
 });
 
-final audioPlayerServiceProvider = Provider<AudioPlayerService>((ref) => AudioPlayerService());
+// AudioPlayerService holds mutable AudioPlayer state — keep alive for the app lifetime
+final audioPlayerServiceProvider = Provider<AudioPlayerService>((ref) {
+  final service = AudioPlayerService();
+  ref.onDispose(service.dispose);
+  return service;
+});
 
+// FavoritesService holds StreamControllers — keep alive and dispose properly
 final favoritesServiceProvider = Provider<FavoritesService>((ref) {
-  return FavoritesService(
+  final service = FavoritesService(
     ref.watch(sharedPreferencesProvider),
     ref.watch(appLoggerProvider),
   );
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final networkInfoProvider = Provider<NetworkInfo>((ref) {
@@ -59,3 +72,9 @@ final networkInfoProvider = Provider<NetworkInfo>((ref) {
 
 /// Current playing recording ID provider
 final currentPlayingRecordingProvider = StateProvider<String?>((ref) => null);
+
+// Navigation service available via Riverpod for feature code
+// (main.dart bootstrap uses GetIt directly)
+final navigationServiceProvider = Provider<NavigationService>((ref) {
+  return NavigationService();
+});

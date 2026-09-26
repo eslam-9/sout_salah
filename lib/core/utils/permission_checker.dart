@@ -11,10 +11,10 @@ final mosquePermissionsProvider = Provider<MosquePermissions>((ref) {
 
 /// Permission checker for UI components
 class PermissionChecker {
-  final MosquePermissions _permissions;
-  final SharedPreferences _prefs;
 
   PermissionChecker(this._permissions, this._prefs);
+  final MosquePermissions _permissions;
+  final SharedPreferences _prefs;
 
   /// Check if user can see upload button
   Future<bool> canShowUploadButton(String mosqueId) async {

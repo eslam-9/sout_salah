@@ -6,14 +6,14 @@ import '../../services/navigation_service.dart';
 
 /// Error page displayed when an invalid route is accessed
 class ErrorPage extends StatelessWidget {
-  final String? routeName;
 
   const ErrorPage({super.key, this.routeName});
+  final String? routeName;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -37,7 +37,7 @@ class ErrorPage extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // Error Title
-                Text(
+                const Text(
                   'الصفحة غير موجودة',
                   style: TextStyle(
                     fontSize: 28,
@@ -98,7 +98,7 @@ class ErrorPage extends StatelessWidget {
                     elevation: 0,
                   ),
                   icon: const Icon(LucideIcons.home),
-                  label: Text(
+                  label: const Text(
                     'العودة للرئيسية',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),

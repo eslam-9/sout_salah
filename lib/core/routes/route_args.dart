@@ -6,13 +6,6 @@ import '../../features/mosques/data/models/daily_video_model.dart';
 
 /// Route arguments for upload recording page
 class UploadRecordingArgs {
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
-  final int month;
-  final Prayer? prayer;
-  final String? customPrayerName;
-  final String? pendingRecordingId;
 
   UploadRecordingArgs({
     required this.mosqueId,
@@ -23,6 +16,13 @@ class UploadRecordingArgs {
     this.customPrayerName,
     this.pendingRecordingId,
   });
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
+  final int month;
+  final Prayer? prayer;
+  final String? customPrayerName;
+  final String? pendingRecordingId;
 
   /// Validate that the arguments are not empty
   bool validate() {
@@ -32,58 +32,54 @@ class UploadRecordingArgs {
 
 /// Route arguments for audio player page
 class AudioPlayerArgs {
-  final Recording recording;
 
   AudioPlayerArgs({required this.recording});
+  final Recording recording;
 }
 
 /// Route arguments for daily video page
 class DailyVideoArgs {
-  final String dayId;
 
   DailyVideoArgs({required this.dayId});
+  final String dayId;
 }
 
 /// Route arguments for video player page
 class VideoPlayerArgs {
-  final DailyVideoModel video;
 
   VideoPlayerArgs({required this.video});
+  final DailyVideoModel video;
 }
 
 /// Route arguments for upload daily video page
 class UploadDailyVideoArgs {
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
 
   UploadDailyVideoArgs({
     required this.mosqueId,
     required this.dayId,
     required this.dayNumber,
   });
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
 }
 
 /// Route arguments for mosque detail page
 class MosqueDetailArgs {
-  final Mosque mosque;
 
   MosqueDetailArgs({required this.mosque});
+  final Mosque mosque;
 }
 
 /// Route arguments for day detail page
 class DayDetailArgs {
-  final RamadanDay day;
 
   DayDetailArgs({required this.day});
+  final RamadanDay day;
 }
 
 /// Route arguments for day schedule page
 class DayScheduleArgs {
-  final String dayId;
-  final String mosqueId;
-  final int dayNumber;
-  final int month;
 
   DayScheduleArgs({
     required this.dayId,
@@ -91,4 +87,8 @@ class DayScheduleArgs {
     required this.dayNumber,
     required this.month,
   });
+  final String dayId;
+  final String mosqueId;
+  final int dayNumber;
+  final int month;
 }

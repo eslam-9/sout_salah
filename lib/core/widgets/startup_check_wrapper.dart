@@ -8,9 +8,9 @@ import '../services/navigation_service.dart';
 import '../../../features/auth/presentation/providers/auth_controller.dart';
 
 class StartupCheckWrapper extends ConsumerStatefulWidget {
-  final Widget child;
 
   const StartupCheckWrapper({super.key, required this.child});
+  final Widget child;
 
   @override
   ConsumerState<StartupCheckWrapper> createState() =>

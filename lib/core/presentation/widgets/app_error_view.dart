@@ -3,9 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/app_theme.dart';
 
 class AppErrorView extends StatelessWidget {
-  final String title;
-  final String message;
-  final VoidCallback? onRetry;
 
   const AppErrorView({
     super.key,
@@ -13,6 +10,9 @@ class AppErrorView extends StatelessWidget {
     required this.message,
     this.onRetry,
   });
+  final String title;
+  final String message;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {

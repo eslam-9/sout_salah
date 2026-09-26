@@ -1,5 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import '../error/exceptions.dart';
 
 /// Audio player service for playing recordings
 class AudioPlayerService {
@@ -19,16 +20,16 @@ class AudioPlayerService {
         Uri.parse(url),
         tag: MediaItem(
           id: url,
-          album: "Sout Salah",
-          title: title ?? "Unknown Title",
-          artist: artist ?? "Unknown Sheikh",
+          album: 'Sout Salah',
+          title: title ?? 'Unknown Title',
+          artist: artist ?? 'Unknown Sheikh',
           artUri: artUri != null ? Uri.parse(artUri) : null,
         ),
       );
       await _player.setAudioSource(source);
       await _player.play();
     } catch (e) {
-      throw Exception('Failed to play audio: $e');
+      throw AudioPlaybackException('Failed to play audio', e);
     }
   }
 

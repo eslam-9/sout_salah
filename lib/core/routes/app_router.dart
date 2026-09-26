@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:get_it/get_it.dart';
-import '../utils/app_logger.dart';
 import '../../features/home/presentation/pages/home_layout.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
@@ -31,26 +29,23 @@ class AppRouter {
   /// Check if user is authenticated (including anonymous guests)
   static bool _isAuthenticated() {
     try {
-      final user = GetIt.I<SupabaseClient>().auth.currentUser;
+      final user = Supabase.instance.client.auth.currentUser;
       return user != null;
     } catch (_) {
-      // Return false if Supabase throws (e.g., offline)
       return false;
     }
   }
 
   /// Main route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    GetIt.I<AppLogger>().i('🧭 AppRouter: Navigating to ${settings.name}');
+    debugPrint('AppRouter: Navigating to ${settings.name}');
 
     // Check if route requires authentication
     final requiresAuth = AppRoutes.authRequiredRoutes.contains(settings.name);
 
     // If route requires auth and user is not authenticated, redirect to login
     if (requiresAuth && !_isAuthenticated()) {
-      GetIt.I<AppLogger>().w(
-        '⚠️ AppRouter: Route requires auth, redirecting to login',
-      );
+      debugPrint('AppRouter: Route requires auth, redirecting to login');
       return RouteTransitions.fadeTransition(
         const LoginPage(),
         const RouteSettings(name: AppRoutes.login),
@@ -64,9 +59,7 @@ class AppRouter {
 
       case AppRoutes.home:
         if (!_isAuthenticated()) {
-          GetIt.I<AppLogger>().i(
-            'Redirecting home to login (not authenticated)',
-          );
+          debugPrint('AppRouter: Redirecting home to login (not authenticated)');
           return RouteTransitions.fadeTransition(const LoginPage(), settings);
         }
         return RouteTransitions.fadeTransition(const HomeLayout(), settings);
@@ -83,9 +76,7 @@ class AppRouter {
       case AppRoutes.mosqueDetail:
         // Validate arguments
         if (settings.arguments is! Mosque) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for mosqueDetail',
-          );
+          debugPrint('AppRouter: Invalid arguments for mosqueDetail');
           return _errorRoute(settings);
         }
         final mosque = settings.arguments as Mosque;
@@ -97,9 +88,7 @@ class AppRouter {
       case AppRoutes.dayDetail:
         // Validate arguments
         if (settings.arguments is! DayDetailArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for dayDetail',
-          );
+          debugPrint('AppRouter: Invalid arguments for dayDetail');
           return _errorRoute(settings);
         }
         final args = settings.arguments as DayDetailArgs;
@@ -110,9 +99,7 @@ class AppRouter {
 
       case AppRoutes.daySchedule:
         if (settings.arguments is! DayScheduleArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for daySchedule',
-          );
+          debugPrint('AppRouter: Invalid arguments for daySchedule');
           return _errorRoute(settings);
         }
         final args = settings.arguments as DayScheduleArgs;
@@ -129,16 +116,12 @@ class AppRouter {
       case AppRoutes.uploadRecording:
         // Validate arguments
         if (settings.arguments is! UploadRecordingArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for uploadRecording',
-          );
+          debugPrint('AppRouter: Invalid arguments for uploadRecording');
           return _errorRoute(settings);
         }
         final args = settings.arguments as UploadRecordingArgs;
         if (!args.validate()) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid uploadRecording arguments',
-          );
+          debugPrint('AppRouter: Invalid uploadRecording arguments');
           return _errorRoute(settings);
         }
         return RouteTransitions.slideTransition(
@@ -168,9 +151,7 @@ class AppRouter {
 
       case AppRoutes.audioPlayer:
         if (settings.arguments is! AudioPlayerArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for audioPlayer',
-          );
+          debugPrint('AppRouter: Invalid arguments for audioPlayer');
           return _errorRoute(settings);
         }
         final args = settings.arguments as AudioPlayerArgs;
@@ -181,9 +162,7 @@ class AppRouter {
 
       case AppRoutes.videoPlayer:
         if (settings.arguments is! VideoPlayerArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for videoPlayer',
-          );
+          debugPrint('AppRouter: Invalid arguments for videoPlayer');
           return _errorRoute(settings);
         }
         final args = settings.arguments as VideoPlayerArgs;
@@ -194,9 +173,7 @@ class AppRouter {
 
       case AppRoutes.dailyVideo:
         if (settings.arguments is! DailyVideoArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for dailyVideo',
-          );
+          debugPrint('AppRouter: Invalid arguments for dailyVideo');
           return _errorRoute(settings);
         }
         final args = settings.arguments as DailyVideoArgs;
@@ -207,9 +184,7 @@ class AppRouter {
 
       case AppRoutes.uploadDailyVideo:
         if (settings.arguments is! UploadDailyVideoArgs) {
-          GetIt.I<AppLogger>().e(
-            '❌ AppRouter: Invalid arguments for uploadDailyVideo',
-          );
+          debugPrint('AppRouter: Invalid arguments for uploadDailyVideo');
           return _errorRoute(settings);
         }
         final args = settings.arguments as UploadDailyVideoArgs;
@@ -223,7 +198,7 @@ class AppRouter {
         );
 
       default:
-        GetIt.I<AppLogger>().e('❌ AppRouter: Unknown route ${settings.name}');
+        debugPrint('AppRouter: Unknown route ${settings.name}');
         return _errorRoute(settings);
     }
   }
@@ -237,7 +212,7 @@ class AppRouter {
 
   /// Handler for unknown routes
   static Route<dynamic> onUnknownRoute(RouteSettings settings) {
-    GetIt.I<AppLogger>().e('❌ AppRouter: Unknown route ${settings.name}');
+    debugPrint('AppRouter: Unknown route ${settings.name}');
     return _errorRoute(settings);
   }
 }
