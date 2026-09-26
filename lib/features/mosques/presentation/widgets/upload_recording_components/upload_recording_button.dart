@@ -3,14 +3,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class UploadRecordingButton extends StatelessWidget {
-  final bool isUploading;
-  final VoidCallback onPressed;
 
   const UploadRecordingButton({
     super.key,
     required this.isUploading,
     required this.onPressed,
   });
+  final bool isUploading;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +28,12 @@ class UploadRecordingButton extends StatelessWidget {
             ),
             elevation: 0,
           ),
-          child: Row(
+          child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.arrowLeft, color: Colors.white),
-              const SizedBox(width: 12),
-              const Text(
+              Icon(LucideIcons.arrowLeft, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
                 'مشاركة التلاوة',
                 style: TextStyle(
                   fontSize: 18,

@@ -6,9 +6,9 @@ import 'day_recording_delete_button.dart';
 import 'day_recording_play_button.dart';
 
 class DayRecordingContent extends StatelessWidget {
-  final Recording recording;
 
   const DayRecordingContent({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context) {

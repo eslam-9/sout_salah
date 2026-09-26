@@ -6,16 +6,17 @@ import '../../domain/entities/mosque.dart';
 import '../providers/ramadan_days_provider.dart';
 import '../providers/month_year.dart';
 import '../../../../features/auth/presentation/providers/auth_controller.dart';
-import '../../../../features/auth/presentation/bloc/auth_state.dart';
+import '../../../../features/auth/presentation/providers/auth_data_providers.dart';
+import '../../../../features/auth/presentation/state/auth_state.dart';
 import '../widgets/mosque_detail_components/mosque_detail_app_bar.dart';
 import '../widgets/mosque_detail_components/mosque_detail_body.dart';
 import '../widgets/mosque_detail_components/mosque_detail_month_navigator.dart';
 import '../widgets/mosque_detail_components/mosque_detail_add_month_dialog.dart';
 
 class MosqueDetailPage extends ConsumerStatefulWidget {
-  final Mosque mosque;
 
   const MosqueDetailPage({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   ConsumerState<MosqueDetailPage> createState() => _MosqueDetailPageState();
@@ -41,13 +42,13 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
       setState(() {
         selectedMonth = months.last;
       });
-      ref.read(ramadanDaysProvider.notifier).loadDays(
+      await ref.read(ramadanDaysProvider.notifier).loadDays(
             widget.mosque.id,
             month: selectedMonth!.month,
             year: selectedMonth!.year,
           );
     } else {
-      ref.read(ramadanDaysProvider.notifier).loadDays(widget.mosque.id);
+      await ref.read(ramadanDaysProvider.notifier).loadDays(widget.mosque.id);
     }
   }
 
@@ -75,12 +76,13 @@ class _MosqueDetailPageState extends ConsumerState<MosqueDetailPage> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: MosqueDetailAppBar(mosque: widget.mosque),
       floatingActionButton: (authState is AuthAuthenticated &&
-              (authState.user.role == 'admin' ||
-               authState.user.role == 'super_admin' ||
-               authState.user.id == widget.mosque.adminId))
+              ref.read(userPermissionServiceProvider).canAddMonth(
+                    authState.user,
+                    widget.mosque,
+                  ))
           ? FloatingActionButton(
               onPressed: () => _showAddMonthDialog(context),
               backgroundColor: AppColors.primary,

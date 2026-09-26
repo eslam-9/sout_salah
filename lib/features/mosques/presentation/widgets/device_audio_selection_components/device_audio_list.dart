@@ -4,14 +4,14 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class DeviceAudioList extends StatelessWidget {
-  final OnAudioQuery audioQuery;
-  final String searchQuery;
 
   const DeviceAudioList({
     super.key,
     required this.audioQuery,
     required this.searchQuery,
   });
+  final OnAudioQuery audioQuery;
+  final String searchQuery;
 
   String _formatDuration(int? duration) {
     if (duration == null) return '--:--';

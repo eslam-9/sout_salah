@@ -9,9 +9,9 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/base_audio_sheet.dart';
 
 class AudioPlayerSheet extends ConsumerWidget {
-  final Recording recording;
 
   const AudioPlayerSheet({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +35,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                   onPressed: () {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text(
                             'التسجيل محفوظ بالفعل',
                             style: TextStyle(),
@@ -71,7 +71,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                             ),
                             Text(
                               '${(snapshot.data! * 100).toInt()}%',
-                              style: TextStyle(fontSize: 10),
+                              style: const TextStyle(fontSize: 10),
                             ),
                           ],
                         ),
@@ -88,7 +88,7 @@ class AudioPlayerSheet extends ConsumerWidget {
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text(
                                 'تم التنزيل بنجاح',
                                 style: TextStyle(),
@@ -103,7 +103,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                             SnackBar(
                               content: Text(
                                 'فشل التنزيل: $e',
-                                style: TextStyle(),
+                                style: const TextStyle(),
                               ),
                               backgroundColor: Colors.red,
                             ),
@@ -151,7 +151,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
+                        content: const Text(
                           'تم إزالة التلاوة من المحفوظات',
                           style: TextStyle(),
                         ),
@@ -163,10 +163,10 @@ class AudioPlayerSheet extends ConsumerWidget {
                   try {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Row(
                             children: [
-                              const SizedBox(
+                              SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
@@ -176,11 +176,11 @@ class AudioPlayerSheet extends ConsumerWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Text('جاري تحميل التلاوة...', style: TextStyle()),
                             ],
                           ),
-                          duration: const Duration(seconds: 30),
+                          duration: Duration(seconds: 30),
                           backgroundColor: AppColors.primary,
                         ),
                       );
@@ -193,7 +193,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text(
                             '❤️ تم حفظ التلاوة',
                             style: TextStyle(),
@@ -206,7 +206,7 @@ class AudioPlayerSheet extends ConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('فشل حفظ التلاوة', style: TextStyle()),
                           backgroundColor: Colors.red,
                         ),

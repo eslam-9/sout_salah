@@ -11,14 +11,14 @@ import '../../../../core/presentation/widgets/app_error_view.dart';
 import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
 class DayScheduleTableWidget extends ConsumerWidget {
-  final String dayId;
-  final String mosqueId;
 
   const DayScheduleTableWidget({
     super.key,
     required this.dayId,
     required this.mosqueId,
   });
+  final String dayId;
+  final String mosqueId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,10 +36,10 @@ class DayScheduleTableWidget extends ConsumerWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromRGBO(0, 0, 0, 0.05),
+          const BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.05),
             blurRadius: 10,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),

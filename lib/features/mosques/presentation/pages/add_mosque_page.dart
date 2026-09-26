@@ -7,6 +7,7 @@ import '../../../../core/utils/permission_checker.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
 
 import '../widgets/add_mosque_components/add_mosque_form.dart';
@@ -93,7 +94,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
           if (mounted) {
             AppSnackBar.showSuccess(
               context,
-              "تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.",
+              'تم إرسال طلب إنشاء المسجد بنجاح. سيتم مراجعته من قبل الإدارة.',
             );
             NavigationService.goBack();
           }
@@ -126,7 +127,7 @@ class _AddMosquePageState extends ConsumerState<AddMosquePage> {
     final isLoading = state is AsyncLoading || requestState is AsyncLoading;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         title: const Text(
           'إضافة مسجد جديد',

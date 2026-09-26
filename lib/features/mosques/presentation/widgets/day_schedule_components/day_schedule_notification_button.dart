@@ -6,10 +6,6 @@ import '../../../../../core/utils/permission_checker.dart';
 import '../../../../../core/services/notification_service.dart';
 
 class DayScheduleNotificationButton extends ConsumerWidget {
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
-  final int month;
 
   const DayScheduleNotificationButton({
     super.key,
@@ -18,6 +14,10 @@ class DayScheduleNotificationButton extends ConsumerWidget {
     required this.dayNumber,
     required this.month,
   });
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
+  final int month;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

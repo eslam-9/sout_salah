@@ -5,9 +5,9 @@ import '../../../domain/entities/ramadan_day.dart';
 import 'mosque_detail_calendar_view.dart';
 
 class MosqueDetailBody extends StatelessWidget {
-  final AsyncValue<List<RamadanDay>> state;
 
   const MosqueDetailBody({super.key, required this.state});
+  final AsyncValue<List<RamadanDay>> state;
 
   @override
   Widget build(BuildContext context) {

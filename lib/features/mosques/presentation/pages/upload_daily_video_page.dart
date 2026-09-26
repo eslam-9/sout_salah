@@ -13,9 +13,6 @@ import '../widgets/upload_daily_video_components/upload_video_file_list.dart';
 import '../widgets/upload_daily_video_components/upload_video_details_form.dart';
 
 class UploadDailyVideoPage extends ConsumerStatefulWidget {
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
 
   const UploadDailyVideoPage({
     super.key,
@@ -23,6 +20,9 @@ class UploadDailyVideoPage extends ConsumerStatefulWidget {
     required this.dayId,
     required this.dayNumber,
   });
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
 
   @override
   ConsumerState<UploadDailyVideoPage> createState() =>

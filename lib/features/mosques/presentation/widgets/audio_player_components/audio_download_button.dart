@@ -7,9 +7,9 @@ import '../../../domain/entities/recording.dart';
 import '../../../../home/presentation/providers/downloads_provider.dart';
 
 class AudioDownloadButton extends ConsumerWidget {
-  final Recording recording;
 
   const AudioDownloadButton({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

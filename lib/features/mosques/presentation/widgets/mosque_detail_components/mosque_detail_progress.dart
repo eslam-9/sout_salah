@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class MosqueDetailProgress extends StatelessWidget {
-  final int completedDays;
-  final int totalDays;
-  final double progress;
 
   const MosqueDetailProgress({
     super.key,
@@ -12,6 +9,9 @@ class MosqueDetailProgress extends StatelessWidget {
     required this.totalDays,
     required this.progress,
   });
+  final int completedDays;
+  final int totalDays;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class MosqueDetailProgress extends StatelessWidget {
           children: [
             Text(
               'الأيام $completedDays/$totalDays',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,

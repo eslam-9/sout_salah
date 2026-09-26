@@ -14,13 +14,6 @@ import '../widgets/upload_recording_components/upload_recording_header.dart';
 import '../widgets/upload_recording_components/upload_recording_button.dart';
 
 class UploadRecordingPage extends ConsumerStatefulWidget {
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
-  final int month;
-  final String? pendingRecordingId;
-  final Prayer? prayer;
-  final String? customPrayerName;
 
   const UploadRecordingPage({
     super.key,
@@ -32,6 +25,13 @@ class UploadRecordingPage extends ConsumerStatefulWidget {
     this.customPrayerName,
     this.pendingRecordingId,
   });
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
+  final int month;
+  final String? pendingRecordingId;
+  final Prayer? prayer;
+  final String? customPrayerName;
 
   @override
   ConsumerState<UploadRecordingPage> createState() =>

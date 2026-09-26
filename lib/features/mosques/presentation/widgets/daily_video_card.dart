@@ -6,9 +6,9 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/route_args.dart';
 
 class DailyVideoCard extends StatelessWidget {
-  final String dayId;
 
   const DailyVideoCard({super.key, required this.dayId});
+  final String dayId;
 
   @override
   Widget build(BuildContext context) {

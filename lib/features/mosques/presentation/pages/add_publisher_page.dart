@@ -7,9 +7,9 @@ import '../providers/mosque_data_providers.dart';
 import '../../../../core/services/notification_service.dart';
 
 class AddPublisherPage extends ConsumerStatefulWidget {
-  final String mosqueId;
 
   const AddPublisherPage({super.key, required this.mosqueId});
+  final String mosqueId;
 
   @override
   ConsumerState<AddPublisherPage> createState() => _AddPublisherPageState();
@@ -73,7 +73,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'إضافة ناشر',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -91,7 +91,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'أدخل البريد الإلكتروني للناشر',
                 style: TextStyle(
                   fontSize: 18,
@@ -139,7 +139,7 @@ class _AddPublisherPageState extends ConsumerState<AddPublisherPage> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text(
+                      : const Text(
                           'إضافة الناشر',
                           style: TextStyle(
                             fontSize: 16,

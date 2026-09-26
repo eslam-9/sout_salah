@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque.dart';
 
 class MosqueInfoDescription extends StatelessWidget {
-  final Mosque mosque;
 
   const MosqueInfoDescription({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class MosqueInfoDescription extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
+          color: AppColors.greyLight,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200),
         ),

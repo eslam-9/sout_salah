@@ -73,7 +73,8 @@ class MosqueNotifier extends AsyncNotifier<List<Mosque>>
     final currentState = state;
     if (currentState.hasValue) {
       final currentList = currentState.value!;
-      state = const AsyncValue.loading();
+      // Use copyWithPrevious so the existing list stays visible while loading
+      state = const AsyncValue<List<Mosque>>.loading().copyWithPrevious(currentState);
 
       try {
         _currentPage++;
@@ -84,10 +85,7 @@ class MosqueNotifier extends AsyncNotifier<List<Mosque>>
         state = AsyncValue.data([...currentList, ...newMosques]);
       } catch (e, st) {
         _currentPage--;
-        state = AsyncValue<List<Mosque>>.error(
-          e,
-          st,
-        ).copyWithPrevious(currentState);
+        state = AsyncValue<List<Mosque>>.error(e, st).copyWithPrevious(currentState);
       }
     }
   }

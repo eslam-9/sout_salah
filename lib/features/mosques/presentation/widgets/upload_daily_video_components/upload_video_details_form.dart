@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class UploadVideoDetailsForm extends StatelessWidget {
-  final TextEditingController titleController;
-  final TextEditingController descriptionController;
-  final bool isUploading;
 
   const UploadVideoDetailsForm({
     super.key,
@@ -11,6 +8,9 @@ class UploadVideoDetailsForm extends StatelessWidget {
     required this.descriptionController,
     required this.isUploading,
   });
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final bool isUploading;
 
   @override
   Widget build(BuildContext context) {

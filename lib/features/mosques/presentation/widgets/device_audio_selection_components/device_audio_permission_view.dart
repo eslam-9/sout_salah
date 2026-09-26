@@ -3,12 +3,12 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class DeviceAudioPermissionView extends StatelessWidget {
-  final VoidCallback onRequestPermission;
 
   const DeviceAudioPermissionView({
     super.key,
     required this.onRequestPermission,
   });
+  final VoidCallback onRequestPermission;
 
   @override
   Widget build(BuildContext context) {

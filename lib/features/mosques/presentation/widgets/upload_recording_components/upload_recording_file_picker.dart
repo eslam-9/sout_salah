@@ -4,11 +4,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class UploadRecordingFilePicker extends StatelessWidget {
-  final File? selectedFile;
-  final bool isUploading;
-  final double uploadProgress;
-  final VoidCallback onPickFile;
-  final VoidCallback onClearFile;
 
   const UploadRecordingFilePicker({
     super.key,
@@ -18,6 +13,11 @@ class UploadRecordingFilePicker extends StatelessWidget {
     required this.onPickFile,
     required this.onClearFile,
   });
+  final File? selectedFile;
+  final bool isUploading;
+  final double uploadProgress;
+  final VoidCallback onPickFile;
+  final VoidCallback onClearFile;
 
   Widget _buildPickerButton({
     required IconData icon,

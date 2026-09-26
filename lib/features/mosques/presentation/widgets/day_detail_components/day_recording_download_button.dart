@@ -7,9 +7,9 @@ import '../../../../../core/di/riverpod_providers.dart';
 import '../../../domain/entities/recording.dart';
 
 class DayRecordingDownloadButton extends ConsumerWidget {
-  final Recording recording;
 
   const DayRecordingDownloadButton({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

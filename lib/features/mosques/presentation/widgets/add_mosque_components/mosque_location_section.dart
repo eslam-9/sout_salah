@@ -13,12 +13,12 @@ import 'mosque_location_actionable_error.dart';
 import 'mosque_location_search_button.dart';
 
 class MosqueLocationSection extends ConsumerStatefulWidget {
-  final ValueChanged<MosqueLocation?> onLocationChanged;
 
   const MosqueLocationSection({
     super.key,
     required this.onLocationChanged,
   });
+  final ValueChanged<MosqueLocation?> onLocationChanged;
 
   @override
   ConsumerState<MosqueLocationSection> createState() => _MosqueLocationSectionState();
@@ -51,11 +51,11 @@ class _MosqueLocationSectionState extends ConsumerState<MosqueLocationSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(LucideIcons.mapPin, color: AppColors.primary),
-              const SizedBox(width: 8),
-              const Text(
+              Icon(LucideIcons.mapPin, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text(
                 'موقع المسجد',
                 style: TextStyle(
                   fontSize: 16,

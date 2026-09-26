@@ -5,14 +5,14 @@ import '../../../domain/usecases/create_pending_recording_params.dart';
 import '../../providers/mosque_data_providers.dart';
 
 class AddPrayerDialog extends ConsumerStatefulWidget {
-  final String mosqueId;
-  final String dayId;
 
   const AddPrayerDialog({
     super.key,
     required this.mosqueId,
     required this.dayId,
   });
+  final String mosqueId;
+  final String dayId;
 
   @override
   ConsumerState<AddPrayerDialog> createState() => _AddPrayerDialogState();

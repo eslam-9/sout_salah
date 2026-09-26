@@ -36,7 +36,7 @@ class _MosqueRequestsPageState extends ConsumerState<MosqueRequestsPage> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         title: const Text(
           'طلبات المساجد',

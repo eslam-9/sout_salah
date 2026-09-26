@@ -6,14 +6,6 @@ import 'add_mosque_text_fields.dart';
 import 'add_mosque_submit_button.dart';
 
 class AddMosqueForm extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
-  final TextEditingController locationController;
-  final TextEditingController descriptionController;
-  final bool isLoading;
-  final bool isSuperAdmin;
-  final ValueChanged<MosqueLocation?> onLocationChanged;
-  final VoidCallback onSubmit;
 
   const AddMosqueForm({
     super.key,
@@ -26,6 +18,14 @@ class AddMosqueForm extends StatelessWidget {
     required this.onLocationChanged,
     required this.onSubmit,
   });
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController locationController;
+  final TextEditingController descriptionController;
+  final bool isLoading;
+  final bool isSuperAdmin;
+  final ValueChanged<MosqueLocation?> onLocationChanged;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {

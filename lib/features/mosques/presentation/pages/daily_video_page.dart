@@ -9,9 +9,9 @@ import '../../../../core/services/navigation_service.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class DailyVideoPage extends ConsumerWidget {
-  final String dayId;
 
   const DailyVideoPage({super.key, required this.dayId});
+  final String dayId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,8 +121,8 @@ class DailyVideoPage extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
-        error: (error, stack) => Center(
-          child: const Text(
+        error: (error, stack) => const Center(
+          child: Text(
             'حدث خطأ في تحميل الفيديوهات',
             style: TextStyle(color: Colors.red),
           ),

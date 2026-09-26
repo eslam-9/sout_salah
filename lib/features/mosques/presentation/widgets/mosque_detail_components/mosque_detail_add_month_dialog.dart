@@ -5,14 +5,14 @@ import '../../providers/ramadan_days_provider.dart';
 import '../../providers/month_year.dart';
 
 class MosqueDetailAddMonthDialog extends ConsumerStatefulWidget {
-  final String mosqueId;
-  final ValueChanged<MonthYear> onMonthAdded;
 
   const MosqueDetailAddMonthDialog({
     super.key,
     required this.mosqueId,
     required this.onMonthAdded,
   });
+  final String mosqueId;
+  final ValueChanged<MonthYear> onMonthAdded;
 
   @override
   ConsumerState<MosqueDetailAddMonthDialog> createState() =>
@@ -87,11 +87,12 @@ class _MosqueDetailAddMonthDialogState
                 widget.onMonthAdded(
                   MonthYear(month: selectedMonthIdx, year: selectedYear),
                 );
-                ref.read(ramadanDaysProvider.notifier).loadDays(
+                await ref.read(ramadanDaysProvider.notifier).loadDays(
                       widget.mosqueId,
                       month: selectedMonthIdx,
                       year: selectedYear,
                     );
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('تم إضافة الشهر بنجاح')),
                 );

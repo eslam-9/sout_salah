@@ -17,10 +17,6 @@ import '../widgets/day_schedule_components/day_schedule_upload_button.dart';
 import '../widgets/day_schedule_components/day_schedule_notification_button.dart';
 
 class DaySchedulePage extends ConsumerWidget {
-  final String dayId;
-  final String mosqueId;
-  final int dayNumber;
-  final int month;
 
   const DaySchedulePage({
     super.key,
@@ -29,6 +25,10 @@ class DaySchedulePage extends ConsumerWidget {
     required this.dayNumber,
     required this.month,
   });
+  final String dayId;
+  final String mosqueId;
+  final int dayNumber;
+  final int month;
 
   String _toArabicNumerals(int number) {
     const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -68,7 +68,7 @@ class DaySchedulePage extends ConsumerWidget {
 
     if (videoAsync.hasError || scheduleAsync.hasError) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
+        backgroundColor: AppColors.greyMedium,
         appBar: _buildAppBar(context),
         body: AppErrorView(
           title: 'فشل تحميل الصفحة',
@@ -83,14 +83,14 @@ class DaySchedulePage extends ConsumerWidget {
 
     if (videoAsync.isLoading || scheduleAsync.isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
+        backgroundColor: AppColors.greyMedium,
         appBar: _buildAppBar(context),
         body: const AppLoadingIndicator(),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.greyMedium,
       appBar: _buildAppBar(context),
       body: SingleChildScrollView(
         child: Column(

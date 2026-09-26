@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class AddMosqueTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final IconData icon;
-  final String? Function(String?)? validator;
-  final int maxLines;
 
   const AddMosqueTextField({
     super.key,
@@ -16,6 +11,11 @@ class AddMosqueTextField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
   });
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final String? Function(String?)? validator;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {

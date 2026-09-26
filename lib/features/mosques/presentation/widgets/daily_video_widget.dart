@@ -11,9 +11,9 @@ import '../../data/models/daily_video_model.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class DailyVideoWidget extends ConsumerStatefulWidget {
-  final DailyVideoModel video;
 
   const DailyVideoWidget({super.key, required this.video});
+  final DailyVideoModel video;
 
   @override
   ConsumerState<DailyVideoWidget> createState() => _DailyVideoWidgetState();
@@ -119,9 +119,9 @@ class _DailyVideoWidgetState extends ConsumerState<DailyVideoWidget> {
           // Return to portrait after full screen
           DeviceOrientation.portraitUp,
         ],
-        placeholder: Container(
+        placeholder: const ColoredBox(
           color: Colors.black,
-          child: const Center(child: CircularProgressIndicator()),
+          child: Center(child: CircularProgressIndicator()),
         ),
         materialProgressColors: ChewieProgressColors(
           playedColor: AppColors.primary,
@@ -192,9 +192,9 @@ class _DailyVideoWidgetState extends ConsumerState<DailyVideoWidget> {
                           .value
                           .isInitialized
                   ? Chewie(controller: _chewieController!)
-                  : Container(
+                  : const ColoredBox(
                       color: Colors.black12,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: Center(child: CircularProgressIndicator()),
                     ),
             ),
           ),

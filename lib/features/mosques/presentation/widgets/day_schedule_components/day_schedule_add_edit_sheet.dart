@@ -5,9 +5,6 @@ import '../../../domain/entities/day_schedule_entry.dart';
 import '../../providers/day_schedule_provider.dart';
 
 class DayScheduleAddEditSheet extends ConsumerStatefulWidget {
-  final String dayId;
-  final String mosqueId;
-  final DayScheduleEntry? entry;
 
   const DayScheduleAddEditSheet({
     super.key,
@@ -15,6 +12,9 @@ class DayScheduleAddEditSheet extends ConsumerStatefulWidget {
     required this.mosqueId,
     this.entry,
   });
+  final String dayId;
+  final String mosqueId;
+  final DayScheduleEntry? entry;
 
   @override
   ConsumerState<DayScheduleAddEditSheet> createState() =>

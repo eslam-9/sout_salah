@@ -4,12 +4,6 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/prayer.dart';
 
 class UploadRecordingForm extends StatelessWidget {
-  final TextEditingController sheikhNameController;
-  final TextEditingController customPrayerController;
-  final Prayer? selectedPrayer;
-  final ValueChanged<Prayer?> onPrayerSelected;
-  final Prayer? initialPrayer;
-  final String? pendingRecordingId;
 
   const UploadRecordingForm({
     super.key,
@@ -20,6 +14,12 @@ class UploadRecordingForm extends StatelessWidget {
     this.initialPrayer,
     this.pendingRecordingId,
   });
+  final TextEditingController sheikhNameController;
+  final TextEditingController customPrayerController;
+  final Prayer? selectedPrayer;
+  final ValueChanged<Prayer?> onPrayerSelected;
+  final Prayer? initialPrayer;
+  final String? pendingRecordingId;
 
   @override
   Widget build(BuildContext context) {

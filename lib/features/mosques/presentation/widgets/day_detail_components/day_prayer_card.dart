@@ -6,12 +6,6 @@ import 'day_pending_recording.dart';
 import 'day_empty_prayer.dart';
 
 class DayPrayerCard extends StatelessWidget {
-  final Prayer prayer;
-  final List<Recording> recordings;
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
-  final int month;
 
   const DayPrayerCard({
     super.key,
@@ -22,6 +16,12 @@ class DayPrayerCard extends StatelessWidget {
     required this.dayNumber,
     required this.month,
   });
+  final Prayer prayer;
+  final List<Recording> recordings;
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
+  final int month;
 
   @override
   Widget build(BuildContext context) {

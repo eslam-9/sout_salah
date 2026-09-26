@@ -5,9 +5,9 @@ import 'mosque_detail_grid.dart';
 import 'mosque_detail_legend.dart';
 
 class MosqueDetailCalendarView extends StatelessWidget {
-  final List<RamadanDay> days;
 
   const MosqueDetailCalendarView({super.key, required this.days});
+  final List<RamadanDay> days;
 
   @override
   Widget build(BuildContext context) {

@@ -5,9 +5,9 @@ import '../widgets/daily_video_widget.dart';
 import '../../data/models/daily_video_model.dart';
 
 class VideoPlayerPage extends StatelessWidget {
-  final DailyVideoModel video;
 
   const VideoPlayerPage({super.key, required this.video});
+  final DailyVideoModel video;
 
   @override
   Widget build(BuildContext context) {

@@ -7,9 +7,9 @@ import '../../../domain/entities/recording.dart';
 import '../../../../home/presentation/providers/favorites_provider.dart';
 
 class AudioFavoriteButton extends ConsumerWidget {
-  final Recording recording;
 
   const AudioFavoriteButton({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

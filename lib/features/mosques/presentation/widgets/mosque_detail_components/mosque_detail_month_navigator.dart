@@ -5,9 +5,6 @@ import '../../providers/ramadan_days_provider.dart';
 import '../../providers/month_year.dart';
 
 class MosqueDetailMonthNavigator extends ConsumerWidget {
-  final String mosqueId;
-  final MonthYear? selectedMonth;
-  final ValueChanged<MonthYear> onMonthSelected;
 
   const MosqueDetailMonthNavigator({
     super.key,
@@ -15,6 +12,9 @@ class MosqueDetailMonthNavigator extends ConsumerWidget {
     required this.selectedMonth,
     required this.onMonthSelected,
   });
+  final String mosqueId;
+  final MonthYear? selectedMonth;
+  final ValueChanged<MonthYear> onMonthSelected;
 
   String _toArabicNumerals(int number) {
     const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
