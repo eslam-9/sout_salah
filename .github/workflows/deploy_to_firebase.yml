@@ -46,6 +46,12 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
+      - name: Create google-services.json
+        run: |
+          cat << 'EOF' > android/app/google-services.json
+          ${{ secrets.GOOGLE_SERVICES_JSON }}
+          EOF
+
       - name: Install dependencies
         run: flutter pub get
 
