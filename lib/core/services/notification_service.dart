@@ -94,7 +94,7 @@ class NotificationService {
       final notification = message.notification;
       if (notification != null) {
         final context = NavigationService.navigatorKey.currentContext;
-        if (context != null) {
+        if (context != null && context.mounted) {
           AppSnackBar.showInfo(
             context,
             notification.body ?? notification.title ?? 'إشعار جديد',
