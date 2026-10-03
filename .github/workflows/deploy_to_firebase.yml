@@ -49,8 +49,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Patch on_audio_query_android namespace
+      - name: Patch broken pub-cache plugins
         run: |
+          # Fix on_audio_query_android AGP 8 namespace issue
           sed -i 's/defaultConfig {/namespace "com.lucasjosino.on_audio_query"\n    defaultConfig {/g' ~/.pub-cache/hosted/pub.dev/on_audio_query_android-*/android/build.gradle
 
       - name: Install fastlane
