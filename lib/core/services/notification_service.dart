@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:io';
 import '../utils/app_logger.dart';
+import '../utils/app_snackbar.dart';
+import '../services/navigation_service.dart';
 
 /// Handles background messages
 @pragma('vm:entry-point')
@@ -85,16 +87,19 @@ class NotificationService {
     _logger.i('User granted permission: ${settings.authorizationStatus}');
   }
 
-  /// Setup handler for when the app is in the foreground
   static void setupForegroundHandler() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      _logger.i('Got a message whilst in the foreground!');
-      _logger.i('Message data: ${message.data}');
+      _logger.i('Got a message whilst in the foreground! ${message.messageId}');
 
-      if (message.notification != null) {
-        _logger.i(
-          'Message also contained a notification: ${message.notification}',
-        );
+      final notification = message.notification;
+      if (notification != null) {
+        final context = NavigationService.navigatorKey.currentContext;
+        if (context != null) {
+          AppSnackBar.showInfo(
+            context,
+            notification.body ?? notification.title ?? 'إشعار جديد',
+          );
+        }
       }
     });
   }
@@ -131,7 +136,7 @@ class NotificationService {
         return;
       }
 
-      _logger.i('FCM Token: $token');
+      _logger.d('FCM token retrieved successfully');
       await _upsertToken(userId: userId, token: token);
       _logger.i('FCM token registered in Supabase');
     } catch (e, stackTrace) {

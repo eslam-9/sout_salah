@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/utils/app_logger.dart';
-import 'package:get_it/get_it.dart';
 
 class StartupData {
 
@@ -18,7 +17,7 @@ class StartupData {
 
 class StartupService {
 
-  StartupService(this._supabase) : _logger = GetIt.I<AppLogger>();
+  StartupService(this._supabase, this._logger);
   final SupabaseClient _supabase;
   final AppLogger _logger;
 

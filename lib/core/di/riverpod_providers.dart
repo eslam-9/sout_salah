@@ -12,6 +12,7 @@ import '../services/r2_storage_service.dart';
 import '../services/downloads_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
+import '../services/startup_service.dart';
 
 import '../services/navigation_service.dart';
 import '../services/startup_service.dart';
@@ -89,4 +90,11 @@ final startupServiceProvider = Provider<StartupService>((ref) {
 final mosquePermissionsProvider = Provider<MosquePermissions>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return MosquePermissions(client);
+});
+
+final startupServiceProvider = Provider<StartupService>((ref) {
+  return StartupService(
+    ref.watch(supabaseClientProvider),
+    ref.watch(appLoggerProvider),
+  );
 });

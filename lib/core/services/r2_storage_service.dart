@@ -54,7 +54,7 @@ class R2StorageService {
         data: fileBytes,
         options: Options(
           headers: headers,
-          contentType: 'audio/mpeg',
+          contentType: contentType,
           sendTimeout: NetworkConfig.audioTimeout,
           receiveTimeout: NetworkConfig.audioTimeout,
         ),
