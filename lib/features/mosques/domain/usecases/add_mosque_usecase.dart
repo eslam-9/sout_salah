@@ -34,6 +34,8 @@ class AddMosqueUseCase implements UseCase<Mosque, AddMosqueParams> {
     return await repository.addMosque(
       name: params.name,
       location: params.location,
+      latitude: params.latitude,
+      longitude: params.longitude,
       description: params.description,
     );
   }

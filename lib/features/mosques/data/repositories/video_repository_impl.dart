@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/error/repository_error_handler.dart';
 import '../../../../core/services/r2_storage_service.dart';
-import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/daily_video.dart';
 import '../../domain/repositories/video_repository.dart';
 import '../models/daily_video_model.dart';
@@ -16,11 +15,9 @@ class VideoRepositoryImpl implements VideoRepository {
   VideoRepositoryImpl({
     required this.supabaseClient,
     required this.r2StorageService,
-    required AppLogger logger,
-  }) : _logger = logger;
+  });
   final SupabaseClient supabaseClient;
   final R2StorageService r2StorageService;
-  final AppLogger _logger;
 
   @override
   Future<Either<Failure, List<DailyVideo>>> getVideosForDay(String dayId) {

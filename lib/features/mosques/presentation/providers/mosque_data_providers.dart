@@ -123,7 +123,6 @@ final videoRepositoryProvider = Provider<VideoRepository>((ref) {
   return VideoRepositoryImpl(
     supabaseClient: ref.watch(supabaseClientProvider),
     r2StorageService: ref.watch(r2StorageServiceProvider),
-    logger: ref.watch(appLoggerProvider),
   );
 });
 
