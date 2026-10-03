@@ -30,7 +30,10 @@ jobs:
           working-directory: android
 
       - name: Create secrets.json
-        run: echo "${{ secrets.APP_SECRETS_JSON }}" > secrets.json
+        run: |
+          cat << 'EOF' > secrets.json
+          ${{ secrets.APP_SECRETS_JSON }}
+          EOF
 
       - name: Create key.properties and decode keystore
         run: |
