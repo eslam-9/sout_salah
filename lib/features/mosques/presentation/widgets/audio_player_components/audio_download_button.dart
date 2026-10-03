@@ -186,7 +186,7 @@ class AudioDownloadButton extends ConsumerWidget {
           ),
         ),
       ),
-      error: (_, _) => const SizedBox(width: 48),
+      error: (error, stack) => const SizedBox(width: 48),
     );
   }
 }

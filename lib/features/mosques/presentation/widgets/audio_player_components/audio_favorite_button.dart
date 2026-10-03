@@ -81,7 +81,7 @@ class AudioFavoriteButton extends ConsumerWidget {
           ),
         ),
       ),
-      error: (_, _) =>
+      error: (error, stack) =>
           Icon(LucideIcons.heart, color: Colors.grey.shade400, size: 28),
     );
   }

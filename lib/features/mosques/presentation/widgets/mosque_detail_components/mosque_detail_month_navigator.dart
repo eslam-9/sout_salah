@@ -78,7 +78,7 @@ class MosqueDetailMonthNavigator extends ConsumerWidget {
         height: 60,
         child: Center(child: LinearProgressIndicator(minHeight: 2)),
       ),
-      error: (_, _) => const SizedBox.shrink(),
+      error: (error, stack) => const SizedBox.shrink(),
     );
   }
 }
