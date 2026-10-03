@@ -12,6 +12,7 @@ import '../services/r2_storage_service.dart';
 import '../services/downloads_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
+import '../services/startup_service.dart';
 
 import '../services/navigation_service.dart';
 
@@ -77,4 +78,11 @@ final currentPlayingRecordingProvider = StateProvider<String?>((ref) => null);
 // (main.dart bootstrap uses GetIt directly)
 final navigationServiceProvider = Provider<NavigationService>((ref) {
   return NavigationService();
+});
+
+final startupServiceProvider = Provider<StartupService>((ref) {
+  return StartupService(
+    ref.watch(supabaseClientProvider),
+    ref.watch(appLoggerProvider),
+  );
 });
