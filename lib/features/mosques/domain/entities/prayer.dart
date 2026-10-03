@@ -34,30 +34,10 @@ enum Prayer {
 
   /// Get Prayer from database value
   static Prayer fromString(String value) {
-    switch (value) {
-      case 'Fajr':
-        return Prayer.fajr;
-      case 'Maghrib':
-        return Prayer.maghrib;
-      case 'Isha':
-        return Prayer.isha;
-      case 'Taraweeh 1':
-        return Prayer.taraweeh1;
-      case 'Taraweeh 2':
-        return Prayer.taraweeh2;
-      case 'Taraweeh 3':
-        return Prayer.taraweeh3;
-      case 'Taraweeh 4':
-        return Prayer.taraweeh4;
-      case 'Shaf':
-        return Prayer.shaf;
-      case 'Witr':
-        return Prayer.witr;
-      case 'Other':
-        return Prayer.other;
-      default:
-        return Prayer.other;
-    }
+    return Prayer.values.firstWhere(
+      (p) => p.englishName == value,
+      orElse: () => Prayer.other,
+    );
   }
 
   /// Get all prayers in order
