@@ -17,7 +17,8 @@ class RamadanDayModel extends RamadanDay {
     if (json['recordings'] != null && json['recordings'] is List) {
       final list = json['recordings'] as List;
       if (list.isNotEmpty && list.first is Map) {
-        count = list.first['count'] ?? 0;
+        final firstEntry = list.first as Map;
+        count = firstEntry['count'] ?? 0;
       }
     }
 

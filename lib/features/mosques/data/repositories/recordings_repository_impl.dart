@@ -7,9 +7,9 @@ import '../../domain/repositories/recordings_repository.dart';
 import '../datasources/recordings_remote_data_source.dart';
 
 class RecordingsRepositoryImpl implements RecordingsRepository {
-  final RecordingsRemoteDataSource remoteDataSource;
 
   RecordingsRepositoryImpl({required this.remoteDataSource});
+  final RecordingsRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, List<Recording>>> getDayRecordings(String dayId, {int? limit, int? offset}) async {

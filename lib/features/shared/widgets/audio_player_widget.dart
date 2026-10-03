@@ -7,9 +7,9 @@ import '../../mosques/domain/entities/recording.dart';
 
 /// Audio player widget for a recording
 class AudioPlayerWidget extends ConsumerStatefulWidget {
-  final Recording recording;
 
   const AudioPlayerWidget({super.key, required this.recording});
+  final Recording recording;
 
   @override
   ConsumerState<AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
@@ -103,14 +103,14 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
                                 children: [
                                   Text(
                                     _formatDuration(position),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
                                     ),
                                   ),
                                   Text(
                                     _formatDuration(duration),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
                                     ),

@@ -4,12 +4,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class UploadVideoFileList extends StatelessWidget {
-  final List<File> selectedFiles;
-  final bool isUploading;
-  final int currentUploadIndex;
-  final double uploadProgress;
-  final VoidCallback onPickVideos;
-  final void Function(int) onRemoveFile;
 
   const UploadVideoFileList({
     super.key,
@@ -20,6 +14,12 @@ class UploadVideoFileList extends StatelessWidget {
     required this.onPickVideos,
     required this.onRemoveFile,
   });
+  final List<File> selectedFiles;
+  final bool isUploading;
+  final int currentUploadIndex;
+  final double uploadProgress;
+  final VoidCallback onPickVideos;
+  final void Function(int) onRemoveFile;
 
   @override
   Widget build(BuildContext context) {

@@ -7,9 +7,9 @@ import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
 
   AuthRepositoryImpl({required this.remoteDataSource});
+  final AuthRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, User>> signInWithEmailAndPassword(
@@ -88,7 +88,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (user != null) {
         return Right(user);
       }
-      return Left(const ServerFailure(message: 'User not found'));
+      return const Left(ServerFailure(message: 'User not found'));
     } on AuthException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on ServerException catch (e) {

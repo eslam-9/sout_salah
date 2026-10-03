@@ -15,7 +15,6 @@ class MockAppLogger implements AppLogger {
   @override
   void e(String message, [dynamic error, StackTrace? stackTrace]) {}
 
-  @override
   void f(String message, [dynamic error, StackTrace? stackTrace]) {}
 
   @override
@@ -23,7 +22,6 @@ class MockAppLogger implements AppLogger {
     infoCalled = true;
   }
 
-  @override
   void t(String message, [dynamic error, StackTrace? stackTrace]) {}
 
   @override

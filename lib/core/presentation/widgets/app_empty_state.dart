@@ -3,9 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/app_theme.dart';
 
 class AppEmptyState extends StatelessWidget {
-  final String title;
-  final String? message;
-  final IconData icon;
 
   const AppEmptyState({
     super.key,
@@ -13,6 +10,9 @@ class AppEmptyState extends StatelessWidget {
     this.message,
     this.icon = LucideIcons.inbox,
   });
+  final String title;
+  final String? message;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {

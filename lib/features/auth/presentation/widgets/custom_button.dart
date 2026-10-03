@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-  final bool outline;
-  final Widget? icon;
   const CustomButton({
     super.key,
     required this.text,
@@ -12,6 +8,10 @@ class CustomButton extends StatelessWidget {
     this.outline = false,
     this.icon,
   });
+  final String text;
+  final VoidCallback onPressed;
+  final bool outline;
+  final Widget? icon;
   @override
   Widget build(BuildContext context) {
     var c = outline ? const Color(0xFF2D6930) : Colors.white;

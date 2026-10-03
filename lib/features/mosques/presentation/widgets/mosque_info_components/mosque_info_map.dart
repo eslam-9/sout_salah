@@ -6,9 +6,9 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque.dart';
 
 class MosqueInfoMap extends StatelessWidget {
-  final Mosque mosque;
 
   const MosqueInfoMap({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   Widget build(BuildContext context) {

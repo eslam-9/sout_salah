@@ -7,9 +7,9 @@ import '../../../shared/widgets/base_audio_sheet.dart';
 
 /// Audio player sheet for favorite recordings
 class FavoriteAudioPlayerSheet extends ConsumerWidget {
-  final FavoriteRecording favorite;
 
   const FavoriteAudioPlayerSheet({super.key, required this.favorite});
+  final FavoriteRecording favorite;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

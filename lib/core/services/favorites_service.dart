@@ -9,10 +9,6 @@ import '../utils/app_logger.dart';
 
 /// Service to manage favorite recordings with reactive updates
 class FavoritesService {
-  static const String _favoritesKey = 'favorite_recordings';
-  final SharedPreferences _prefs;
-  final AppLogger _logger;
-  late final StreamController<List<FavoriteRecording>> _favoritesController;
 
   FavoritesService(this._prefs, this._logger) {
     _favoritesController = StreamController<List<FavoriteRecording>>.broadcast(
@@ -21,6 +17,10 @@ class FavoritesService {
       },
     );
   }
+  static const String _favoritesKey = 'favorite_recordings';
+  final SharedPreferences _prefs;
+  final AppLogger _logger;
+  late final StreamController<List<FavoriteRecording>> _favoritesController;
 
   /// Get stream of favorites for reactive updates
   Stream<List<FavoriteRecording>> get favoritesStream =>

@@ -11,9 +11,9 @@ import '../../providers/daily_video_providers.dart';
 import '../daily_video_card.dart';
 
 class DayDetailVideoSection extends ConsumerWidget {
-  final RamadanDay day;
 
   const DayDetailVideoSection({super.key, required this.day});
+  final RamadanDay day;
 
   void _showUploadVideoSheet(BuildContext context, WidgetRef ref) async {
     final uploaded = await NavigationService.navigateTo(

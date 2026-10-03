@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
 class AppLoadingIndicator extends StatelessWidget {
-  final bool centered;
-  final double? size;
-  final Color color;
-  final double strokeWidth;
 
   const AppLoadingIndicator({
     super.key,
@@ -14,6 +10,10 @@ class AppLoadingIndicator extends StatelessWidget {
     this.color = AppColors.primary,
     this.strokeWidth = 4.0,
   });
+  final bool centered;
+  final double? size;
+  final Color color;
+  final double strokeWidth;
 
   @override
   Widget build(BuildContext context) {

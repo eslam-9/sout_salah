@@ -5,18 +5,18 @@ import '../entities/recording.dart';
 import '../repositories/recordings_repository.dart';
 
 class GetDayRecordingsParams {
+
+  const GetDayRecordingsParams({required this.dayId, this.limit, this.offset});
   final String dayId;
   final int? limit;
   final int? offset;
-
-  const GetDayRecordingsParams({required this.dayId, this.limit, this.offset});
 }
 
 class GetDayRecordingsUseCase
     implements UseCase<List<Recording>, GetDayRecordingsParams> {
-  final RecordingsRepository repository;
 
   GetDayRecordingsUseCase(this.repository);
+  final RecordingsRepository repository;
 
   @override
   Future<Either<Failure, List<Recording>>> call(

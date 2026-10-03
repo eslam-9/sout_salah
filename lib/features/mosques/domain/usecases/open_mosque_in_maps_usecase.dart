@@ -4,16 +4,16 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/location_repository.dart';
 
 class OpenMapsParams {
-  final double latitude;
-  final double longitude;
 
   OpenMapsParams({required this.latitude, required this.longitude});
+  final double latitude;
+  final double longitude;
 }
 
 class OpenMosqueInMapsUseCase implements UseCase<void, OpenMapsParams> {
-  final LocationRepository repository;
 
   OpenMosqueInMapsUseCase(this.repository);
+  final LocationRepository repository;
 
   @override
   Future<Either<Failure, void>> call(OpenMapsParams params) async {

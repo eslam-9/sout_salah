@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_controller.dart';
-import '../../bloc/auth_state.dart';
+import '../../state/auth_state.dart';
 
 class EditProfileDialog {
   static void show(BuildContext context, WidgetRef ref) {

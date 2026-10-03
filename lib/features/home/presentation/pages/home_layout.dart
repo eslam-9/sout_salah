@@ -5,7 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../auth/presentation/providers/auth_controller.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../auth/presentation/state/auth_state.dart';
 
 import 'mosques_page.dart';
 import 'downloads_page.dart';
@@ -44,22 +44,22 @@ class _HomeLayoutState extends ConsumerState<HomeLayout> {
     });
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(
           boxShadow: [
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.05),
               blurRadius: 20,
-              offset: const Offset(0, -5),
+              offset: Offset(0, -5),
             ),
           ],
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey[400],
+          unselectedItemColor: AppColors.grey,
           showSelectedLabels: true,
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed, // Required for 4+ items

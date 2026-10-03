@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,20 +19,47 @@ import 'core/services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // --- Startup assertions: fail fast if secrets were not injected ---
+  assert(
+    AppConfig.supabaseUrl.isNotEmpty,
+    'SUPABASE_URL must be provided via --dart-define-from-file=secrets.json',
+  );
+  assert(
+    AppConfig.supabaseAnonKey.isNotEmpty,
+    'SUPABASE_ANON_KEY must be provided via --dart-define-from-file=secrets.json',
+  );
+
+  // Initialize Service Locator first so AppLogger is available
+  await di.setupServiceLocator();
+
+  // --- Global error boundary: log all uncaught errors in release builds ---
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details); // still shows red screen in debug
+    GetIt.I<AppLogger>().e(
+      'Uncaught Flutter Error',
+      details.exception,
+      details.stack,
+    );
+  };
+
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    GetIt.I<AppLogger>().e('Unhandled Platform Error', error, stack);
+    return true; // prevent app crash
+  };
+
   // Initialize Supabase
   try {
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,
       anonKey: AppConfig.supabaseAnonKey,
     );
-  } catch (e) {
-    GetIt.I<AppLogger>().i(
-      'Failed to initialize Supabase (likely offline): $e',
+  } catch (e, stackTrace) {
+    GetIt.I<AppLogger>().e(
+      'Failed to initialize Supabase (likely offline)',
+      e,
+      stackTrace,
     );
   }
-
-  // Initialize Service Locator
-  await di.setupServiceLocator();
 
   // Initialize Notification Service for Push Notifications
   GetIt.I<AppLogger>().i('Initializing NotificationService...');
@@ -55,7 +84,7 @@ void main() async {
     GetIt.I<AppLogger>().i('JustAudioBackground initialized successfully');
   } catch (e, stackTrace) {
     GetIt.I<AppLogger>().e(
-      '❌ CRITICAL ERROR: Failed to initialize JustAudioBackground',
+      'Failed to initialize JustAudioBackground',
       e,
       stackTrace,
     );

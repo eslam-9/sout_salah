@@ -15,29 +15,29 @@ class MosqueInitial extends MosqueState {}
 class MosqueLoading extends MosqueState {}
 
 class MosqueLoaded extends MosqueState {
-  final List<Mosque> mosques;
   const MosqueLoaded(this.mosques);
+  final List<Mosque> mosques;
   @override
   List<Object> get props => [mosques];
 }
 
 class RamadanDaysLoaded extends MosqueState {
-  final List<RamadanDay> days;
   const RamadanDaysLoaded(this.days);
+  final List<RamadanDay> days;
   @override
   List<Object> get props => [days];
 }
 
 class RecordingsLoaded extends MosqueState {
-  final List<Recording> recordings;
   const RecordingsLoaded(this.recordings);
+  final List<Recording> recordings;
   @override
   List<Object> get props => [recordings];
 }
 
 class MosqueError extends MosqueState {
-  final String message;
   const MosqueError(this.message);
+  final String message;
   @override
   List<Object> get props => [message];
 }

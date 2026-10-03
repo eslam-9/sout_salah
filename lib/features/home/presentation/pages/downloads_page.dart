@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../providers/downloads_provider.dart';
 
 import '../widgets/downloads_components/downloads_header.dart';
@@ -16,7 +17,7 @@ class DownloadsPage extends ConsumerWidget {
     final downloadsAsync = ref.watch(allDownloadsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       body: SafeArea(
         child: Column(
           children: [

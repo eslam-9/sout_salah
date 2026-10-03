@@ -6,9 +6,9 @@ import '../../domain/repositories/ramadan_days_repository.dart';
 import '../datasources/ramadan_days_remote_data_source.dart';
 
 class RamadanDaysRepositoryImpl implements RamadanDaysRepository {
-  final RamadanDaysRemoteDataSource remoteDataSource;
 
   RamadanDaysRepositoryImpl({required this.remoteDataSource});
+  final RamadanDaysRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, List<RamadanDay>>> getRamadanDays(

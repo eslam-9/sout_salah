@@ -8,9 +8,9 @@ import '../../../domain/entities/recording.dart';
 import '../../providers/mosque_data_providers.dart';
 
 class DayRecordingDeleteButton extends ConsumerWidget {
-  final Recording recording;
 
   const DayRecordingDeleteButton({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

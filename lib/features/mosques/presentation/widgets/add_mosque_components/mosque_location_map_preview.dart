@@ -6,14 +6,14 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque_location.dart';
 
 class MosqueLocationMapPreview extends StatelessWidget {
-  final MosqueLocation location;
-  final VoidCallback onChangeLocation;
 
   const MosqueLocationMapPreview({
     super.key,
     required this.location,
     required this.onChangeLocation,
   });
+  final MosqueLocation location;
+  final VoidCallback onChangeLocation;
 
   @override
   Widget build(BuildContext context) {

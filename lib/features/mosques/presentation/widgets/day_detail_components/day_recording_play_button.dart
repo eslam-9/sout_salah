@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -9,9 +11,9 @@ import '../../../domain/entities/recording.dart';
 import '../../../../../core/di/riverpod_providers.dart';
 
 class DayRecordingPlayButton extends ConsumerWidget {
-  final Recording recording;
 
   const DayRecordingPlayButton({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,22 +29,28 @@ class DayRecordingPlayButton extends ConsumerWidget {
         return GestureDetector(
           onTap: () async {
             if (isCurrentlyPlaying) {
-              NavigationService.navigateTo(
-                AppRoutes.audioPlayer,
-                arguments: AudioPlayerArgs(recording: recording),
+              unawaited(
+                NavigationService.navigateTo(
+                  AppRoutes.audioPlayer,
+                  arguments: AudioPlayerArgs(recording: recording),
+                ),
               );
             } else {
               ref.read(currentPlayingRecordingProvider.notifier).state =
                   recording.id;
-              audioService.play(
-                recording.audioUrl,
-                title: recording.prayer.resolvedArabicName(recording.customPrayerName),
-                artist: recording.sheikhName,
+              unawaited(
+                audioService.play(
+                  recording.audioUrl,
+                  title: recording.prayer.resolvedArabicName(recording.customPrayerName),
+                  artist: recording.sheikhName,
+                ),
               );
               if (context.mounted) {
-                NavigationService.navigateTo(
-                  AppRoutes.audioPlayer,
-                  arguments: AudioPlayerArgs(recording: recording),
+                unawaited(
+                  NavigationService.navigateTo(
+                    AppRoutes.audioPlayer,
+                    arguments: AudioPlayerArgs(recording: recording),
+                  ),
                 );
               }
             }

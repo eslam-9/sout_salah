@@ -6,11 +6,6 @@ import '../entities/mosque_request.dart';
 import 'package:equatable/equatable.dart';
 
 class CreateMosqueRequestParams extends Equatable {
-  final String name;
-  final String location;
-  final double? latitude;
-  final double? longitude;
-  final String? description;
 
   const CreateMosqueRequestParams({
     required this.name,
@@ -19,15 +14,20 @@ class CreateMosqueRequestParams extends Equatable {
     this.longitude,
     this.description,
   });
+  final String name;
+  final String location;
+  final double? latitude;
+  final double? longitude;
+  final String? description;
 
   @override
   List<Object?> get props => [name, location, latitude, longitude, description];
 }
 
 class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestParams> {
-  final MosqueRequestsRepository repository;
 
   CreateMosqueRequestUseCase(this.repository);
+  final MosqueRequestsRepository repository;
 
   @override
   Future<Either<Failure, void>> call(CreateMosqueRequestParams params) {
@@ -42,9 +42,9 @@ class CreateMosqueRequestUseCase implements UseCase<void, CreateMosqueRequestPar
 }
 
 class GetPendingRequestsUseCase implements UseCase<List<MosqueRequest>, NoParams> {
-  final MosqueRequestsRepository repository;
 
   GetPendingRequestsUseCase(this.repository);
+  final MosqueRequestsRepository repository;
 
   @override
   Future<Either<Failure, List<MosqueRequest>>> call(NoParams params) {
@@ -53,9 +53,9 @@ class GetPendingRequestsUseCase implements UseCase<List<MosqueRequest>, NoParams
 }
 
 class AcceptMosqueRequestUseCase implements UseCase<void, String> {
-  final MosqueRequestsRepository repository;
 
   AcceptMosqueRequestUseCase(this.repository);
+  final MosqueRequestsRepository repository;
 
   @override
   Future<Either<Failure, void>> call(String requestId) {
@@ -64,9 +64,9 @@ class AcceptMosqueRequestUseCase implements UseCase<void, String> {
 }
 
 class DeclineMosqueRequestUseCase implements UseCase<void, String> {
-  final MosqueRequestsRepository repository;
 
   DeclineMosqueRequestUseCase(this.repository);
+  final MosqueRequestsRepository repository;
 
   @override
   Future<Either<Failure, void>> call(String requestId) {

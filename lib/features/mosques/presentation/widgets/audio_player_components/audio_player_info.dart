@@ -4,9 +4,9 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/recording.dart';
 
 class AudioPlayerInfo extends StatelessWidget {
-  final Recording recording;
 
   const AudioPlayerInfo({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context) {

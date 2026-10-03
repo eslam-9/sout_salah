@@ -7,14 +7,14 @@ import '../../../../../core/services/navigation_service.dart';
 import '../../../domain/entities/ramadan_day.dart';
 
 class MosqueDetailDayCircle extends StatelessWidget {
-  final RamadanDay day;
-  final bool isToday;
 
   const MosqueDetailDayCircle({
     super.key,
     required this.day,
     required this.isToday,
   });
+  final RamadanDay day;
+  final bool isToday;
 
   String _toArabicNumerals(int number) {
     const western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -46,7 +46,7 @@ class MosqueDetailDayCircle extends StatelessWidget {
         AppRoutes.dayDetail,
         arguments: DayDetailArgs(day: day),
       ),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           color: bg,
           shape: BoxShape.circle,

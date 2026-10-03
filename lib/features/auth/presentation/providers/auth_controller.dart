@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/riverpod_providers.dart';
 
 import '../../domain/usecases/auth_usecases.dart';
 import '../../domain/usecases/sign_in_anonymously_usecase.dart';
 import 'auth_data_providers.dart';
-import '../bloc/auth_state.dart';
+import '../state/auth_state.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../core/error/failures.dart';
+import '../../../../core/utils/failure_mapper.dart';
 import '../../domain/usecases/sign_up_params.dart';
 import '../../../../core/services/notification_service.dart';
 
@@ -63,7 +65,7 @@ class AuthNotifier extends Notifier<AuthState> {
       SignInParams(email: email, password: password),
     );
     result.fold(
-      (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
+      (failure) => state = AuthError(message: mapFailureToMessage(failure)),
       (user) {
         ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         NotificationService.registerToken(user.id);
@@ -82,7 +84,7 @@ class AuthNotifier extends Notifier<AuthState> {
       SignUpParams(email: email, password: password, username: username),
     );
     result.fold(
-      (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
+      (failure) => state = AuthError(message: mapFailureToMessage(failure)),
       (user) {
         ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         NotificationService.registerToken(user.id);
@@ -95,7 +97,7 @@ class AuthNotifier extends Notifier<AuthState> {
     state = AuthLoading();
     final result = await ref.read(signInAnonymouslyUseCaseProvider)(NoParams());
     result.fold(
-      (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
+      (failure) => state = AuthError(message: mapFailureToMessage(failure)),
       (user) {
         ref.read(sharedPreferencesProvider).setBool('is_guest_mode', true);
         NotificationService.registerToken(user.id);
@@ -108,31 +110,17 @@ class AuthNotifier extends Notifier<AuthState> {
     // Remove token before logging out
     if (state is AuthAuthenticated) {
       final userId = (state as AuthAuthenticated).user.id;
-      NotificationService.removeToken(userId);
+      unawaited(NotificationService.removeToken(userId));
     }
 
     final result = await ref.read(signOutUseCaseProvider)(NoParams());
     result.fold(
-      (failure) => state = AuthError(message: _mapFailureToMessage(failure)),
+      (failure) => state = AuthError(message: mapFailureToMessage(failure)),
       (_) {
         ref.read(sharedPreferencesProvider).setBool('is_guest_mode', false);
         state = AuthUnauthenticated();
       },
     );
-  }
-
-  String _mapFailureToMessage(Failure failure) {
-    if (failure is ServerFailure) {
-      return failure.message;
-    } else if (failure is CacheFailure) {
-      return 'Cache Failure';
-    } else if (failure is NetworkFailure) {
-      return failure.message;
-    } else if (failure is AuthFailure) {
-      return failure.message;
-    } else {
-      return 'Unexpected Error';
-    }
   }
 
   Future<bool> updateUsername(String username) async {
@@ -144,7 +132,7 @@ class AuthNotifier extends Notifier<AuthState> {
     );
     return result.fold(
       (failure) {
-        state = AuthError(message: _mapFailureToMessage(failure));
+        state = AuthError(message: mapFailureToMessage(failure));
         return false;
       },
       (user) {

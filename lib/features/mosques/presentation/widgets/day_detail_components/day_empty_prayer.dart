@@ -10,11 +10,6 @@ import '../../providers/mosque_data_providers.dart';
 import '../../../domain/entities/prayer.dart';
 
 class DayEmptyPrayerContent extends ConsumerWidget {
-  final Prayer prayer;
-  final String mosqueId;
-  final String dayId;
-  final int dayNumber;
-  final int month;
 
   const DayEmptyPrayerContent({
     super.key,
@@ -24,6 +19,11 @@ class DayEmptyPrayerContent extends ConsumerWidget {
     required this.dayNumber,
     required this.month,
   });
+  final Prayer prayer;
+  final String mosqueId;
+  final String dayId;
+  final int dayNumber;
+  final int month;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

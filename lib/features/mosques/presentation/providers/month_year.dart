@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 
 class MonthYear extends Equatable {
-  final int month;
-  final int year;
 
   const MonthYear({required this.month, required this.year});
+  final int month;
+  final int year;
 
   @override
   List<Object?> get props => [month, year];

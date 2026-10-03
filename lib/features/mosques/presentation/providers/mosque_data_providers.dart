@@ -25,6 +25,11 @@ import '../../domain/usecases/add_month_usecase.dart';
 import '../../domain/usecases/create_pending_recording_usecase.dart';
 import '../../domain/usecases/get_current_location_usecase.dart';
 import '../../domain/usecases/open_mosque_in_maps_usecase.dart';
+import '../../domain/usecases/get_day_videos_usecase.dart';
+import '../../domain/usecases/upload_video_usecase.dart';
+import '../../domain/usecases/delete_video_usecase.dart';
+import '../../data/repositories/video_repository_impl.dart';
+import '../../domain/repositories/video_repository.dart';
 import '../../data/services/location_service.dart';
 import '../../data/services/maps_navigation_service.dart';
 import '../../data/repositories/location_repository_impl.dart';
@@ -114,6 +119,14 @@ final locationRepositoryProvider = Provider<LocationRepository>((ref) {
   );
 });
 
+final videoRepositoryProvider = Provider<VideoRepository>((ref) {
+  return VideoRepositoryImpl(
+    supabaseClient: ref.watch(supabaseClientProvider),
+    r2StorageService: ref.watch(r2StorageServiceProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
 // --- Use Cases & Providers ---
 final dayRecordingsProvider = FutureProvider.autoDispose.family<List<Recording>, String>((
   ref,
@@ -123,7 +136,7 @@ final dayRecordingsProvider = FutureProvider.autoDispose.family<List<Recording>,
   final result = await repository.getDayRecordings(dayId);
 
   return result.fold(
-    (failure) => throw Exception('Failed to load recordings'),
+    (failure) => throw Exception(failure.message),
     (recordings) => recordings,
   );
 });
@@ -159,4 +172,16 @@ final getCurrentLocationUseCaseProvider = Provider<GetCurrentLocationUseCase>((r
 
 final openMosqueInMapsUseCaseProvider = Provider<OpenMosqueInMapsUseCase>((ref) {
   return OpenMosqueInMapsUseCase(ref.watch(locationRepositoryProvider));
+});
+
+final getVideosForDayUseCaseProvider = Provider<GetDayVideosUseCase>((ref) {
+  return GetDayVideosUseCase(ref.watch(videoRepositoryProvider));
+});
+
+final uploadVideoUseCaseProvider = Provider<UploadVideoUseCase>((ref) {
+  return UploadVideoUseCase(ref.watch(videoRepositoryProvider));
+});
+
+final deleteVideoUseCaseProvider = Provider<DeleteVideoUseCase>((ref) {
+  return DeleteVideoUseCase(ref.watch(videoRepositoryProvider));
 });

@@ -28,44 +28,44 @@ abstract class RecordingsRemoteDataSource {
 }
 
 class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final R2StorageService r2StorageService;
-  final AppLogger logger;
 
   RecordingsRemoteDataSourceImpl(
     this.supabaseClient,
     this.r2StorageService,
     this.logger,
   );
+  final SupabaseClient supabaseClient;
+  final R2StorageService r2StorageService;
+  final AppLogger logger;
 
   @override
   Future<List<RecordingModel>> getDayRecordings(String dayId, {int? limit, int? offset}) async {
     logger.i('Fetching recordings for day: $dayId (limit: $limit, offset: $offset)');
     try {
-      dynamic query = supabaseClient
+      final baseQuery = supabaseClient
           .from('recordings')
           .select('id, mosque_id, day_id, publisher_id, prayer_name, sheikh_name, audio_url, file_size, duration, created_at')
           .eq('day_id', dayId)
           .order('prayer_name', ascending: true);
 
-      if (limit != null) {
-        query = query.limit(limit);
-      }
-      if (offset != null) {
-        final to = limit != null ? offset + limit - 1 : null;
-        if (to != null) {
-          query = query.range(offset, to);
-        }
+      final List<dynamic> data;
+      if (limit != null && offset != null) {
+        final response =
+            await baseQuery.limit(limit).range(offset, offset + limit - 1);
+        data = response as List<dynamic>;
+      } else if (limit != null) {
+        final response = await baseQuery.limit(limit);
+        data = response as List<dynamic>;
+      } else {
+        final response = await baseQuery;
+        data = response as List<dynamic>;
       }
 
-      final response = await query;
-
-      final data = response as List<dynamic>;
       logger.i('Fetched ${data.length} recordings');
       return data.map((json) => RecordingModel.fromJson(json)).toList();
     } catch (e, stackTrace) {
       logger.e('Error fetching recordings', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -113,7 +113,7 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
       return RecordingModel.fromJson(response);
     } catch (e) {
       logger.e('Error uploading recording', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -141,7 +141,7 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
       logger.i('Recording deleted successfully');
     } catch (e) {
       logger.e('Error deleting recording', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -171,7 +171,7 @@ class RecordingsRemoteDataSourceImpl implements RecordingsRemoteDataSource {
       return RecordingModel.fromJson(response);
     } catch (e) {
       logger.e('Error creating pending recording', e);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

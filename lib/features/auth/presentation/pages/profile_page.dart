@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_controller.dart';
-import '../bloc/auth_state.dart';
+import '../providers/auth_data_providers.dart';
+import '../state/auth_state.dart';
 import '../../../mosques/presentation/pages/mosque_requests_page.dart';
 import '../../../../core/presentation/widgets/app_loading_indicator.dart';
 
@@ -34,7 +35,7 @@ class ProfilePage extends ConsumerWidget {
     final state = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         title: const Text(
           'الملف الشخصي',
@@ -112,7 +113,7 @@ class ProfilePage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  if (user.role == 'admin') ...[
+                  if (ref.read(userPermissionServiceProvider).isAdmin(user)) ...[
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,

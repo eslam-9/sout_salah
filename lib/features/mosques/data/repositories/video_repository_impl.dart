@@ -1,25 +1,30 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/error/failures.dart';
+import '../../../../core/error/repository_error_handler.dart';
 import '../../../../core/services/r2_storage_service.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../domain/entities/daily_video.dart';
+import '../../domain/repositories/video_repository.dart';
 import '../models/daily_video_model.dart';
 
-class VideoRepository {
-  final SupabaseClient supabaseClient;
-  final R2StorageService r2StorageService;
-  final AppLogger _logger;
+class VideoRepositoryImpl implements VideoRepository {
 
-  VideoRepository({
+  VideoRepositoryImpl({
     required this.supabaseClient,
     required this.r2StorageService,
     required AppLogger logger,
   }) : _logger = logger;
+  final SupabaseClient supabaseClient;
+  final R2StorageService r2StorageService;
+  final AppLogger _logger;
 
-  /// Returns all videos for a given day (multiple videos supported).
-  Future<List<DailyVideoModel>> getVideosForDay(String dayId) async {
-    try {
+  @override
+  Future<Either<Failure, List<DailyVideo>>> getVideosForDay(String dayId) {
+    return executeWithCatch(() async {
       final response = await supabaseClient
           .from('daily_videos')
           .select('id, mosque_id, day_id, publisher_id, video_url, title, description, created_at')
@@ -29,13 +34,11 @@ class VideoRepository {
       return (response as List)
           .map((e) => DailyVideoModel.fromJson(e as Map<String, dynamic>))
           .toList();
-    } catch (e) {
-      _logger.e('Error fetching daily videos for day $dayId', e);
-      rethrow;
-    }
+    });
   }
 
-  Future<DailyVideoModel> uploadVideo({
+  @override
+  Future<Either<Failure, DailyVideo>> uploadVideo({
     required File videoFile,
     required String mosqueId,
     required String dayId,
@@ -43,8 +46,8 @@ class VideoRepository {
     String? title,
     String? description,
     void Function(double)? onProgress,
-  }) async {
-    try {
+  }) {
+    return executeWithCatch(() async {
       // 1. Upload to Cloudflare R2
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = '${timestamp}_video_day_$dayNumber.mp4';
@@ -72,14 +75,12 @@ class VideoRepository {
           .single();
 
       return DailyVideoModel.fromJson(response);
-    } catch (e) {
-      _logger.e('Error uploading daily video', e);
-      rethrow;
-    }
+    });
   }
 
-  Future<void> deleteVideo(DailyVideoModel video) async {
-    try {
+  @override
+  Future<Either<Failure, void>> deleteVideo(DailyVideo video) {
+    return executeWithCatch(() async {
       // 1. Delete from R2
       final urlParts = video.videoUrl.split('.dev/');
       if (urlParts.length == 2) {
@@ -89,9 +90,6 @@ class VideoRepository {
 
       // 2. Delete from Supabase
       await supabaseClient.from('daily_videos').delete().eq('id', video.id);
-    } catch (e) {
-      _logger.e('Error deleting daily video', e);
-      rethrow;
-    }
+    });
   }
 }

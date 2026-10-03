@@ -12,9 +12,9 @@ import '../widgets/mosque_info_components/mosque_info_map.dart';
 import '../widgets/mosque_info_components/mosque_info_maps_button.dart';
 
 class MosqueInfoPage extends StatefulWidget {
-  final Mosque mosque;
 
   const MosqueInfoPage({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   State<MosqueInfoPage> createState() => _MosqueInfoPageState();

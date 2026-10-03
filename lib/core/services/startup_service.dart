@@ -3,8 +3,6 @@ import '../../core/utils/app_logger.dart';
 import 'package:get_it/get_it.dart';
 
 class StartupData {
-  final String info;
-  final String link;
 
   StartupData({required this.info, required this.link});
 
@@ -14,13 +12,15 @@ class StartupData {
       link: json['link'] as String? ?? '',
     );
   }
+  final String info;
+  final String link;
 }
 
 class StartupService {
-  final SupabaseClient _supabase;
-  final AppLogger _logger;
 
   StartupService(this._supabase) : _logger = GetIt.I<AppLogger>();
+  final SupabaseClient _supabase;
+  final AppLogger _logger;
 
   Future<StartupData?> checkStartupData() async {
     try {

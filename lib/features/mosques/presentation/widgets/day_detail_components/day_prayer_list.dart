@@ -11,10 +11,10 @@ import 'day_prayer_card.dart';
 import 'add_prayer_dialog.dart';
 
 class DayPrayerList extends StatelessWidget {
-  final RamadanDay day;
-  final List<Recording> recordings;
 
   const DayPrayerList({super.key, required this.day, required this.recordings});
+  final RamadanDay day;
+  final List<Recording> recordings;
 
   @override
   Widget build(BuildContext context) {

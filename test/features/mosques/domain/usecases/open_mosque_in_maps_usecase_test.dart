@@ -12,7 +12,7 @@ class MockLocationRepository implements LocationRepository {
   @override
   Future<Either<Failure, void>> openInGoogleMaps(double latitude, double longitude) async {
     if (willFail) {
-      return Left(ServerFailure(message: 'Failed to open maps'));
+      return const Left(ServerFailure(message: 'Failed to open maps'));
     }
     return const Right(null);
   }

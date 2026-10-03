@@ -4,9 +4,9 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/ramadan_day.dart';
 
 class DayDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final RamadanDay day;
 
   const DayDetailAppBar({super.key, required this.day});
+  final RamadanDay day;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

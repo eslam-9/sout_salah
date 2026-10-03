@@ -11,9 +11,6 @@ import '../../../domain/entities/recording.dart';
 import '../../../domain/usecases/delete_recording_usecase.dart';
 
 class DayPendingRecordingContent extends ConsumerWidget {
-  final Recording recording;
-  final int dayNumber;
-  final int month;
 
   const DayPendingRecordingContent({
     super.key, 
@@ -21,6 +18,9 @@ class DayPendingRecordingContent extends ConsumerWidget {
     required this.dayNumber,
     required this.month,
   });
+  final Recording recording;
+  final int dayNumber;
+  final int month;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

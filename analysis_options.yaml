@@ -1,1 +1,28 @@
 include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Correctness
+    - cancel_subscriptions
+    - close_sinks
+    - unawaited_futures
+    - avoid_dynamic_calls
+    - avoid_type_to_string
+    # Style
+    - always_declare_return_types
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_fields
+    - prefer_single_quotes
+    - sort_constructors_first
+    # Flutter
+    - use_colored_box
+    - use_decorated_box
+    - sized_box_for_whitespace
+
+analyzer:
+  errors:
+    avoid_dynamic_calls: warning
+    unawaited_futures: warning
+    cancel_subscriptions: error
+    close_sinks: error

@@ -3,9 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class MosqueLocationActionableError extends StatelessWidget {
-  final String message;
-  final String buttonText;
-  final VoidCallback onPressed;
 
   const MosqueLocationActionableError({
     super.key,
@@ -13,6 +10,9 @@ class MosqueLocationActionableError extends StatelessWidget {
     required this.buttonText,
     required this.onPressed,
   });
+  final String message;
+  final String buttonText;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {

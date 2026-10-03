@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ProfileItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
 
   const ProfileItem({
     super.key,
@@ -11,6 +8,9 @@ class ProfileItem extends StatelessWidget {
     required this.label,
     required this.value,
   });
+  final IconData icon;
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {

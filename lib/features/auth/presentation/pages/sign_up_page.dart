@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../providers/auth_controller.dart';
-import '../bloc/auth_state.dart';
+import '../state/auth_state.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/services/navigation_service.dart';
 
 import '../widgets/sign_up_components/sign_up_header.dart';
@@ -30,7 +31,7 @@ class SignUpPage extends ConsumerWidget {
     final state = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

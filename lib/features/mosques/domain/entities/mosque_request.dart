@@ -1,15 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class MosqueRequest extends Equatable {
-  final String id;
-  final String name;
-  final String location;
-  final double? latitude;
-  final double? longitude;
-  final String? description;
-  final String requestedBy;
-  final String status;
-  final DateTime createdAt;
 
   const MosqueRequest({
     required this.id,
@@ -22,6 +13,15 @@ class MosqueRequest extends Equatable {
     required this.status,
     required this.createdAt,
   });
+  final String id;
+  final String name;
+  final String location;
+  final double? latitude;
+  final double? longitude;
+  final String? description;
+  final String requestedBy;
+  final String status;
+  final DateTime createdAt;
 
   @override
   List<Object?> get props => [

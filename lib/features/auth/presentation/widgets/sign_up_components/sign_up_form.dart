@@ -3,14 +3,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class SignUpForm extends StatefulWidget {
-  final bool isLoading;
-  final void Function(String email, String password, String? username) onSignUp;
 
   const SignUpForm({
     super.key,
     required this.isLoading,
     required this.onSignUp,
   });
+  final bool isLoading;
+  final void Function(String email, String password, String? username) onSignUp;
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();

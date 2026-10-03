@@ -7,10 +7,10 @@ import '../services/location_service.dart';
 import '../services/maps_navigation_service.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
-  final LocationService locationService;
-  final MapsNavigationService mapsNavigationService;
 
   LocationRepositoryImpl(this.locationService, this.mapsNavigationService);
+  final LocationService locationService;
+  final MapsNavigationService mapsNavigationService;
 
   @override
   Future<Either<Failure, MosqueLocation>> getCurrentLocation() async {

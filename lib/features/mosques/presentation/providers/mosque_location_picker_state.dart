@@ -13,9 +13,6 @@ enum LocationPickerStatus {
 }
 
 class MosqueLocationPickerState extends Equatable {
-  final LocationPickerStatus status;
-  final MosqueLocation? mosqueLocation;
-  final String? errorMessage;
 
   const MosqueLocationPickerState({
     required this.status,
@@ -44,6 +41,9 @@ class MosqueLocationPickerState extends Equatable {
       errorMessage: message,
     );
   }
+  final LocationPickerStatus status;
+  final MosqueLocation? mosqueLocation;
+  final String? errorMessage;
 
   @override
   List<Object?> get props => [status, mosqueLocation, errorMessage];

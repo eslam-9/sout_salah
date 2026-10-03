@@ -4,14 +4,15 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque.dart';
 import '../../../../auth/presentation/providers/auth_controller.dart';
-import '../../../../auth/presentation/bloc/auth_state.dart';
+import '../../../../auth/presentation/providers/auth_data_providers.dart';
+import '../../../../auth/presentation/state/auth_state.dart';
 import '../../pages/add_publisher_page.dart';
 import '../../pages/mosque_info_page.dart';
 
 class MosqueDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  final Mosque mosque;
 
   const MosqueDetailAppBar({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -44,8 +45,9 @@ class MosqueDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
       centerTitle: true,
       actions: [
         if (authState is AuthAuthenticated &&
-            (authState.user.role == 'admin' ||
-                authState.user.id == mosque.adminId))
+            ref
+                .read(userPermissionServiceProvider)
+                .canManagePublishers(authState.user, mosque))
           IconButton(
             icon: const Icon(LucideIcons.userPlus, color: Colors.black),
             onPressed: () => Navigator.push(

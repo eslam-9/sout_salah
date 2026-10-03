@@ -10,9 +10,9 @@ import '../../providers/mosque_data_providers.dart';
 import '../../../domain/usecases/open_mosque_in_maps_usecase.dart';
 
 class MosqueInfoMapsButton extends ConsumerWidget {
-  final Mosque mosque;
 
   const MosqueInfoMapsButton({super.key, required this.mosque});
+  final Mosque mosque;
 
   Future<void> _openMaps(BuildContext context, WidgetRef ref) async {
     if (mosque.latitude == null || mosque.longitude == null) return;

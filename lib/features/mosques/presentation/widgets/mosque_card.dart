@@ -4,10 +4,10 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../mosques/domain/entities/mosque.dart';
 
 class MosqueCard extends StatelessWidget {
-  final Mosque mosque;
-  final VoidCallback onTap;
 
   const MosqueCard({super.key, required this.mosque, required this.onTap});
+  final Mosque mosque;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +20,10 @@ class MosqueCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
-            BoxShadow(
+            const BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.04),
               blurRadius: 24,
-              offset: const Offset(0, 8),
+              offset: Offset(0, 8),
             ),
           ],
         ),

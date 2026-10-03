@@ -14,10 +14,9 @@ enum Prayer {
   witr('Witr', 'الوتر'),
   other('Other', 'أخرى');
 
+  const Prayer(this.englishName, this.arabicName);
   final String englishName;
   final String arabicName;
-
-  const Prayer(this.englishName, this.arabicName);
 
   /// Returns the custom name if the prayer is 'other', otherwise returns the english name
   String resolvedName(String? customName) {
@@ -67,10 +66,10 @@ enum Prayer {
 
 /// Represents a prayer with its recordings
 class PrayerWithRecordings extends Equatable {
-  final Prayer prayer;
-  final List<Recording> recordings;
 
   const PrayerWithRecordings({required this.prayer, required this.recordings});
+  final Prayer prayer;
+  final List<Recording> recordings;
 
   bool get hasRecordings => recordings.isNotEmpty;
   int get recordingCount => recordings.length;

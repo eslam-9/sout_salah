@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'custom_button.dart';
 
 class LoginActions extends StatelessWidget {
-  final VoidCallback onSignIn, onSignUp, onGuest;
   const LoginActions({
     super.key,
     required this.onSignIn,
     required this.onSignUp,
     required this.onGuest,
   });
+  final VoidCallback onSignIn, onSignUp, onGuest;
   @override
   Widget build(BuildContext context) => Column(
     children: [
@@ -19,14 +19,14 @@ class LoginActions extends StatelessWidget {
         onPressed: onSignIn,
       ),
       const SizedBox(height: 24),
-      Row(
+      const Row(
         children: [
-          const Expanded(child: Divider()),
+          Expanded(child: Divider()),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text('أو', style: TextStyle(color: Colors.grey)),
           ),
-          const Expanded(child: Divider()),
+          Expanded(child: Divider()),
         ],
       ),
       const SizedBox(height: 24),

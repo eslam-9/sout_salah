@@ -15,8 +15,8 @@ enum UserRole {
   /// Normal user/listener - can view and listen only
   listener('listener');
 
-  final String value;
   const UserRole(this.value);
+  final String value;
 
   static UserRole fromString(String value) {
     switch (value) {
@@ -35,11 +35,6 @@ enum UserRole {
 
 /// Profile entity representing a user profile
 class Profile extends Equatable {
-  final String id;
-  final String? email;
-  final String? username;
-  final UserRole role;
-  final DateTime createdAt;
 
   const Profile({
     required this.id,
@@ -48,6 +43,11 @@ class Profile extends Equatable {
     this.role = UserRole.listener,
     required this.createdAt,
   });
+  final String id;
+  final String? email;
+  final String? username;
+  final UserRole role;
+  final DateTime createdAt;
 
   @override
   List<Object?> get props => [id, email, username, role, createdAt];

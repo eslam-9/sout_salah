@@ -5,7 +5,6 @@ import 'package:sout_salah/core/error/exceptions.dart';
 import 'package:sout_salah/core/error/failures.dart';
 import 'package:sout_salah/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:sout_salah/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:sout_salah/features/auth/domain/entities/user.dart';
 import 'package:sout_salah/features/auth/data/models/user_model.dart';
 
 class MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}

@@ -6,7 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../../../auth/presentation/providers/auth_controller.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../auth/presentation/state/auth_state.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -32,7 +32,7 @@ class SettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'الإعدادات',
             style: TextStyle(
               fontSize: 32,
@@ -81,10 +81,10 @@ class SettingsPage extends ConsumerWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(
-              color: const Color.fromRGBO(0, 0, 0, 0.05),
+            const BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.05),
               blurRadius: 10,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -108,7 +108,7 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
             const Spacer(),
-            Icon(LucideIcons.chevronLeft, color: Colors.grey[400]),
+            const Icon(LucideIcons.chevronLeft, color: AppColors.grey),
           ],
         ),
       ),

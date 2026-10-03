@@ -3,14 +3,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class UploadVideoEmptyState extends StatelessWidget {
-  final bool isUploading;
-  final VoidCallback onPickVideos;
 
   const UploadVideoEmptyState({
     super.key,
     required this.isUploading,
     required this.onPickVideos,
   });
+  final bool isUploading;
+  final VoidCallback onPickVideos;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class UploadVideoEmptyState extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 LucideIcons.uploadCloud,
                 size: 64,
                 color: AppColors.primary,

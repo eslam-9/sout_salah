@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_theme.dart';
 
 class AddMosqueSubmitButton extends StatelessWidget {
-  final bool isLoading;
-  final bool isSuperAdmin;
-  final VoidCallback onSubmit;
 
   const AddMosqueSubmitButton({
     super.key,
@@ -12,6 +9,9 @@ class AddMosqueSubmitButton extends StatelessWidget {
     required this.isSuperAdmin,
     required this.onSubmit,
   });
+  final bool isLoading;
+  final bool isSuperAdmin;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {

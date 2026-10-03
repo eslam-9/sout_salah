@@ -4,9 +4,9 @@ import '../../../../../core/constants/app_constants.dart';
 import 'mosque_detail_day_circle.dart';
 
 class MosqueDetailGrid extends StatelessWidget {
-  final List<RamadanDay> days;
 
   const MosqueDetailGrid({super.key, required this.days});
+  final List<RamadanDay> days;
 
   @override
   Widget build(BuildContext context) {

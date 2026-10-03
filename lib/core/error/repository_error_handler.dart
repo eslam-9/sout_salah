@@ -10,6 +10,8 @@ Future<Either<Failure, T>> executeWithCatch<T>(Future<T> Function() action) asyn
     return Left(NetworkFailure(message: e.message ?? 'لا يوجد اتصال بالإنترنت'));
   } on AppAuthException catch (e) {
     return Left(AuthFailure(message: e.message ?? 'خطأ في المصادقة'));
+  } on UserNotFoundException catch (e) {
+    return Left(NotFoundFailure(message: 'المستخدم ${e.email} غير موجود'));
   } on NotFoundException catch (e) {
     return Left(NotFoundFailure(message: e.message ?? 'العنصر غير موجود'));
   } on ValidationException catch (e) {

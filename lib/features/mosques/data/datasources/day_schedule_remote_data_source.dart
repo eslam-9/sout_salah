@@ -23,10 +23,10 @@ abstract class DayScheduleRemoteDataSource {
 }
 
 class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  final AppLogger logger;
 
   DayScheduleRemoteDataSourceImpl(this.supabaseClient, this.logger);
+  final SupabaseClient supabaseClient;
+  final AppLogger logger;
 
   @override
   Future<List<DayScheduleEntryModel>> getDaySchedule(String dayId) async {
@@ -44,7 +44,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
       return data.map((json) => DayScheduleEntryModel.fromJson(json)).toList();
     } catch (e, stackTrace) {
       logger.e('Error fetching day schedule', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -76,7 +76,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
       return DayScheduleEntryModel.fromJson(response);
     } catch (e, stackTrace) {
       logger.e('Error adding schedule entry', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -100,7 +100,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
       return DayScheduleEntryModel.fromJson(response);
     } catch (e, stackTrace) {
       logger.e('Error updating schedule entry', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 
@@ -112,7 +112,7 @@ class DayScheduleRemoteDataSourceImpl implements DayScheduleRemoteDataSource {
       logger.i('Schedule entry deleted successfully');
     } catch (e, stackTrace) {
       logger.e('Error deleting schedule entry', e, stackTrace);
-      throw ServerException();
+      throw ServerException(e.toString());
     }
   }
 }

@@ -6,9 +6,9 @@ import '../../domain/repositories/day_schedule_repository.dart';
 import '../datasources/day_schedule_remote_data_source.dart';
 
 class DayScheduleRepositoryImpl implements DayScheduleRepository {
-  final DayScheduleRemoteDataSource remoteDataSource;
 
   DayScheduleRepositoryImpl({required this.remoteDataSource});
+  final DayScheduleRemoteDataSource remoteDataSource;
 
   @override
   Future<Either<Failure, List<DayScheduleEntry>>> getDaySchedule(String dayId) async {

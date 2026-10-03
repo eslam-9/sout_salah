@@ -5,14 +5,14 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/utils/permission_checker.dart';
 
 class DayScheduleUploadButton extends ConsumerWidget {
-  final String mosqueId;
-  final VoidCallback onUploadPressed;
 
   const DayScheduleUploadButton({
     super.key,
     required this.mosqueId,
     required this.onUploadPressed,
   });
+  final String mosqueId;
+  final VoidCallback onUploadPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

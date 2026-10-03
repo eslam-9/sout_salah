@@ -9,9 +9,9 @@ import 'package:sout_salah/core/presentation/widgets/app_loading_indicator.dart'
 import '../../providers/daily_video_providers.dart';
 
 class DayDetailBody extends ConsumerWidget {
-  final RamadanDay day;
 
   const DayDetailBody({super.key, required this.day});
+  final RamadanDay day;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

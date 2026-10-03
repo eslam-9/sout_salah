@@ -11,7 +11,7 @@ class DownloadsHeader extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Expanded(
+          const Expanded(
             child: Text(
               'التنزيلات',
               style: TextStyle(

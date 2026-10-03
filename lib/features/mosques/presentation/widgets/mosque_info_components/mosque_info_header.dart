@@ -3,9 +3,9 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque.dart';
 
 class MosqueInfoHeader extends StatelessWidget {
-  final Mosque mosque;
 
   const MosqueInfoHeader({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   Widget build(BuildContext context) {

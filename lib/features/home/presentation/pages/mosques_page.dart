@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -23,6 +25,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
   String _searchQuery = '';
   bool _canAddMosque = false;
   final ScrollController _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -60,12 +64,17 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
     final state = ref.watch(mosqueProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.greyLight,
       body: SafeArea(
         child: Column(
           children: [
             HomeAppBar(
-              onSearchChanged: (query) => setState(() => _searchQuery = query),
+              onSearchChanged: (query) {
+                _debounceTimer?.cancel();
+                _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+                  if (mounted) setState(() => _searchQuery = query);
+                });
+              },
             ),
             Expanded(
               child: RefreshIndicator(
@@ -75,8 +84,11 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                   builder: (context) {
                     return state.when(
                       data: (mosquesList) {
+                        final query = _searchQuery.toLowerCase();
                         final mosques = mosquesList
-                            .where((m) => m.name.contains(_searchQuery))
+                            .where(
+                              (m) => m.name.toLowerCase().contains(query),
+                            )
                             .toList();
 
                         if (mosques.isEmpty) {
@@ -102,7 +114,7 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
                           padding: const EdgeInsets.all(16),
                           itemCount:
                               mosques.length +
-                              (ref.read(mosqueProvider.notifier).hasMore
+                              (ref.watch(mosqueProvider.notifier).hasMore
                                   ? 1
                                   : 0),
                           itemBuilder: (context, index) {
@@ -157,14 +169,18 @@ class _MosquesPageState extends ConsumerState<MosquesPage> {
         ),
       ),
       floatingActionButton: _canAddMosque
-          ? FloatingActionButton.extended(
-              onPressed: () =>
-                  NavigationService.navigateTo(AppRoutes.addMosque),
-              backgroundColor: AppColors.primary,
-              icon: const Icon(LucideIcons.plus),
-              label: const Text(
-                'إضافة مسجد',
-                style: TextStyle(fontWeight: FontWeight.bold),
+          ? Semantics(
+              label: 'إضافة مسجد جديد',
+              button: true,
+              child: FloatingActionButton.extended(
+                onPressed: () =>
+                    NavigationService.navigateTo(AppRoutes.addMosque),
+                backgroundColor: AppColors.primary,
+                icon: const Icon(LucideIcons.plus),
+                label: const Text(
+                  'إضافة مسجد',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             )
           : null,

@@ -9,9 +9,9 @@ import '../widgets/audio_player_components/audio_player_slider.dart';
 import '../widgets/audio_player_components/audio_player_controls.dart';
 
 class AudioPlayerPage extends ConsumerWidget {
-  final Recording recording;
 
   const AudioPlayerPage({super.key, required this.recording});
+  final Recording recording;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

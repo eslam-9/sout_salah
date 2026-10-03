@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_controller.dart';
-import '../bloc/auth_state.dart';
+import '../state/auth_state.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/navigation_service.dart';
 import '../widgets/auth_header.dart';
@@ -107,9 +107,9 @@ class LoginPage extends ConsumerWidget {
     }
 
     // Show login form for initial/unauthenticated state
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(children: [AuthHeader(), LoginForm()]),
       ),
     );

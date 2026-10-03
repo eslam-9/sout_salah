@@ -7,13 +7,6 @@ import '../utils/app_logger.dart';
 import '../constants/app_constants.dart';
 
 class R2StorageService {
-  late final String _endpoint;
-  late final String _accessKey;
-  late final String _secretKey;
-  late final String _bucket;
-  late final String _cdnUrl;
-  final AppLogger _logger;
-  final Dio _dio;
 
   R2StorageService({required Dio dio, required AppLogger logger})
       : _dio = dio,
@@ -26,6 +19,13 @@ class R2StorageService {
 
     _logger.i('R2StorageService initialized: bucket=$_bucket, cdn=$_cdnUrl');
   }
+  late final String _endpoint;
+  late final String _accessKey;
+  late final String _secretKey;
+  late final String _bucket;
+  late final String _cdnUrl;
+  final AppLogger _logger;
+  final Dio _dio;
 
   Future<String> uploadFile(
     String key,

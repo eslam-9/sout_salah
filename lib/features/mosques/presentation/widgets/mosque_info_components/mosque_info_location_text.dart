@@ -4,9 +4,9 @@ import '../../../../../core/theme/app_theme.dart';
 import '../../../domain/entities/mosque.dart';
 
 class MosqueInfoLocationText extends StatelessWidget {
-  final Mosque mosque;
 
   const MosqueInfoLocationText({super.key, required this.mosque});
+  final Mosque mosque;
 
   @override
   Widget build(BuildContext context) {
