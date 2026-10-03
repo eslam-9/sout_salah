@@ -15,7 +15,7 @@ platform :android do
       service_credentials_json_data: ENV["FIREBASE_CREDENTIALS_JSON"],
       apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
       testers: "eslamage20@gmail.com",
-      groups: ["tester"],
+      groups: "tester",
       release_notes: "CI/CD build triggered by merge to main branch. Commit: #{ENV['GITHUB_SHA']}"
     )
   end
