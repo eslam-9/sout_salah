@@ -15,7 +15,6 @@ import '../services/favorites_service.dart';
 import '../services/startup_service.dart';
 
 import '../services/navigation_service.dart';
-import '../services/startup_service.dart';
 import '../utils/mosque_permissions.dart';
 
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) => GetIt.I<SharedPreferences>());
@@ -92,9 +91,4 @@ final mosquePermissionsProvider = Provider<MosquePermissions>((ref) {
   return MosquePermissions(client);
 });
 
-final startupServiceProvider = Provider<StartupService>((ref) {
-  return StartupService(
-    ref.watch(supabaseClientProvider),
-    ref.watch(appLoggerProvider),
-  );
-});
+
