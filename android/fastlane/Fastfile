@@ -1,0 +1,22 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build Flutter APK and upload to Firebase App Distribution"
+  lane :distribute do
+    
+    # 1. Build the Flutter APK using the secrets file
+    # We navigate to the parent directory to run flutter build
+    sh("cd .. && flutter build apk --release --dart-define-from-file=secrets.json")
+
+    # 2. Upload to Firebase App Distribution
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID"],
+      service_credentials_file: ENV["FIREBASE_CREDENTIALS_JSON"] ? nil : "firebase-credentials.json",
+      service_credentials_content: ENV["FIREBASE_CREDENTIALS_JSON"],
+      apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
+      testers: "eslamage20@gmail.com",
+      groups: ["tester"],
+      release_notes: "CI/CD build triggered by merge to main branch. Commit: #{ENV['GITHUB_SHA']}"
+    )
+  end
+end
