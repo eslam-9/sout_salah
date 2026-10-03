@@ -1,16 +1,15 @@
-import 'package:equatable/equatable.dart';
+import '../../domain/entities/daily_video.dart';
 
-class DailyVideoModel extends Equatable {
-
+class DailyVideoModel extends DailyVideo {
   const DailyVideoModel({
-    required this.id,
-    required this.mosqueId,
-    required this.dayId,
-    this.publisherId,
-    required this.videoUrl,
-    this.title,
-    this.description,
-    required this.createdAt,
+    required super.id,
+    required super.mosqueId,
+    required super.dayId,
+    super.publisherId,
+    required super.videoUrl,
+    super.title,
+    super.description,
+    required super.createdAt,
   });
 
   factory DailyVideoModel.fromJson(Map<String, dynamic> json) {
@@ -25,14 +24,6 @@ class DailyVideoModel extends Equatable {
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
     );
   }
-  final String id;
-  final String mosqueId;
-  final String dayId;
-  final String? publisherId;
-  final String videoUrl;
-  final String? title;
-  final String? description;
-  final DateTime createdAt;
 
   Map<String, dynamic> toJson() {
     return {
@@ -46,16 +37,4 @@ class DailyVideoModel extends Equatable {
       'created_at': createdAt.toUtc().toIso8601String(),
     };
   }
-
-  @override
-  List<Object?> get props => [
-    id,
-    mosqueId,
-    dayId,
-    publisherId,
-    videoUrl,
-    title,
-    description,
-    createdAt,
-  ];
 }
