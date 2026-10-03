@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sout_salah/features/mosques/presentation/providers/day_schedule_provider.dart';
 import 'package:sout_salah/features/mosques/presentation/providers/daily_video_providers.dart';
 import '../widgets/day_schedule_table_widget.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../domain/entities/mosque_location.dart';
 import 'mosque_location_section.dart';
 import 'add_mosque_text_fields.dart';

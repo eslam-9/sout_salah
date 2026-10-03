@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../domain/entities/recording.dart';
 import '../widgets/audio_player_components/audio_player_info.dart';
 import '../widgets/audio_player_components/audio_download_button.dart';

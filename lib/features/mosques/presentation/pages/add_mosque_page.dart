@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../providers/mosque_controller.dart';
 import '../providers/mosque_requests_provider.dart';
 import '../../../../core/utils/permission_checker.dart';
