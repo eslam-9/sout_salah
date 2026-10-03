@@ -12,7 +12,7 @@ platform :android do
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: ENV["FIREBASE_CREDENTIALS_JSON"] ? nil : "firebase-credentials.json",
-      service_credentials_content: ENV["FIREBASE_CREDENTIALS_JSON"],
+      service_credentials_json_data: ENV["FIREBASE_CREDENTIALS_JSON"],
       apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
       testers: "eslamage20@gmail.com",
       groups: ["tester"],
