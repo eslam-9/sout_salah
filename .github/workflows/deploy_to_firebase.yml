@@ -1,0 +1,58 @@
+name: Deploy to Firebase App Distribution
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          working-directory: android
+
+      - name: Create secrets.json
+        run: echo "${{ secrets.APP_SECRETS_JSON }}" > secrets.json
+
+      - name: Create key.properties and decode keystore
+        run: |
+          # 1. Decode keystore from base64
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+          
+          # 2. Create key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install fastlane
+        working-directory: android
+        run: bundle install
+
+      - name: Run Fastlane to Build & Upload
+        working-directory: android
+        env:
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS }}
+        run: bundle exec fastlane android distribute
