@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
-import 'package:sout_salah/core/utils/app_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/startup_service.dart';
+import '../di/riverpod_providers.dart';
 import '../services/navigation_service.dart';
 import '../../../features/auth/presentation/providers/auth_controller.dart';
 
 class StartupCheckWrapper extends ConsumerStatefulWidget {
-
   const StartupCheckWrapper({super.key, required this.child});
   final Widget child;
 
@@ -25,25 +23,25 @@ class _StartupCheckWrapperState extends ConsumerState<StartupCheckWrapper> {
   }
 
   Future<void> _checkStartupData() async {
-    // Small delay to ensure the widget tree is built and splash is gone
-    await Future.delayed(const Duration(seconds: 1));
-    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
 
-    try {
-      // Check auth status first
-      await _checkAuthStatus();
+      try {
+        // Check auth status first
+        await _checkAuthStatus();
 
-      // Then check startup data
-      final startupService = GetIt.I<StartupService>();
-      final data = await startupService.checkStartupData();
+        // Then check startup data
+        final startupService = ref.read(startupServiceProvider);
+        final data = await startupService.checkStartupData();
 
-      if (data != null && data.info.isNotEmpty) {
-        if (!mounted) return;
-        _showInfoDialog(data);
+        if (data != null && data.info.isNotEmpty) {
+          if (!mounted) return;
+          _showInfoDialog(data);
+        }
+      } catch (e) {
+        ref.read(appLoggerProvider).e('Error in startup check wrapper', e);
       }
-    } catch (e) {
-      GetIt.I<AppLogger>().e('Error in startup check wrapper', e);
-    }
+    });
   }
 
   Future<void> _checkAuthStatus() async {
@@ -51,7 +49,7 @@ class _StartupCheckWrapperState extends ConsumerState<StartupCheckWrapper> {
       final authNotifier = ref.read(authProvider.notifier);
       await authNotifier.checkAuthStatus();
     } catch (e) {
-      GetIt.I<AppLogger>().e('Error checking auth status', e);
+      ref.read(appLoggerProvider).e('Error checking auth status', e);
       // Continue anyway - don't block app startup on auth errors
     }
   }
@@ -60,7 +58,9 @@ class _StartupCheckWrapperState extends ConsumerState<StartupCheckWrapper> {
     // Use the navigator context, as this widget is above the Navigator in the tree
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) {
-      GetIt.I<AppLogger>().w('Navigator context is null, cannot show dialog');
+      ref
+          .read(appLoggerProvider)
+          .w('Navigator context is null, cannot show dialog');
       return;
     }
 
@@ -124,10 +124,10 @@ class _StartupCheckWrapperState extends ConsumerState<StartupCheckWrapper> {
     try {
       final Uri url = Uri.parse(urlString);
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-        GetIt.I<AppLogger>().w('Could not launch $urlString');
+        ref.read(appLoggerProvider).w('Could not launch $urlString');
       }
     } catch (e) {
-      GetIt.I<AppLogger>().e('Error launching URL', e);
+      ref.read(appLoggerProvider).e('Error launching URL', e);
     }
   }
 

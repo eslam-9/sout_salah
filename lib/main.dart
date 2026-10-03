@@ -28,6 +28,26 @@ void main() async {
     AppConfig.supabaseAnonKey.isNotEmpty,
     'SUPABASE_ANON_KEY must be provided via --dart-define-from-file=secrets.json',
   );
+  assert(
+    AppConfig.r2Endpoint.isNotEmpty,
+    'R2_ENDPOINT must be provided',
+  );
+  assert(
+    AppConfig.r2AccessKey.isNotEmpty,
+    'R2_ACCESS_KEY must be provided',
+  );
+  assert(
+    AppConfig.r2SecretKey.isNotEmpty,
+    'R2_SECRET_KEY must be provided',
+  );
+  assert(
+    AppConfig.r2Bucket.isNotEmpty,
+    'R2_BUCKET must be provided',
+  );
+  assert(
+    AppConfig.r2CdnUrl.isNotEmpty,
+    'R2_CDN_URL must be provided',
+  );
 
   // Initialize Service Locator first so AppLogger is available
   await di.setupServiceLocator();
@@ -53,6 +73,8 @@ void main() async {
       url: AppConfig.supabaseUrl,
       anonKey: AppConfig.supabaseAnonKey,
     );
+    // Register client AFTER successful initialization
+    di.sl.registerLazySingleton(() => Supabase.instance.client);
   } catch (e, stackTrace) {
     GetIt.I<AppLogger>().e(
       'Failed to initialize Supabase (likely offline)',
