@@ -39,6 +39,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       logger.i('Sign in successful: ${response.user!.id}');
       return _getUserWithProfile(response.user!);
+    } on AuthException catch (e) {
+      logger.e('Sign in AuthException', e);
+      throw AppAuthException(e.message);
     } catch (e) {
       logger.e('Sign in error', e);
       throw ServerException(e.toString());
@@ -67,6 +70,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       logger.i('Sign up successful: ${response.user!.id}');
       // Profile is created by trigger, fetch it
       return _getUserWithProfile(response.user!);
+    } on AuthException catch (e) {
+      logger.e('Sign up AuthException', e);
+      throw AppAuthException(e.message);
     } catch (e) {
       logger.e('Sign up error', e);
       throw ServerException(e.toString());
@@ -88,7 +94,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       logger.e(
         'Anonymous sign in AuthException: ${e.message}, StatusCode: ${e.statusCode}',
       );
-      throw ServerException(e.toString());
+      throw AppAuthException(e.message);
     } catch (e) {
       logger.e('Anonymous sign in error', e);
       throw ServerException(e.toString());
@@ -99,6 +105,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> signOut() async {
     try {
       await supabaseClient.auth.signOut();
+    } on AuthException catch (e) {
+      throw AppAuthException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -112,6 +120,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return _getUserWithProfile(user);
       }
       return null;
+    } on AuthException catch (e) {
+      throw AppAuthException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -130,6 +140,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final user = supabaseClient.auth.currentUser;
       if (user == null) throw ServerException('No authenticated user found');
       return _getUserWithProfile(user);
+    } on AuthException catch (e) {
+      logger.e('AuthException updating profile for user $userId', e);
+      throw AppAuthException(e.message);
     } catch (e) {
       logger.e('Error updating profile for user $userId', e);
       throw ServerException(e.toString());

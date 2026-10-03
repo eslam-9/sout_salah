@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
-import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/error/repository_error_handler.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
@@ -15,20 +14,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> signInWithEmailAndPassword(
     String email,
     String password,
-  ) async {
-    try {
+  ) {
+    return executeWithCatch(() async {
       final user = await remoteDataSource.signInWithEmailAndPassword(
         email,
         password,
       );
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+      return user;
+    });
   }
 
   @override
@@ -36,85 +29,54 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? username,
-  }) async {
-    try {
+  }) {
+    return executeWithCatch(() async {
       final user = await remoteDataSource.signUp(
         email: email,
         password: password,
         username: username,
       );
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+      return user;
+    });
   }
 
   @override
-  Future<Either<Failure, User>> signInAnonymously() async {
-    try {
+  Future<Either<Failure, User>> signInAnonymously() {
+    return executeWithCatch(() async {
       final user = await remoteDataSource.signInAnonymously();
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+      return user;
+    });
   }
 
   @override
-  Future<Either<Failure, void>> signOut() async {
-    try {
+  Future<Either<Failure, void>> signOut() {
+    return executeWithCatch(() async {
       await remoteDataSource.signOut();
-      return const Right(null);
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+    });
   }
 
   @override
-  Future<Either<Failure, User>> getCurrentUser() async {
-    try {
+  Future<Either<Failure, User>> getCurrentUser() {
+    return executeWithCatch(() async {
       final user = await remoteDataSource.getCurrentUser();
       if (user != null) {
-        return Right(user);
+        return user;
       }
-      return const Left(ServerFailure(message: 'User not found'));
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+      throw const ServerFailure(message: 'User not found');
+    });
   }
 
   @override
   Future<Either<Failure, User>> updateProfile(
     String userId, {
     String? username,
-  }) async {
-    try {
+  }) {
+    return executeWithCatch(() async {
       final user = await remoteDataSource.updateProfile(
         userId,
         username: username,
       );
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Unknown Server Error'));
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
+      return user;
+    });
   }
 }
