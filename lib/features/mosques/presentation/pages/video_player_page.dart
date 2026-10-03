@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../widgets/daily_video_widget.dart';
-import '../../data/models/daily_video_model.dart';
+import '../../domain/entities/daily_video.dart';
 
 class VideoPlayerPage extends StatelessWidget {
 
   const VideoPlayerPage({super.key, required this.video});
-  final DailyVideoModel video;
+  final DailyVideo video;
 
   @override
   Widget build(BuildContext context) {

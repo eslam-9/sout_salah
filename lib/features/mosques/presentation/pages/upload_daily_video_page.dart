@@ -8,6 +8,8 @@ import 'package:sout_salah/core/di/riverpod_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../providers/daily_video_providers.dart';
+import '../providers/mosque_data_providers.dart';
+import '../../domain/usecases/upload_video_usecase.dart';
 import '../widgets/upload_daily_video_components/upload_video_empty_state.dart';
 import '../widgets/upload_daily_video_components/upload_video_file_list.dart';
 import '../widgets/upload_daily_video_components/upload_video_details_form.dart';
@@ -86,7 +88,7 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
     });
 
     try {
-      final repository = ref.read(videoRepositoryProvider);
+      final uploadUseCase = ref.read(uploadVideoUseCaseProvider);
       final totalFiles = _selectedFiles.length;
 
       for (int i = 0; i < totalFiles; i++) {
@@ -95,7 +97,7 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
           _uploadProgress = 0.0;
         });
 
-        await repository.uploadVideo(
+        final result = await uploadUseCase(UploadVideoParams(
           videoFile: _selectedFiles[i],
           mosqueId: widget.mosqueId,
           dayId: widget.dayId,
@@ -109,6 +111,11 @@ class _UploadDailyVideoPageState extends ConsumerState<UploadDailyVideoPage> {
               });
             }
           },
+        ));
+        
+        result.fold(
+          (failure) => throw Exception(failure.message),
+          (_) => null,
         );
       }
 

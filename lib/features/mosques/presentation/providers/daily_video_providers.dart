@@ -1,20 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../core/di/riverpod_providers.dart';
-import '../../data/models/daily_video_model.dart';
-import '../../data/repositories/video_repository.dart';
-
-final videoRepositoryProvider = Provider<VideoRepository>((ref) {
-  return VideoRepository(
-    supabaseClient: ref.watch(supabaseClientProvider),
-    r2StorageService: ref.watch(r2StorageServiceProvider),
-    logger: ref.watch(appLoggerProvider),
-  );
-});
+import '../../domain/entities/daily_video.dart';
+import 'mosque_data_providers.dart';
 
 /// Fetches ALL videos for a given day (supports multiple videos per day).
 final dailyVideoListProvider =
-    FutureProvider.autoDispose.family<List<DailyVideoModel>, String>((ref, dayId) async {
-      final repository = ref.watch(videoRepositoryProvider);
-      return repository.getVideosForDay(dayId);
+    FutureProvider.autoDispose.family<List<DailyVideo>, String>((ref, dayId) async {
+      final getVideosForDayUseCase = ref.watch(getVideosForDayUseCaseProvider);
+      final result = await getVideosForDayUseCase(dayId);
+      
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (videos) => videos,
+      );
     });

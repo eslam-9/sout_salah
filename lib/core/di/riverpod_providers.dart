@@ -14,6 +14,8 @@ import '../services/audio_player_service.dart';
 import '../services/favorites_service.dart';
 
 import '../services/navigation_service.dart';
+import '../services/startup_service.dart';
+import '../utils/mosque_permissions.dart';
 
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) => GetIt.I<SharedPreferences>());
 
@@ -73,8 +75,18 @@ final networkInfoProvider = Provider<NetworkInfo>((ref) {
 /// Current playing recording ID provider
 final currentPlayingRecordingProvider = StateProvider<String?>((ref) => null);
 
-// Navigation service available via Riverpod for feature code
-// (main.dart bootstrap uses GetIt directly)
 final navigationServiceProvider = Provider<NavigationService>((ref) {
-  return NavigationService();
+  return GetIt.I<NavigationService>();
+});
+
+final startupServiceProvider = Provider<StartupService>((ref) {
+  return StartupService(
+    ref.watch(supabaseClientProvider),
+    ref.watch(appLoggerProvider),
+  );
+});
+
+final mosquePermissionsProvider = Provider<MosquePermissions>((ref) {
+  final client = ref.watch(supabaseClientProvider);
+  return MosquePermissions(client);
 });

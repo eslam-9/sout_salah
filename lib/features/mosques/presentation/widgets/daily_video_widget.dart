@@ -7,13 +7,13 @@ import 'package:flutter/services.dart';
 import '../../../../core/di/riverpod_providers.dart';
 import '../../../../core/utils/app_logger.dart';
 
-import '../../data/models/daily_video_model.dart';
+import '../../domain/entities/daily_video.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class DailyVideoWidget extends ConsumerStatefulWidget {
 
   const DailyVideoWidget({super.key, required this.video});
-  final DailyVideoModel video;
+  final DailyVideo video;
 
   @override
   ConsumerState<DailyVideoWidget> createState() => _DailyVideoWidgetState();
