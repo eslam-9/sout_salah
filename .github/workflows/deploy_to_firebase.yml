@@ -49,6 +49,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Patch on_audio_query_android namespace
+        run: |
+          sed -i 's/defaultConfig {/namespace "com.lucasjosino.on_audio_query"\n    defaultConfig {/g' ~/.pub-cache/hosted/pub.dev/on_audio_query_android-*/android/build.gradle
+
       - name: Install fastlane
         working-directory: android
         run: bundle install
